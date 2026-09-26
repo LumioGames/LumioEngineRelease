@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Observability</name>
+    </assembly>
+    <members>
+        <member name="F:Lumio.GameRuntime.Observability.ObservabilityFailure.FatalEvidenceWriteErrorId">
+            <summary>
+            证据写入失败的稳定 identity。取自 generated
+            <c>StableErrorIds.All</c>,不自造错误码。
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Observability.ObservabilityFailure.FatalEvidenceWrite(System.String)">
+            <summary>
+            Failure Bundle 落盘失败没有降级路径:证据写不下去就等于事故不可复现,
+            必须一次性升级为 Fatal,不得 catch-and-continue(T05.S07)。
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Observability.FailureBundleAssembler.Write(Lumio.GameRuntime.Observability.FailureBundleView,Lumio.GameRuntime.Observability.IDurableEvidencePort)">
+            <summary>
+            把已装配的 bundle 作为 durable 证据写出。Port 未接受即证据丢失,
+            返回 FatalEvidenceWrite 供调用方 fail-stop;写成功返回 null。
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.TxnJournalRecordCommitState">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.TxnJournalRecordDurabilityState">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.TxnJournalRecordRecordKind">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.TxnJournalRecord">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Observability.Records.TxnJournalRecord.CommandId">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.CommandLogRecordCommitState">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.CommandLogRecordDurabilityState">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.CommandLogRecordRecordKind">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.CommandLogRecord">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Observability.Records.CommandLogRecord.TxnId">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.WalRecordEnvelopeInnerKind">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.WalRecordEnvelope">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.Records.SchemaCatalog">
+            <summary>耐久证据可能引用到的全部 schemaId。</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Observability.DurableEvidenceRouter.KeySeparator">
+            <summary>
+            generated 记录的 durable 键分隔符。抽成常量供 <c>DurableKeySchemeGuardTests</c> 引用,
+            避免实现与守护各写各的字面量。
+            <para><b>改这个值前先读那组测试的类注释。</b>拼接键的单射性同时依赖分隔符**无自重叠**
+            (无真后缀等于真前缀)与「分隔符之前的字段不含分隔符」两条;把它改成 <c>"::"</c> 这类
+            自重叠的串会静默破坏单射。守护里有专门一条钉住这一点。</para>
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Observability.TickSampleCsvWriter">
+            <summary>
+            Writes raw Tick sample CSVs. Empty cells mean missing, never a filled-in 0.
+            N19: <c>tick_id,phase,elapsed_nanos,queue_wait_nanos</c>.
+            N21: <c>tick_id,allocated_bytes,gen0,gen1,gen2,pause_ms,query_count,structure_count,live_entities,rss_bytes</c>.
+            </summary>
+        </member>
+    </members>
+</doc>

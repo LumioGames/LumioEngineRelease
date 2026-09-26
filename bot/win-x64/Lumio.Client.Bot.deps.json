@@ -1,0 +1,575 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.1/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
+      "Lumio.Client.Bot/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Gameplay.Input": "1.0.0",
+          "Lumio.Client.Gameplay.Session": "1.0.0",
+          "Lumio.Client.Log": "1.0.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Replication": "0.1.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Bot.dll": {}
+        }
+      },
+      "Microsoft.Bcl.AsyncInterfaces/10.0.11": {
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
+            "assemblyVersion": "10.0.0.11",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.11": {
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/10.0.11": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.11",
+          "System.Diagnostics.DiagnosticSource": "10.0.11"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "System.Diagnostics.DiagnosticSource/10.0.11": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Diagnostics.DiagnosticSource.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "System.IO.Pipelines/10.0.11": {
+        "runtime": {
+          "lib/netstandard2.0/System.IO.Pipelines.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/6.1.2": {
+        "runtime": {
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.100.225.20307"
+          }
+        }
+      },
+      "System.Text.Encodings.Web/10.0.11": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Text.Encodings.Web.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "System.Text.Json/10.0.11": {
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "10.0.11",
+          "System.IO.Pipelines": "10.0.11",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2",
+          "System.Text.Encodings.Web": "10.0.11"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Text.Json.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
+          }
+        }
+      },
+      "System.Threading.Channels/10.0.0": {
+        "runtime": {
+          "lib/netstandard2.1/System.Threading.Channels.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.52411"
+          }
+        }
+      },
+      "Lumio.Client.Gameplay.ECS/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Replication": "0.1.0",
+          "Lumio.GameRuntime.Simulation": "0.1.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Gameplay.ECS.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Gameplay.GAS/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Gameplay.GAS.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Gameplay.Input/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Gameplay.Input.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Gameplay.Session/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Gameplay.ECS": "1.0.0",
+          "Lumio.Client.Gameplay.GAS": "1.0.0",
+          "Lumio.Client.Gameplay.Input": "1.0.0",
+          "Lumio.Client.Log": "1.0.0",
+          "Lumio.Client.Network.Connection": "1.0.0",
+          "Lumio.Client.Network.Handshake": "1.0.0",
+          "Lumio.Client.Storage": "1.0.0",
+          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Gameplay.Session.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Log/1.0.0": {
+        "dependencies": {
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Log.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Network.Connection/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Network.Connection.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Network.Handshake/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "Lumio.Client.Network.Connection": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Network.Handshake.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Client.Storage/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Storage.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.Engine.NativeLoader.Hfsm/1.0.0": {
+        "runtime": {
+          "Lumio.Engine.NativeLoader.Hfsm.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Command/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Observability": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Command.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Config/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Observability": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Config.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Coordination/0.1.0": {
+        "dependencies": {
+          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
+          "Lumio.GameRuntime.Command": "0.1.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Observability": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Coordination.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Ecs/0.1.0": {
+        "dependencies": {
+          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
+          "Lumio.GameRuntime.Config": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.11"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Ecs.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Gas/0.1.0": {
+        "dependencies": {
+          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
+          "Lumio.GameRuntime.Command": "0.1.0",
+          "Lumio.GameRuntime.Config": "0.1.0",
+          "Lumio.GameRuntime.Coordination": "0.1.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Observability": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Gas.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Observability/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Primitives": "0.1.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Observability.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Persistence/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Coordination": "0.1.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.11",
+          "System.Text.Json": "10.0.11"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Persistence.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Primitives/0.1.0": {
+        "runtime": {
+          "Lumio.GameRuntime.Primitives.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Replication/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Command": "0.1.0",
+          "Lumio.GameRuntime.Config": "0.1.0",
+          "Lumio.GameRuntime.Coordination": "0.1.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Gas": "0.1.0",
+          "Lumio.GameRuntime.Observability": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Replication.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Simulation/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Command": "0.1.0",
+          "Lumio.GameRuntime.Config": "0.1.0",
+          "Lumio.GameRuntime.Coordination": "0.1.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Gas": "0.1.0",
+          "Lumio.GameRuntime.Observability": "0.1.0",
+          "Lumio.GameRuntime.Persistence": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0",
+          "Lumio.GameRuntime.Replication": "0.1.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Simulation.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.Engine.NativeLoader/1.0.0.0": {
+        "runtime": {
+          "Lumio.Engine.NativeLoader.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Coordination.VoxelAdapters/0.1.0.0": {
+        "runtime": {
+          "Lumio.GameRuntime.Coordination.VoxelAdapters.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.Engine.SDK/1.0.0.0": {
+        "runtime": {
+          "Lumio.Engine.SDK.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Lumio.Client.Bot/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Bcl.AsyncInterfaces/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pUkYI1f99hY9giu/MRaEVN53RO7skXwR7FGtVvFJCK5ezdg5i0W+z1yj/91X5aKv07xGuSB5n1g/Zt2P4Ooq6g==",
+      "path": "microsoft.bcl.asyncinterfaces/10.0.11",
+      "hashPath": "microsoft.bcl.asyncinterfaces.10.0.11.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/a1aJz4m7ylhEDf25ugQChLQoN5XwoGjWw/BoR/ZWWKsO1v4DdJElS1uyngahz4B/eOzjFk1KNTkarRLE5wsIg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/10.0.11",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.10.0.11.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ljd0Uxoq5XpScD2Bg0nM/r3mwx7Ao5Uq24eo2ARxbGvqJ7Zht6rt2cJtwVRH4Cv+1ZVMdXz6TB43KbpmsxRrvQ==",
+      "path": "microsoft.extensions.logging.abstractions/10.0.11",
+      "hashPath": "microsoft.extensions.logging.abstractions.10.0.11.nupkg.sha512"
+    },
+    "System.Diagnostics.DiagnosticSource/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QoXcAdDhBudxorzYF1F5Uo7FY0CSWgmTjqVRJjcQaYAkbO3dCPXDJajJwyApTGHCJ+T5PfVyKZqXEKZ8PH+UWQ==",
+      "path": "system.diagnostics.diagnosticsource/10.0.11",
+      "hashPath": "system.diagnostics.diagnosticsource.10.0.11.nupkg.sha512"
+    },
+    "System.IO.Pipelines/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rg8LPOZ62quw3aTnsQNh9rssncaMs69WEM1DiJdDkV+o4Llb2s5Pasy5Bulfm8zL+pE4gDcSQo7V2zW2jvxwYg==",
+      "path": "system.io.pipelines/10.0.11",
+      "hashPath": "system.io.pipelines.10.0.11.nupkg.sha512"
+    },
+    "System.Runtime.CompilerServices.Unsafe/6.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2hBr6zdbIBTDE3EhK7NSVNdX58uTK6iHW/P/Axmm9sl1xoGSLqDvMtpecn226TNwHByFokYwJmt/aQQNlO5CRw==",
+      "path": "system.runtime.compilerservices.unsafe/6.1.2",
+      "hashPath": "system.runtime.compilerservices.unsafe.6.1.2.nupkg.sha512"
+    },
+    "System.Text.Encodings.Web/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-R7H2/Oqr3onFff/JKDpfRjwxcQZlocF/eQ0ce8go/OTjqz+6LEp/fZK8j1YnDobtysChATEg7krVq4hQJ3IoeQ==",
+      "path": "system.text.encodings.web/10.0.11",
+      "hashPath": "system.text.encodings.web.10.0.11.nupkg.sha512"
+    },
+    "System.Text.Json/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-X2rXQy7g8KEUvWVbAz6vOk6byI1eMgmzFeXbKxq4BfZCfFy5S91K+K+hd4ZBlSp0wL1Y8FyGRXs6+hvABTjwQw==",
+      "path": "system.text.json/10.0.11",
+      "hashPath": "system.text.json.10.0.11.nupkg.sha512"
+    },
+    "System.Threading.Channels/10.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-fwRdkJpKisUEVNaEdsL5w5EwidzuVw0BOTfzDvYB1Yg8sq1pqNfUZxBOVFgSj6i6tNhpT3HP8BEDXf1+kFkTDA==",
+      "path": "system.threading.channels/10.0.0",
+      "hashPath": "system.threading.channels.10.0.0.nupkg.sha512"
+    },
+    "Lumio.Client.Gameplay.ECS/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Gameplay.GAS/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Gameplay.Input/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Gameplay.Session/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Log/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Network.Connection/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Network.Handshake/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Client.Storage/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Engine.NativeLoader.Hfsm/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Command/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Config/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Coordination/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Ecs/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Gas/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Observability/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Persistence/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Primitives/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Replication/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Simulation/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Engine.NativeLoader/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Coordination.VoxelAdapters/0.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.Engine.SDK/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

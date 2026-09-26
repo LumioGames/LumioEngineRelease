@@ -1,0 +1,110 @@
+# Lumio Platform — local development stack from the published image (ADR-123 §8).
+#
+# The engine release copies this file verbatim to LumioEngineRelease/platform/. It is
+# shared by every game: nothing in it names a game. The platform image is referenced by
+# `image:` only (no build), and each game supplies its own inputs through one directory.
+#
+# Required variables (compose refuses to start without them):
+#   LUMIO_PLATFORM_IMAGE       published image, e.g. ghcr.io/lumiogames/lumio-platform:0.0.1
+#   LUMIO_GAME_PLATFORM_DIR    the game's platform directory (absolute path recommended;
+#                              a relative path resolves against the directory of this file)
+#
+# The game's platform directory holds exactly three things:
+#   platform.env     game variables such as Platform__Allocations__<slug>__*, read by the
+#                    platform service as env_file (one KEY=VALUE per line)
+#   seed-games.sql   the game's catalog seed, run once by games-seed after the platform
+#                    has migrated the schema; must be idempotent
+#   games/           lobby bundle directory, mounted read-only at /var/lumio/games (may be empty)
+#
+# Usage:
+#   LUMIO_PLATFORM_IMAGE=ghcr.io/lumiogames/lumio-platform:0.0.1 \
+#   LUMIO_GAME_PLATFORM_DIR=/abs/path/to/game/platform \
+#   docker compose -f docker-compose.yml up -d
+#   curl -fsS http://127.0.0.1:8080/healthz
+#
+# The host port defaults to 8080; set LUMIO_PLATFORM_HOST_PORT to publish another one when 8080
+# is taken on this machine (the container always listens on 8080).
+#
+# LOCAL DEVELOPMENT ONLY. Every trust value below is a fixed, publicly known dev value.
+# Never run this file, or any of these values, in production: production injects its own
+# key ring and never sets the test registration profile.
+#
+# Local admission key (Ed25519). A game's DS template verifies launch tickets with:
+#   admission_public_key_hex = 9593f57065df3c7303d67a27a458cd4ec8c55de7c5e6c6153b80c5a32ef19cd7
+#   admission_key_id         = 1
+name: lumio-platform
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      # Local development only: throwaway database credentials.
+      POSTGRES_USER: lumio
+      POSTGRES_PASSWORD: lumio
+      POSTGRES_DB: lumio_platform
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumio"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  platform:
+    image: ghcr.io/lumiogames/lumio-platform:0.0.1@sha256:3b1d44faaf555509186471665d91cbc33d2da604930e15342075b6f5781c13a1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Game variables. Keys listed under `environment` below take precedence, so a game
+    # file cannot change the local trust material or the registration profile.
+    env_file:
+      - ${LUMIO_GAME_PLATFORM_DIR:?set LUMIO_GAME_PLATFORM_DIR to the game platform directory}/platform.env
+    environment:
+      # Local development only: connection to the throwaway database above.
+      PLATFORM_DB_CONNECTION_STRING: Host=postgres;Database=lumio_platform;Username=lumio;Password=lumio
+      # Local development only: listen on all container interfaces; the host publishes
+      # LUMIO_PLATFORM_HOST_PORT (default 8080) onto this container port.
+      PLATFORM_LISTEN_URL: http://0.0.0.0:8080
+      # Local development only: fixed admission signing seed (public key in the header).
+      LUMIO_ACCOUNT_ADMISSION_PRIVATE_KEY_HEX: d306f904255095e7b5302db8cdf0e10fd18dabe6ff1cb04c6e74c77c70b4178c
+      # Local development only: key id paired with the seed above.
+      LUMIO_ACCOUNT_ADMISSION_KEY_ID: "1"
+      # Local development only: all-zero bot tool key, no bot tool credential is accepted.
+      LUMIO_ACCOUNT_BOT_TOOL_PUBLIC_KEY_HEX: "0000000000000000000000000000000000000000000000000000000000000000"
+      # Local development only: lobby bundles come from the game directory's games/.
+      PLATFORM_GAMES_ROOT: /var/lumio/games
+      # Local development only: WS login-or-register creates accounts on the fly and allows
+      # loopback ws:// allocations. Never set test in production.
+      PLATFORM_REGISTRATION_PROFILE: test
+      # Local development only: throttles sized for one host driving 100 logins + 100
+      # launches a minute (bot runs). Override from the shell; app defaults are unchanged.
+      PLATFORM_ACCOUNT_RATE_LIMIT_MAX_REQUESTS_PER_IP: ${PLATFORM_ACCOUNT_RATE_LIMIT_MAX_REQUESTS_PER_IP:-240}
+      PLATFORM_LAUNCH_RATE_PER_ACCOUNT_GAME: ${PLATFORM_LAUNCH_RATE_PER_ACCOUNT_GAME:-12}
+      PLATFORM_LAUNCH_RATE_PER_IP: ${PLATFORM_LAUNCH_RATE_PER_IP:-240}
+      PLATFORM_LAUNCH_RATE_WINDOW_SECONDS: ${PLATFORM_LAUNCH_RATE_WINDOW_SECONDS:-60}
+    volumes:
+      - ${LUMIO_GAME_PLATFORM_DIR:?set LUMIO_GAME_PLATFORM_DIR to the game platform directory}/games:/var/lumio/games:ro
+    ports: ["${LUMIO_PLATFORM_HOST_PORT:-8080}:8080"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/healthz"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+
+  # One-shot catalog seed: runs the game's seed-games.sql after /healthz reports the
+  # migrated database.
+  games-seed:
+    image: postgres:17
+    depends_on:
+      platform:
+        condition: service_healthy
+    environment:
+      # Local development only: same throwaway database credentials as postgres above.
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: lumio
+      PGPASSWORD: lumio
+      PGDATABASE: lumio_platform
+    volumes:
+      - ${LUMIO_GAME_PLATFORM_DIR:?set LUMIO_GAME_PLATFORM_DIR to the game platform directory}/seed-games.sql:/seed-games.sql:ro
+    command: ["psql", "-v", "ON_ERROR_STOP=1", "-f", "/seed-games.sql"]
+    restart: "no"

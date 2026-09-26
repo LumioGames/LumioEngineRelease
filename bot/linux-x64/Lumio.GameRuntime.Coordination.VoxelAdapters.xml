@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Coordination.VoxelAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi">
+            <summary>
+            Production ABI adapter: delegates all INativeVoxelAbi calls to Lumio.Engine.NativeLoader VoxelFacade.
+            Does not reimplement DDA, physics queries, or token transaction lifecycle.
+            </summary>
+            <remarks>
+            There is no substitute build of this type. The project fails the build when the architecture
+            repository is not reachable rather than compiling a throwing stand-in (R-00469 AC6, 公共纪律 ⑫).
+            </remarks>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.MinSectionX">
+            <summary>Smallest section X that survives a round trip through the packed key.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.MaxSectionX">
+            <summary>Largest section X that survives a round trip through the packed key.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.MaxSectionY">
+            <summary>Largest section Y that fits the packed key's four bits.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.EncodeSectionKey(System.Int32,System.Byte,System.Int32)">
+            <summary>Encodes a section coordinate into a packed ulong.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.DecodeSectionCoordinates(System.UInt64)">
+            <summary>Decodes a packed ulong section key into coordinates.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.DecodeCellCoordinates(System.UInt64,System.Int32)">
+            <summary>Decodes a packed ulong section key and cell offset into world coordinates.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.DecodeSectionKey(System.UInt64)">
+            <summary>Decodes a packed ulong section key into a VoxelSectionKey.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.DecodeCellCoordinate(System.UInt64,System.Int32)">
+            <summary>Decodes sectionKey and cellOffset into a world coordinate.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.BufferTooSmall">
+            <summary>
+            Native status <c>LUMIO_STATUS_BUFFER_TOO_SMALL</c> (engine/abi/native-abi.json <c>status.BufferTooSmall</c>
+            = 5): a shared <c>lumio_status_t</c> value, not one of the per-capability generated enums
+            (<see cref="T:Lumio.Engine.SDK.VoxelErrorCode"/> only covers the voxel business error table, 1000+). Named locally
+            like <c>INativeLogAbi</c>/<c>INativeTimerAbi</c>/<c>CodecFacade</c> already do in LumioGameEngine,
+            since the generator does not emit a per-capability alias for it (ADR-121 R3: no bare literal).
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.BlockingMaterialMask">
+            <summary>
+            Material mask for movement and line-of-sight queries: the three blocking classes
+            Solid (1) | Cutout (4) | Translucent (8) = 13 (contract <c>voxel.enums.material_mask</c>,
+            ADR-124 D1). Mask 1 now selects Solid only and would walk through leaves, glass and ice.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor">
+            <summary>Creates a default ABI adapter that throws if invoked without world provider.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(Lumio.Engine.SDK.NativeVoxelWorld)">
+            <summary>Creates an ABI adapter wrapping a known NativeVoxelWorld instance.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(System.Func{System.IntPtr,Lumio.Engine.SDK.NativeVoxelWorld})">
+            <summary>Creates an ABI adapter that resolves NativeVoxelWorld from world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(Lumio.Engine.NativeLoader.NativeEngineLease)">
+            <summary>Creates an ABI adapter wrapping a NativeEngineLease.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Read(System.IntPtr,System.UInt64,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Sweep(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Raycast(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Overlap(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Apply(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ApplyWithResult(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ReplaceBindingContext(System.IntPtr,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingEntityEntry})">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.CloseFaultedWorld">
+            <summary>Explicit owner shutdown after a fault; never retries or reclassifies the mutation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ValidateBatchForCoalescing(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.QueryReceipt(System.IntPtr,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.BindingGet(System.IntPtr,System.UInt64,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.SweepMiss(System.IntPtr)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.SweepUnresolved(System.IntPtr)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.TryReadSectionBindings(System.IntPtr,System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">
+            <inheritdoc />
+            <remarks>
+            R-00768: LumioGameEngine landed the RootApi slot and <c>NativeVoxelWorld.ReadSectionBindings</c>
+            wrapper after R-00727 was cut (R-00725, commit f6b576a), so this member is wired for real — the
+            other four ADR-119 residency members (durability ack / unload / release / load) are wired below
+            by R-00770. Probes with an empty buffer first (native honors a zero-capacity probe), then reads
+            the exact <see cref="P:Lumio.Engine.SDK.VoxelSectionBindingReadResult.RequiredBytes"/> once. <c>section_unavailable</c>
+            (Pending or not-yet-loaded) is the documented miss and returns false, never an empty table; any
+            other non-success status is an unexpected Native fault.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.DecodeBindingEntries(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Decodes <c>voxel_section_binding_read_v1</c>'s canonical table bytes: u16 LE count, then entries
+            strictly ascending by cell offset of u16 LE offset, u16 LE id length and UTF-8 id bytes
+            (engine/wire/voxel-world-v1.json <c>bindingRead</c>; same shape as <c>bindingSegment</c> without
+            its 0xFFFF marker). An empty table is just the two count bytes.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.AcknowledgeSectionDurability(System.IntPtr,System.UInt64,System.UInt64,System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.UnloadSection(System.IntPtr,System.UInt64,System.UInt64,System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ReleaseSection(System.IntPtr,System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.LoadSection(System.IntPtr,System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ResidencyWireErrorCode(Lumio.Engine.SDK.VoxelErrorCode)">
+            <summary>
+            Maps the ADR-119 residency refusal subset of <see cref="T:Lumio.Engine.SDK.VoxelErrorCode"/> (the generated contract
+            enum from a caught <see cref="T:Lumio.Engine.SDK.VoxelNativeException"/>.Code, never a hand-typed status int —
+            ADR-121 R3) to the exact snake_case string engine/abi/native-abi.json's <c>voxelErrors</c> table
+            declares for it — the same string Runtime's own <c>IVoxelSectionResidencyPort</c> double and
+            <c>DedicatedServerHostBinding</c> already report for these codes.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadePredictionSession">
+            <summary>Owns a Rev5 session, borrowing the host world until a successful close.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadePredictionSession.BlockingMaterialMask">
+            <summary>
+            Material mask for prediction movement and line-of-sight queries: Solid (1) | Cutout (4) |
+            Translucent (8) = 13 (contract <c>voxel.enums.material_mask</c>, ADR-124 D1), the same mask
+            the authority facade uses, so both sides collide against the same classes.
+            </summary>
+        </member>
+    </members>
+</doc>

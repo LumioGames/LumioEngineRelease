@@ -1,0 +1,598 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Config</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Config.ConfigVersionState">
+            <summary>Version pointer for one snapshot identity in the activation slot.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigVersionState.None">
+            <summary>Unknown identity.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigVersionState.Staged">
+            <summary>Waiting at the staged pointer; not visible to new tick leases.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigVersionState.Active">
+            <summary>Current Active pointer.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigVersionState.Superseded">
+            <summary>Replaced at a barrier; existing leases may still read it.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigStageResult">
+            <summary>Outcome of staging one immutable snapshot.</summary>
+            <param name="Staged">True when the candidate occupies the staged slot.</param>
+            <param name="SnapshotId">Candidate identity.</param>
+            <param name="ErrorId">Generated catalog id when rejected; otherwise null.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigStageResult.#ctor(System.Boolean,Lumio.GameRuntime.Config.ConfigSnapshotId,System.String)">
+            <summary>Outcome of staging one immutable snapshot.</summary>
+            <param name="Staged">True when the candidate occupies the staged slot.</param>
+            <param name="SnapshotId">Candidate identity.</param>
+            <param name="ErrorId">Generated catalog id when rejected; otherwise null.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigStageResult.Staged">
+            <summary>True when the candidate occupies the staged slot.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigStageResult.SnapshotId">
+            <summary>Candidate identity.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigStageResult.ErrorId">
+            <summary>Generated catalog id when rejected; otherwise null.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigActivationResult">
+            <summary>Outcome of a Tick Barrier activation.</summary>
+            <param name="Activated">True when the staged snapshot became Active.</param>
+            <param name="ActiveSnapshotId">Active identity after the call.</param>
+            <param name="ErrorId">Generated catalog id when rejected; otherwise null.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationResult.#ctor(System.Boolean,Lumio.GameRuntime.Config.ConfigSnapshotId,System.String)">
+            <summary>Outcome of a Tick Barrier activation.</summary>
+            <param name="Activated">True when the staged snapshot became Active.</param>
+            <param name="ActiveSnapshotId">Active identity after the call.</param>
+            <param name="ErrorId">Generated catalog id when rejected; otherwise null.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigActivationResult.Activated">
+            <summary>True when the staged snapshot became Active.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigActivationResult.ActiveSnapshotId">
+            <summary>Active identity after the call.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigActivationResult.ErrorId">
+            <summary>Generated catalog id when rejected; otherwise null.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigActivationSlot">
+            <summary>
+            Single staged slot plus Active pointer. Staging never switches the Active
+            pointer; only <see cref="M:Lumio.GameRuntime.Config.ConfigActivationSlot.ActivateAtBarrier(Lumio.GameRuntime.Config.TickId)"/> on the owner thread does.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationSlot.TryClaim(System.Object,Lumio.GameRuntime.Config.ConfigSnapshotLease@)">
+            <summary>
+            Takes the exclusive owner claim for <paramref name="owner"/>, from the
+            thread that constructed this slot and no other.
+            </summary>
+            <remarks>
+            This is the check that makes "the thread that created the
+            <c>ConfigModule</c>" the Simulation Owner Thread for everything
+            downstream: <c>WorldConfigBinding</c> claims here in its constructor, so a
+            binding can only be built on that thread, and the manager it is handed to
+            inherits the same thread. Public contract:
+            <c>engine/wire/world-gameplay-config-v1.json</c> &#8594;
+            <c>ownerThread</c>. An already-held claim and a wrong thread are both
+            <c>WrongContext</c> on purpose — neither tells the caller to retry
+            elsewhere.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationSlot.#ctor">
+            <summary>
+            Bind the constructing thread as the Simulation Owner Thread. The binding
+            is permanent: there is no rebind, and the contract
+            (<c>world-gameplay-config-v1.json</c> &#8594; <c>ownerThread</c>) does not
+            allow a second owner-thread parameter to exist anywhere downstream.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigActivationSlot.Active">
+            <summary>Current Active snapshot. Throws when none has been activated.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationSlot.Stage(Lumio.GameRuntime.Config.ConfigSnapshot)">
+            <summary>
+            Place a validated snapshot in the staged slot. Same id+hash is idempotent.
+            Never overwrites Active.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationSlot.ActivateAtBarrier(Lumio.GameRuntime.Config.TickId)">
+            <summary>
+            Owner-thread Tick Barrier switch. No staged candidate returns Rejected
+            (<c>InvalidArgument</c>) and leaves Active unchanged. Non-owner returns
+            <c>WrongContext</c>.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationSlot.AcquireForTick(Lumio.GameRuntime.Config.TickId)">
+            <summary>Pin the current Active snapshot to a lease for this tick.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivationSlot.GetVersionState(Lumio.GameRuntime.Config.ConfigSnapshotId)">
+            <summary>Staged/Active/Superseded pointer for one identity.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigActivator">
+            <summary>
+            Tick Barrier activation facade. Does not own staging; it only publishes the
+            staged snapshot at the owner-thread barrier.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivator.#ctor(Lumio.GameRuntime.Config.ConfigActivationSlot)">
+            <summary>Bind to an existing activation slot.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigActivator.ActivateAtBarrier(Lumio.GameRuntime.Config.TickId)">
+            <summary>Activate the staged snapshot at the Tick Barrier.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigModule">
+            <summary>
+            Config module facade: validate generated artifacts, merge fixed layers,
+            stage an immutable snapshot, and activate it only at the Tick Barrier.
+            No compiler, file watcher, or DI container.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.Create">
+            <summary>Create a module bound to the constructing thread as owner.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigModule.Services">
+            <summary>Read/stage/activation facade.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigModule.ActiveSnapshot">
+            <summary>Current Active snapshot. Throws when none has been activated.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigModule.Activator">
+            <summary>Owner-thread barrier activator.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.Submit(Lumio.GameRuntime.Config.GeneratedConfigArtifactView@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.Validate(Lumio.GameRuntime.Config.GeneratedConfigArtifactView@)">
+            <summary>Validate without storing or staging. Does not touch Active.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.StageMerged(Lumio.GameRuntime.Config.ConfigSnapshotId)">
+            <summary>Merge previously submitted validated layers and occupy the staged slot.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.Stage(Lumio.GameRuntime.Config.ConfigSnapshot)">
+            <summary>Stage an already constructed immutable snapshot. Does not activate.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.ActivateAtBarrier(Lumio.GameRuntime.Config.TickId)">
+            <summary>Owner-thread Tick Barrier activation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigModule.AcquireForTick(Lumio.GameRuntime.Config.TickId)">
+            <summary>Pin Active to a lease for this tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigServices">
+            <summary>
+            Stable candidate facade: validator, stage/activation, and the active
+            <see cref="T:Lumio.GameRuntime.Config.IConfigSnapshotView"/>. No compiler, file watcher, or DI container.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigServices.ActiveSnapshot">
+            <summary>Currently activated snapshot. Throws when none has been activated.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigServices.Validate(Lumio.GameRuntime.Config.GeneratedConfigArtifactView@)">
+            <summary>Validate a generated artifact without staging or activation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigServices.Stage(Lumio.GameRuntime.Config.ConfigSnapshot)">
+            <summary>Stage a constructed snapshot. Does not switch Active.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigServices.StageMerged(Lumio.GameRuntime.Config.ConfigSnapshotId)">
+            <summary>Merge submitted validated layers and stage the resulting snapshot.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigServices.ActivateAtBarrier(Lumio.GameRuntime.Config.TickId)">
+            <summary>Owner-thread Tick Barrier activation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigServices.AcquireForTick(Lumio.GameRuntime.Config.TickId)">
+            <summary>Pin Active to a lease for this tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.Bool">
+            <summary>Wire value <c>bool</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.I32">
+            <summary>Wire value <c>i32</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.I64">
+            <summary>Wire value <c>i64</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.U32">
+            <summary>Wire value <c>u32</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.U64">
+            <summary>Wire value <c>u64</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.F32">
+            <summary>Wire value <c>f32</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.F64">
+            <summary>Wire value <c>f64</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.String">
+            <summary>Wire value <c>string</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.Enum">
+            <summary>Wire value <c>enum</c>.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType.Ref">
+            <summary>Wire value <c>ref</c>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemTypeWire.Value(Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.Contracts.ConfigTableActivation">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItem">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItem.Minimum">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItem.Maximum">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItem.EnumValues">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItem.RefTarget">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItem.DefaultValue">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.Contracts.ConfigTableRowsItem">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.Contracts.ConfigTable">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.Contracts.ConfigTable.Signature">
+            <summary>Optional in the schema.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSnapshotId">
+            <summary>Tick-stable identity of one immutable config snapshot.</summary>
+            <param name="Value">Opaque snapshot identity assigned at construct/stage time.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotId.#ctor(System.UInt64)">
+            <summary>Tick-stable identity of one immutable config snapshot.</summary>
+            <param name="Value">Opaque snapshot identity assigned at construct/stage time.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotId.Value">
+            <summary>Opaque snapshot identity assigned at construct/stage time.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.SchemaEpoch">
+            <summary>Generated architecture schema epoch carried by a snapshot.</summary>
+            <param name="Value">Epoch integer from the generated contract manifest.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.SchemaEpoch.#ctor(System.Int32)">
+            <summary>Generated architecture schema epoch carried by a snapshot.</summary>
+            <param name="Value">Epoch integer from the generated contract manifest.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.SchemaEpoch.Value">
+            <summary>Epoch integer from the generated contract manifest.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.SchemaEpoch.FromRuntimeSchema">
+            <summary>Epoch declared by the locked generated contract manifest.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.TickId">
+            <summary>Logical tick identity consumed at the config barrier. Not a Host clock.</summary>
+            <param name="Value">Monotonic logical tick number.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.TickId.#ctor(System.UInt64)">
+            <summary>Logical tick identity consumed at the config barrier. Not a Host clock.</summary>
+            <param name="Value">Monotonic logical tick number.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.TickId.Value">
+            <summary>Monotonic logical tick number.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.TickId.FromUInt64(System.UInt64)">
+            <summary>Construct from a canonical unsigned integer.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.IConfigSnapshotView">
+            <summary>
+            Tick-local immutable config read surface. Implementations must not return
+            mutable dictionaries/arrays or alias caller-owned input storage.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.IConfigSnapshotView.SnapshotId">
+            <summary>Identity pinned for this snapshot.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.IConfigSnapshotView.SchemaEpoch">
+            <summary>Generated schema epoch recorded at construct time.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.IConfigSnapshotView.TryOpenTable(System.String,Lumio.GameRuntime.Config.ConfigTableReader@)">
+            <summary>Open a typed reader for a table id. Missing tables return false.</summary>
+            <param name="tableName">Generated table id.</param>
+            <param name="reader">Reader bound to this snapshot's immutable storage.</param>
+            <returns>True when the table exists.</returns>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.IConfigSnapshotView.TryGetTable``1(``0@)">
+            <summary>Try get a strongly typed config table struct.</summary>
+            <typeparam name="TTable">The table type.</typeparam>
+            <param name="table">Output table struct.</param>
+            <returns>True when the typed table exists in this snapshot.</returns>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.IGeneratedConfigArtifactPort">
+            <summary>
+            Host/Dev entry that delivers a toolchain-generated config artifact.
+            Accepts generated views only; compilation belongs to Game/Toolchain.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.IGeneratedConfigArtifactPort.Submit(Lumio.GameRuntime.Config.GeneratedConfigArtifactView@)">
+            <summary>Submit one generated artifact. Concurrent submits are serialized by staging.</summary>
+            <param name="artifact">Generated table view plus the layer it declares.</param>
+            <returns>Accepted, or Rejected with a stable error id.</returns>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.GeneratedConfigArtifactView">
+            <summary>
+            Read-only view of one generated artifact: id, declared layer, and
+            generated <see cref="T:Lumio.GameRuntime.Config.Contracts.ConfigTable"/> rows whose values are canonical JSON.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.GeneratedConfigArtifactView.#ctor(System.String,Lumio.GameRuntime.Config.ConfigLayer,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Config.Contracts.ConfigTable})">
+            <summary>
+            Read-only view of one generated artifact: id, declared layer, and
+            generated <see cref="T:Lumio.GameRuntime.Config.Contracts.ConfigTable"/> rows whose values are canonical JSON.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.GeneratedConfigArtifactView.IsWellFormed">
+            <summary>Non-empty artifact id and at least one table.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSubmitStatus">
+            <summary>Submit outcome.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigSubmitStatus.Accepted">
+            <summary>Entered the validate/merge pipeline.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigSubmitStatus.Rejected">
+            <summary>Rejected (malformed, over budget, or validation failed).</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSubmitResult">
+            <summary>Submit result. Rejected carries a stable error id.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSubmitResult.#ctor(Lumio.GameRuntime.Config.ConfigSubmitStatus,System.String)">
+            <summary>Submit result. Rejected carries a stable error id.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSubmitResult.Accepted">
+            <summary>Accepted result.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSubmitResult.Rejected(System.String)">
+            <summary>Rejected result.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigTarget">
+            <summary>
+            Target projection identifier for LumioConfig export.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.LumioConfigLoadResult">
+            <summary>
+            Result of loading a LumioConfig export package.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.LumioConfigLoadResult.CreateSnapshot(Lumio.GameRuntime.Config.ConfigSnapshotId,System.Nullable{Lumio.GameRuntime.Config.SchemaEpoch})">
+            <summary>
+            Construct a ConfigSnapshot bound to the typed tables and artifact data.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigLoadAndActivateResult">
+            <summary>
+            Result of the end-to-end LoadAndActivate pipeline.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.LumioConfigLoader">
+            <summary>
+            M9 Loader for LumioConfig export artifacts:
+            reads JSON exports, validates revision fingerprints, parses rows into strongly-typed
+            &lt;Table&gt;Row / &lt;Table&gt;Table, and constructs snapshot / submit views.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.LumioConfigLoader.Load(System.String,Lumio.GameRuntime.Config.ConfigTarget,System.Collections.Generic.IReadOnlyList{System.String},Lumio.GameRuntime.Config.ConfigLayer,System.Func{Lumio.GameRuntime.Config.ConfigTarget,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Config.ConfigSnapshotTable},Lumio.GameRuntime.Config.ITypedTableSet})">
+            <summary>
+            Load from an export directory for a specific target.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.LumioConfigLoader.LoadAndActivate(Lumio.GameRuntime.Config.ConfigModule,System.String,Lumio.GameRuntime.Config.ConfigTarget,Lumio.GameRuntime.Config.TickId,System.Collections.Generic.IReadOnlyList{System.String},System.Nullable{Lumio.GameRuntime.Config.ConfigSnapshotId},System.Func{Lumio.GameRuntime.Config.ConfigTarget,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Config.ConfigSnapshotTable},Lumio.GameRuntime.Config.ITypedTableSet})">
+            <summary>
+            Execute end-to-end: Load export -> Submit to port -> Stage snapshot -> Activate at tick barrier.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigLayer">
+            <summary>
+            Fixed six-layer precedence. Larger ordinals merge later and win.
+            Order is Engine, Platform, Server, Product, Environment, UserOrSession.
+            Callers cannot reorder or add a seventh layer.
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigLayer.Engine">
+            <summary>Engine defaults (lowest precedence).</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigLayer.Platform">
+            <summary>Platform layer.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigLayer.Server">
+            <summary>Server layer.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigLayer.Product">
+            <summary>Product layer.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigLayer.Environment">
+            <summary>Environment layer.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Config.ConfigLayer.UserOrSession">
+            <summary>User or session layer (highest precedence).</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ValidatedConfigLayer">
+            <summary>One validated layer input. <see cref="T:Lumio.GameRuntime.Config.ConfigLayerMerger"/> accepts only this type.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ValidatedConfigLayer.#ctor(Lumio.GameRuntime.Config.ConfigLayer,Lumio.GameRuntime.Config.GeneratedConfigArtifactView)">
+            <summary>One validated layer input. <see cref="T:Lumio.GameRuntime.Config.ConfigLayerMerger"/> accepts only this type.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigLayerMerger">
+            <summary>
+            Fixed six-layer merger. Precedence is a compile-time array; no custom comparer.
+            Later layers override earlier layers at key/column granularity.
+            Conflicting column declarations fail; the merger does not convert types.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.CanonicalJson">
+            <summary>
+            Strict JSON parse/write following generated CanonicalForm: code-point member
+            order, ASCII escaping, no whitespace, duplicate-member detection. Number
+            literals are passed through; the artifact contract is toolchain canonical text.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSnapshotCell">
+            <summary>One cell used to construct a snapshot. Copied on construct.</summary>
+            <param name="Column">Generated column name.</param>
+            <param name="CanonicalText">Canonical cell text.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotCell.#ctor(System.String,System.String)">
+            <summary>One cell used to construct a snapshot. Copied on construct.</summary>
+            <param name="Column">Generated column name.</param>
+            <param name="CanonicalText">Canonical cell text.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotCell.Column">
+            <summary>Generated column name.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotCell.CanonicalText">
+            <summary>Canonical cell text.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSnapshotRow">
+            <summary>One row used to construct a snapshot. The cell span is copied.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotRow.#ctor(System.String,System.ReadOnlySpan{Lumio.GameRuntime.Config.ConfigSnapshotCell})">
+            <summary>Copy <paramref name="cells"/> into owned storage.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotRow.Key">
+            <summary>Row key.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotRow.Cells">
+            <summary>Cells in this snapshot row.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSnapshotTable">
+            <summary>One table used to construct a snapshot. Row storage is copied.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotTable.#ctor(System.String,System.String,System.ReadOnlySpan{Lumio.GameRuntime.Config.ConfigSnapshotRow})">
+            <summary>Copy <paramref name="rows"/> into owned storage.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotTable.TableId">
+            <summary>Generated table id.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotTable.CanonicalBytesHex">
+            <summary>Canonical table digest copied at construct time.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotTable.Rows">
+            <summary>Rows in this snapshot table.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigTableData">
+            <summary>Owned immutable table storage. Never returned to callers.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSnapshot">
+            <summary>
+            Immutable config snapshot. Constructor copies table/row/cell storage so later
+            mutation of caller arrays cannot be observed. Readers are concurrent-safe.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshot.#ctor(Lumio.GameRuntime.Config.ConfigSnapshotId,Lumio.GameRuntime.Config.SchemaEpoch,System.String,System.ReadOnlySpan{Lumio.GameRuntime.Config.ConfigSnapshotTable})">
+            <summary>Copy-on-construct from caller table views.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshot.#ctor(Lumio.GameRuntime.Config.ConfigSnapshotId,Lumio.GameRuntime.Config.SchemaEpoch,System.String,System.ReadOnlySpan{Lumio.GameRuntime.Config.ConfigSnapshotTable},Lumio.GameRuntime.Config.ITypedTableSet)">
+            <summary>Copy-on-construct from caller table views and typed table set.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshot.SnapshotId">
+            <inheritdoc />
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshot.SchemaEpoch">
+            <inheritdoc />
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshot.OutputHashHex">
+            <summary>Canonical output digest of the merged tables copied at construct time.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshot.TryOpenTable(System.String,Lumio.GameRuntime.Config.ConfigTableReader@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshot.TryGetTable``1(``0@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshot.FromMergeResult(Lumio.GameRuntime.Config.ConfigSnapshotId,Lumio.GameRuntime.Config.SchemaEpoch,Lumio.GameRuntime.Config.ConfigMergeResult)">
+            <summary>
+            Build a snapshot from Task 6 merged tables. Copies row/cell storage; does
+            not alias merger dictionaries.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigSnapshotLease">
+            <summary>
+            Tick-pinned access to one immutable snapshot. Dispose is the use-after-return
+            fence: further Snapshot/reader access throws <see cref="T:System.ObjectDisposedException"/>.
+            Replacing Active does not affect an already acquired lease.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotLease.Snapshot">
+            <summary>Pinned snapshot. Throws after <see cref="M:Lumio.GameRuntime.Config.ConfigSnapshotLease.Dispose"/>.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigSnapshotLease.TickId">
+            <summary>Tick the lease was acquired for. Identity only; it does not switch snapshots.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotLease.TryOpenTable(System.String,Lumio.GameRuntime.Config.ConfigTableReader@)">
+            <summary>Open a table reader bound to this lease's lifetime.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotLease.TryGetTable``1(``0@)">
+            <summary>Try get a strongly typed config table struct bound to this lease.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigSnapshotLease.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigValueView">
+            <summary>One already-validated cell value. Canonical text, not a mutable container.</summary>
+            <param name="CanonicalText">Toolchain canonical cell text copied into the snapshot.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigValueView.#ctor(System.String)">
+            <summary>One already-validated cell value. Canonical text, not a mutable container.</summary>
+            <param name="CanonicalText">Toolchain canonical cell text copied into the snapshot.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigValueView.CanonicalText">
+            <summary>Toolchain canonical cell text copied into the snapshot.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigTableReader">
+            <summary>
+            Typed reader over one immutable table. Does not expose dictionaries, arrays,
+            or caller-owned buffers. A reader bound to a lease throws after dispose.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Config.ConfigTableReader.CanonicalBytesHex">
+            <summary>Canonical SHA-256 hex of this table copied at snapshot construct time.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ConfigTableReader.TryGet(System.String,System.String,Lumio.GameRuntime.Config.ConfigValueView@)">
+            <summary>
+            Look up one cell. Missing row/column returns false and does not invent a zero default.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ITypedTableSet">
+            <summary>
+            Container of strongly typed config tables for one target projection.
+            Generated typed tables and reader containers live in consumer assemblies.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Config.ITypedTableSet.TryGetTable``1(``0@)">
+            <summary>Try get a typed table struct by its table type.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.ConfigValidationIssueCode">
+            <summary>Internal classification of generated-schema violations. Not a public contract code.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Config.GeneratedConfigValidator">
+            <summary>
+            Validates a generated config artifact against generated <see cref="T:Lumio.GameRuntime.Config.Contracts.ConfigTable"/>
+            column metadata (type, required, min/max, enumValues, refTarget, activation).
+            Ref cells resolve to a row key of <c>RefTarget</c> only within this artifact
+            (ADR-033 missing-ref). Cross-layer / cross-artifact refs are not resolved here;
+            T07 may do that after merge, or not. Returns every issue; never swallows
+            failures into a valid report. Canonical JSON rules come from generated
+            <c>CanonicalForm</c> constants.
+            </summary>
+        </member>
+    </members>
+</doc>

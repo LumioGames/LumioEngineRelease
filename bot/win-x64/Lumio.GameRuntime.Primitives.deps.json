@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Lumio.GameRuntime.Primitives/0.1.0": {
+        "runtime": {
+          "Lumio.GameRuntime.Primitives.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Lumio.GameRuntime.Primitives/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

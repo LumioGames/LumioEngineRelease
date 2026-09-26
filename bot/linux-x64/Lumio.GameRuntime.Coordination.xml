@@ -1,0 +1,805 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Coordination</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Coordination.CommitIntentCoordinator">
+            <summary>Session-scoped durable intent and participant commit authority.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.CommitIntentCoordinator._sessionFault">
+            <summary>
+            Best-effort, commit-fault-path-only notification; always null in production today (Tick path
+            warmup coverage tracked in Coordination.Tests.TickPathCallbackCompletenessTests, R-00763 follow-up 1).
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IEcsCommandCommitRevisionPort">
+            <summary>Internal ECS result seam for the participant revision returned by the real ECS adapter.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.CoordinationModule.Create(Lumio.Engine.NativeLoader.INativeHfsmAbi,Lumio.GameRuntime.Coordination.SessionRevisionVectorView,Lumio.GameRuntime.Coordination.IGameReservationPort,Lumio.GameRuntime.Coordination.IVoxelWorldPort,Lumio.GameRuntime.Command.EcsCommandCommitExecutor,Lumio.GameRuntime.Coordination.ITxnJournalPort,System.Func{Lumio.GameRuntime.Coordination.TxnRecord,Lumio.GameRuntime.Command.CommandApplyReceipt,Lumio.GameRuntime.Coordination.SessionRevisionVectorView},Lumio.GameRuntime.Coordination.ITxnResultEvidencePort)">
+            <summary>Creates a configured composition; the resolver must project the persisted ECS participant result.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.FailClosedTxnJournalPort">
+            <summary>
+            Explicit fail-closed journal when a death-surviving Persistence backend is missing.
+            Append, query, and tail all fail closed. Never pretends to be durable.
+            Production callers inject a death-surviving carrier when one exists.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.ITxnJournalPort">
+            <summary>Durable journal boundary owned by the caller (normally Persistence).</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.InMemoryTxnJournalPort">
+            <summary>Small bounded reference journal for deterministic tests; it is never a production default.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnJournalRecordFactory">
+            <summary>Creates generated journal records with deterministic hashes and no object-address data.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnPrepareCoordinator">
+            <summary>Runs all CrossWorld preflight checks before acquiring reservations.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnRecoveryResolver">
+            <summary>Builds and validates a durable recovery candidate before publishing any local authority state.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.ReservationLease">
+            <summary>A reservation handle whose release operation is idempotent.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.Revision.SessionRevisionVector">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.SessionRevisionVectorStore">
+            <summary>Read-only publicly; mutation requires a live session authority operation.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.SessionRevisionVectorView">
+            <summary>Immutable, defensive view of the generated SessionRevisionVector contract.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnResultEvidenceIdentity">
+            <summary>Identity of a transaction result written to the Runtime persistence seam.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.TxnResultEvidenceIdentity.#ctor(System.String,System.String,System.String,System.UInt64,System.String,System.String,System.String)">
+            <summary>Identity of a transaction result written to the Runtime persistence seam.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnResultEvidence">
+            <summary>
+            Durable proof that one exact request produced one exact revision vector.
+            This is a Runtime persistence seam, not a generated wire contract.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.ITxnResultEvidencePort">
+            <summary>Persistence boundary for the exact result vector of one transaction.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IIdentityAwareTxnResultEvidencePort">
+            <summary>Optional identity-aware capability for adapters that can key reads atomically.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.InMemoryTxnResultEvidencePort">
+            <summary>
+            Deterministic bounded reference implementation for tests. A production
+            persistence adapter must explicitly implement <see cref="T:Lumio.GameRuntime.Coordination.ITxnResultEvidencePort"/>
+            and retain the same identity and corruption checks.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.InMemoryTxnResultEvidencePort.Corrupt(System.String,System.String,Lumio.GameRuntime.Coordination.SessionRevisionVectorView)">
+            <summary>Test/host hook for simulating a corrupted durable row.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.MissingTxnResultEvidencePort">
+            <summary>Explicit fail-closed capability used by default composition.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnResultEvidencePortExtensions">
+            <summary>Identity-aware read helper for persistence adapters implementing the Runtime seam.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.SnapshotCutCoordinator">
+            <summary>Opens a consistent cut only at an approved barrier and releases pins atomically.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.CrossWorldCoordinator">
+            <summary>Owns transaction records and delegates participant work to barrier coordinators.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.CrossWorldCoordinator.#ctor(Lumio.Engine.NativeLoader.INativeHfsmAbi,Lumio.GameRuntime.Coordination.SessionRevisionVectorStore,Lumio.GameRuntime.Coordination.TxnIdempotencyIndex)">
+            <summary>Builds a fail-closed foundation composition; real participant ports are required for commit.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.CrossWorldTxn">
+            <summary>Named transaction projection matching the architecture binding; state is owned by TxnRecord.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnIdempotencyIndex">
+            <summary>Bounded session transaction index; request digest conflicts are fatal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnRequestDigest">
+            <summary>
+            Request digest hasher used until Task 20 injects the Persistence canonical Port.
+            SHA-256 over UTF-8 fields joined by LF (U+000A), no trailing LF:
+            sessionId, gameReleaseId, txnId, commandId, tickId (decimal invariant), expectedRevisionDigest.
+            This is not LumioBinV1. A caller-supplied 64-hex digest is stored opaquely on the record.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnLifecycle">
+            <summary>Compiled definitions owned by a coordinator or a standalone record.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnParticipantState">
+            <summary>
+            Runtime view of <c>cross-world-txn.schema.json</c> <c>participantMarkers.voxelCommit</c> /
+            <c>ecsCommandBufferCommit</c>. Wire names and declaration order match the schema enum
+            <c>NotStarted|Unknown|Applied|Failed</c>. Generated C# has no standalone enum type.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.TxnRecord">
+            <summary>Session-scoped transaction metadata and guarded state machine.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.AcceptingGameReservationPort">
+            <summary>
+            Game-reservation participant that records a lease without mutating gameplay accounts.
+            Account, reserve and drop mutations belong to gameplay systems; this port only
+            participates in 2PC so a voxel-only commit can still go through prepare.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.DurableInMemoryTxnJournalPort">
+            <summary>
+            Test-only bounded journal with the same append/query/tail surface as a host
+            journal. It does not provide cross-restart transaction recovery.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter">
+            <summary>
+            ADR-119 binding context ownership (R-00727): the block-type → block-entity-type policy is the only
+            thing gameplay supplies. Runtime derives every live candidate of a declared type from
+            <see cref="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.World"/> itself and is the sole writer of the native candidate
+            list — there is no second entry point that accepts an explicit entity list, so a stale gameplay
+            snapshot can never race Runtime's own view. This file also implements
+            <see cref="T:Lumio.GameRuntime.Ecs.ISectionBindingReader"/>, the Section-level committed binding table read consumed by
+            Runtime's own Section subscription projection (R-00726).
+            </summary>
+            <summary>Bounded staging over a caller-owned Native voxel world; Native owns historical receipts.</summary>
+            <summary>
+            Thin owner-thread wrappers over the four ADR-119 Section residency ABI slots (R-00727):
+            <c>voxel_section_durability_ack_v1</c>, <c>voxel_section_unload_v1</c>,
+            <c>voxel_section_release_v1</c> and <c>voxel_section_load_v1</c>. This file does not decide when a
+            Section should load, unload, be acked or be released, and does not enforce Authority/Client role —
+            Native's own role check (<c>InvalidArgument</c> for the wrong role, see <c>voxel_residency</c>
+            rules) is the enforcement point. Deciding the sequence, timing and role is Section residency
+            orchestration and belongs to R5, not this card.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.BindingPolicy">
+            <summary>Current binding policy, for diagnostics and tests. Empty until <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.SetBindingPolicy(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry})"/> runs.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.SetBindingPolicy(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry})">
+            <summary>
+            Sets the block-type → block-entity-type binding policy and immediately pushes a fresh
+            Runtime-derived candidate list to Native. Every <see cref="P:Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry.EntityType"/>
+            must resolve through <see cref="M:Lumio.GameRuntime.Ecs.EcsRegistry.TryResolveEntityType(System.String,System.Type@)"/> to a type declared in
+            <see cref="P:Lumio.GameRuntime.Ecs.EcsRegistry.BlockEntityTypes"/> (ADR-119 决策 1 / 6); anything else — an unresolvable
+            wire name or a CLR type without <c>[BlockEntity]</c> — is rejected before any native call.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.RefreshBindingContext">
+            <summary>
+            Re-derives the native binding candidate list from every live entity of a policy-declared type
+            and pushes it to Native (the only writer, ADR-119). Call again whenever the live candidate set
+            may have moved after the last push — in particular after a Section load/restore hydrates its
+            entities ("refreshes the binding context before the next Tick", <c>voxel_section_load_v1</c>
+            rules); <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.LoadSection(System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})"/> already does this for its own call, but a residency orchestrator
+            that hydrates entities separately (R5) must call this again once that hydration is done.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.TryReadSectionBindings(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">
+            <inheritdoc />
+            <remarks>
+            Rejects a non-owner-thread caller before touching Native; never caches — every call re-reads
+            Native's committed table (<c>voxel_section_binding_read_v1</c> is the only truth). Both the
+            authority (Runtime's own Section subscription projection, R-00726) and a predicting client's own
+            gameplay/GAS code (<see cref="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.Prediction"/> non-null) may call this: Native accepts both worlds
+            (R-00725, R-00768) and each call only ever reads <see cref="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.Handle"/>'s own world — a client
+            never reaches another connection's data through it, and a client's bounded prediction session is
+            a separate Native construct layered on top, so an open session does not block this read of the
+            base world's committed table (ADR-119 决策 2: "位置只有一个来源：绑定表，两端同一份"). An
+            unparseable entity id from Native is a fault — this method does not catch <see cref="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.Abi"/>'s
+            exception, so it propagates.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.RestoreResultCheckpoint(Lumio.GameRuntime.Coordination.VoxelResultCheckpoint)">
+            <summary>Installs validated delivery facts on a fresh candidate before its first business frame.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.TryStageCoalescibleDigThrough(System.UInt64,System.Int32,System.UInt64,System.String,System.Nullable{Lumio.GameRuntime.Ecs.WorldOperationId})">
+            <summary>
+            Stages one authoritative dig. Ids are logical-dig:{world:x16}:{tick:x16}:{serial:x16},
+            with strictly increasing serials within the current tick. They cannot be appended or replayed.
+            </summary>
+        </member>
+        <member name="E:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.DigApplied">
+            <summary>
+            Raised once per dig, synchronously inside <c>TickPhase.VoxelCommit</c> (from <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.CommitTransactionCore(System.String)"/>),
+            after Native has applied the transaction. <b>Observe-only</b> (tick.md §3 rule 5, Owner 2026-09-18):
+            subscribers may read and record, nothing else. While a subscriber runs the bound <see cref="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.World"/> is in an
+            observe-only window: <c>World.Commands.Create</c> / <c>QueueDestroy</c> / local create-destroy and every
+            <c>Sync&lt;T&gt;.Value</c> (or Sync container) write throw. Do not queue structural orders, effect orders or
+            any other business settlement here. When staging a dig, retain pending settlement and read
+            <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.DrainResults"/> in phase 3 or 4 of a later frame. Settle only successful results;
+            discard refused pending work without charging, clearing reserves or creating drops.
+            A business refusal is not a fault. Any subscriber exception
+            (including rejection of a forbidden callback write) is recorded as a <see cref="T:Lumio.GameRuntime.Coordination.VoxelNotificationDiagnostic"/>, faults this
+            adapter and propagates out of <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.CommitVoxel"/>, so the whole tick fails as VoxelCommit ProcessFault.
+            No production code in this repository subscribes today; when a host does, Prime cannot see the
+            subscriber ahead of time (it is registered at runtime, after Bind) — Tick path warmup coverage
+            tracked in Coordination.Tests.TickPathCallbackCompletenessTests (R-00763 follow-up 1).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.AcknowledgeSectionDurability(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Applies one Section-keyed durability receipt for the block half up to a SectionRevision.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.UnloadSection(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Authority unload of one Ready, clean, unpinned Section; blocks and bindings drop together.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.ReleaseSection(System.UInt64)">
+            <summary>Client release of one held Section back to not-received. Not held is a successful no-op.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.LoadSection(System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Authority restore of one non-resident Section from its durable record. On success, refreshes the
+            binding context if an ECS <see cref="P:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.World"/> is bound (ADR-119: "refreshes the binding context
+            before the next Tick"). A residency orchestrator that hydrates the Section's entities (Runtime
+            OnHydrate) after this call returns must call <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.RefreshBindingContext"/> again once that
+            hydration is done — this call alone only sees whatever is already live at the time it runs.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelResultCheckpoint">
+            <summary>Unconsumed delivery facts, not the Native historical receipt ledger.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelResultCheckpoint.#ctor(Lumio.GameRuntime.Coordination.VoxelTransactionResult[],Lumio.GameRuntime.Coordination.VoxelDigApplied[],System.String[],System.UInt64)">
+            <summary>Unconsumed delivery facts, not the Native historical receipt ledger.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelTxnState">
+            <summary>Lifecycle of one voxel transaction inside a voxel participant.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelTxnState.Unknown">
+            <summary>The adapter has never seen this transaction.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelTxnState.Prepared">
+            <summary>Work is prepared and not yet committed natively.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelTxnState.Applied">
+            <summary>The transaction was committed natively exactly once.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelTxnState.Aborted">
+            <summary>The transaction was aborted; its queued work will never be applied.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelDigApplied">
+            <summary>
+            One dig that has been committed natively. Gameplay systems decide what (if anything) it drops.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelDigApplied.#ctor(System.String,System.UInt64,System.Int32,System.String)">
+            <summary>
+            One dig that has been committed natively. Gameplay systems decide what (if anything) it drops.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.INativeVoxelAbi">
+            <summary>
+            Caller-supplied native ABI. Architecture SDK binds this from Host;
+            Runtime does not compile against Lumio.Engine.*.
+            </summary>
+            <remarks>
+            One transaction is exactly one native batch: <see cref="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.Apply(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)"/> carries the block writes and the
+            sparse entity binding mutations together through PrepareWriteV2 and a single CommitV3.
+            Rich results and historical queries preserve Native's disposition and original receipt.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.ValidateBatchForCoalescing(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+            <summary>Validates an unpublished union with Native Prepare/requirements/Abort; never commits.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.OpenPrediction(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelPredictionConfig@,Lumio.GameRuntime.Coordination.IVoxelPredictionSession@)">
+            <summary>Opens a Rev5 session on the borrowed world. Absence throws; Native errors retain their raw status.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.Read(System.IntPtr,System.UInt64,System.Int32)">
+            <summary>Reads one cell through the host world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.Sweep(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <summary>Sweeps an axis-aligned box through the host world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.Raycast(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,System.Single)">
+            <summary>Raycasts through the host world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.Overlap(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <summary>Overlaps an axis-aligned box through the host world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.Apply(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+            <summary>
+            Applies one transaction as a single native batch: block writes plus binding mutations under
+            one write token, committed once. Returns the native receipt; callers must not invent revisions.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.BindingGet(System.IntPtr,System.UInt64,System.Int32)">
+            <summary>
+            Reads the sparse entity binding for a cell. Native is the only truth for bindings;
+            Runtime keeps no second table.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.SweepMiss(System.IntPtr)">
+            <summary>Returns a miss sweep through the host world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.SweepUnresolved(System.IntPtr)">
+            <summary>Returns an unresolved sweep through the host world handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.TryReadSectionBindings(System.IntPtr,System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">
+            <summary>
+            Reads one Section's whole committed sparse binding table and its SectionRevision in one call
+            (voxel_section_binding_read_v1, ADR-119). Ready returns its entries; Unchanged returns an empty
+            table (<paramref name="entries"/> empty, <c>true</c>); Pending or Unavailable returns
+            <c>false</c> and leaves <paramref name="entries"/>/<paramref name="sectionRevision"/> at their
+            default — non-resident is never reported as an empty table. Authority and Client worlds both
+            accept this call.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.AcknowledgeSectionDurability(System.IntPtr,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Applies one Section-keyed durability receipt for the block half up to
+            <paramref name="upToSectionRevision"/> (voxel_section_durability_ack_v1). Authority only; a
+            receipt above the Section's current revision is <c>stale_section_revision</c>.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.UnloadSection(System.IntPtr,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Authority unload of one Ready, clean, unpinned Section: blocks and its binding table are dropped
+            together (voxel_section_unload_v1).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.ReleaseSection(System.IntPtr,System.UInt64)">
+            <summary>
+            Client release of one held Section back to not-received: blocks, binding table and the replica
+            revision are dropped together (voxel_section_release_v1). Releasing a Section that is not held
+            is a successful no-op.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.INativeVoxelAbi.LoadSection(System.IntPtr,System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Authority restore of one non-resident Section from its durable record, full-encoding semantics
+            (voxel_section_load_v1). The payload SHA-256 is verified before interpretation.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelApplyBatch">
+            <summary>
+            One transaction's complete native batch. <see cref="P:Lumio.GameRuntime.Coordination.VoxelApplyBatch.Bindings"/> is applied under the same write
+            token as <see cref="P:Lumio.GameRuntime.Coordination.VoxelApplyBatch.Writes"/>, so a dig and its sparse-reference removal cannot half-commit.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelApplyBatch.#ctor(System.String,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelWriteEntry},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingOp})">
+            <summary>
+            One transaction's complete native batch. <see cref="P:Lumio.GameRuntime.Coordination.VoxelApplyBatch.Bindings"/> is applied under the same write
+            token as <see cref="P:Lumio.GameRuntime.Coordination.VoxelApplyBatch.Writes"/>, so a dig and its sparse-reference removal cannot half-commit.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelBindingOp">
+            <summary>
+            A sparse entity binding mutation. A null <see cref="P:Lumio.GameRuntime.Coordination.VoxelBindingOp.EntityId"/> clears the binding
+            (<c>binding_clear</c>); a non-null one sets it (<c>binding_set</c>).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelBindingOp.#ctor(System.UInt64,System.Int32,System.String)">
+            <summary>
+            A sparse entity binding mutation. A null <see cref="P:Lumio.GameRuntime.Coordination.VoxelBindingOp.EntityId"/> clears the binding
+            (<c>binding_clear</c>); a non-null one sets it (<c>binding_set</c>).
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelSectionReceipt">
+            <summary>Per-section revision as reported by the native commit receipt.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelSectionReceipt.#ctor(System.UInt64,System.UInt64)">
+            <summary>Per-section revision as reported by the native commit receipt.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelApplyReceipt">
+            <summary>
+            Outcome of one native commit. Revisions come from the native receipt — the adapter never
+            increments a counter of its own.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelApplyReceipt.#ctor(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelSectionReceipt})">
+            <summary>
+            Outcome of one native commit. Revisions come from the native receipt — the adapter never
+            increments a counter of its own.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.SectionLoadEncoding">
+            <summary>Block encodings <c>voxel_section_load_v1</c> accepts. Delta (native encoding 3) is rejected.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.SectionLoadEnvelope">
+            <summary>
+            One durable Section record's block half, ready for <c>voxel_section_load_v1</c>. Native verifies
+            <see cref="P:Lumio.GameRuntime.Coordination.SectionLoadEnvelope.PayloadSha256"/> against the block payload bytes before any interpretation.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.SectionLoadEnvelope.#ctor(System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEncoding,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            One durable Section record's block half, ready for <c>voxel_section_load_v1</c>. Native verifies
+            <see cref="P:Lumio.GameRuntime.Coordination.SectionLoadEnvelope.PayloadSha256"/> against the block payload bytes before any interpretation.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.SectionResidencyOutcome">
+            <summary>
+            Result of one <c>voxel_residency</c> call that is not a binding read: the Section's state after the
+            call. A false <see cref="P:Lumio.GameRuntime.Coordination.SectionResidencyOutcome.Success"/> with a non-null <see cref="P:Lumio.GameRuntime.Coordination.SectionResidencyOutcome.ErrorCode"/> is a known business
+            refusal (stale_section_revision, pinned_section_evicted, dirty_section_not_durable, …), reported so
+            callers can branch without an exception; every other field stays at its default in that case,
+            mirroring the ABI rule that a refusal leaves outputs untouched.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.SectionResidencyOutcome.#ctor(System.Boolean,System.String,Lumio.GameRuntime.Coordination.VoxelPresence,System.Boolean,System.UInt32,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Result of one <c>voxel_residency</c> call that is not a binding read: the Section's state after the
+            call. A false <see cref="P:Lumio.GameRuntime.Coordination.SectionResidencyOutcome.Success"/> with a non-null <see cref="P:Lumio.GameRuntime.Coordination.SectionResidencyOutcome.ErrorCode"/> is a known business
+            refusal (stale_section_revision, pinned_section_evicted, dirty_section_not_durable, …), reported so
+            callers can branch without an exception; every other field stays at its default in that case,
+            mirroring the ABI rule that a refusal leaves outputs untouched.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelGameplayQueries">
+            <summary>Public batch-read surface. Missing chunks stay Pending/Unavailable, never air.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelGameplayQueries.Read(System.UInt64,System.Int32)">
+            <summary>Reads one cell. Missing chunks stay Pending/Unavailable, never air.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelGameplayQueries.Read(System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.UInt64,System.Int32}})">
+            <summary>Reads many cells. Missing chunks stay Pending/Unavailable, never air.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelGameplayWrites">
+            <summary>Public structured write surface. Dig-through queues one commit for block, sparse ref, and ECS.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelGameplayWrites.Write(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelWriteEntry},System.String)">
+            <summary>Queues structured writes (sectionKey + cell offset + BlockId + expectedSectionRevision).</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelGameplayWrites.DigThrough(System.UInt64,System.Int32,System.UInt64,System.String)">
+            <summary>Queues one commit: block to air, sparse-ref delete, and entity unbind. Does not create drops.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelPhysicalCommitRecorder">
+            <summary>Synchronous infrastructure observation of a borrowed original physical receipt. Must not throw.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelPhysicsQueries">
+            <summary>Public physics queries. Miss travel fraction is 1.0; Unresolved must not fill that fraction.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelPhysicsQueries.SweepMiss">
+            <summary>Canonical miss: collided false and travel fraction 1.0.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelPhysicsQueries.SweepUnresolved">
+            <summary>Canonical unresolved sweep: collided false and travel fraction is not 1.0.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelPhysicsQueries.Sweep(Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <summary>Sweeps an axis-aligned box. Degenerate half-extents are rejected.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelPhysicsQueries.Raycast(Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,System.Single)">
+            <summary>Raycasts along a direction. Unresolved is not a miss.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelPhysicsQueries.Overlap(Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <summary>Overlaps an axis-aligned box. Degenerate half-extents are rejected.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelPredictionExecution">
+            <summary>GAS execution reference injected into the existing gameplay adapter; owns no second voxel state.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelPredictionSession">
+            <summary>Host-owned Rev5 session. Status and progress are returned even on failure.</summary>
+            <remarks>No methods allocate network identities or interpret authority coverage. Close success alone releases ownership.
+            An open session belongs to its caller until a consumer explicitly accepts ownership; a failed consumer
+            constructor leaves it with the caller. The Native world must remain alive until Close returns zero.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelPredictionSession.ReleaseCovered(System.UInt64,System.UInt64,System.UInt64,Lumio.GameRuntime.Coordination.VoxelPredictionRelease@)">
+            <summary>Releases the inclusive journal-key range reported by the caller as covered by authority.
+            Zero fromJournalKey selects a prefix; equal bounds select one record. Does not undo, publish,
+            or change surviving records' validated Section revisions. Returns Native status and progress on failure.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelPredictionConfig">
+            <summary>Explicit Native allocation limits; zero disables the corresponding resource.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelPredictionConfig.#ctor(System.UInt64,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
+            <summary>Explicit Native allocation limits; zero disables the corresponding resource.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelSelectivePredictionSession">
+            <summary>Selective operations borrow caller-owned bounded buffers; no operation interprets input coverage.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelTickCommit">
+            <summary>Public façade for the VoxelCommit tick participant. Does not duplicate the txn state machine.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelTickCommit.CommitVoxel">
+            <summary>Runs at TickPhase.VoxelCommit. Must be idempotent for a duplicate txn id.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.IVoxelTickStage">
+            <summary>
+            Internal interface for voxel coordination participants (double or production host adapter).
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.IVoxelTickStage.QueuedCount">
+            <summary>Number of writes currently queued for commit.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.IVoxelTickStage.AppliedDigs">
+            <summary>Digs committed natively, in apply order. Gameplay decides whether any of them drop.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.IVoxelTickStage.DestroyedEntities">
+            <summary>Entities destroyed by dig operations.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelTickStage.CreateWorldPort">
+            <summary>Creates the coordinator port for cross-world 2PC.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.IVoxelTickStage.VoxelCommitPhaseBump">
+            <summary>Bumps the commit phase count.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.RecordingVoxelProvider">
+            <summary>
+            Conformance double standing in for the native voxel world: missing chunk is Pending/Unavailable,
+            never air (BlockId 0 with Ready).
+            </summary>
+            <remarks>
+            This double owns its cell store, its sparse bindings and its world revision the way native does —
+            that is the point of a double. It follows the same transaction rules as
+            <see cref="T:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter"/>: one transaction is one batch, committing one transaction
+            never applies another's queued work, and a dig reports itself rather than creating a drop.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.#ctor">
+            <summary>Creates a four-state double with an empty sparse binding table.</summary>
+        </member>
+        <member name="E:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.DigApplied">
+            <summary>
+            Raised once per dig after its transaction was applied, synchronously inside <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.CommitVoxel"/>
+            (TickPhase.VoxelCommit). Observe-only, exactly like <see cref="E:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.DigApplied"/>: while a
+            subscriber runs the bound <see cref="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.World"/> rejects structural commands and <c>Sync&lt;T&gt;</c> writes.
+            Gameplay decides drops in a later business phase from <see cref="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.AppliedDigs"/>, never here.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.CommitCount">
+            <summary>Number of distinct txn ids that produced a new dig-through or write commit.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.VoxelCommitPhaseCount">
+            <summary>Times <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.CommitVoxel"/> ran from TickPhase.VoxelCommit.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.DestroyedEntities">
+            <summary>Entity ids destroyed because the voxel they were bound to was dug through.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.AppliedDigs">
+            <summary>Digs that were applied, in apply order.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.World">
+            <summary>Optional live world used to QueueDestroy entities bound to a dug voxel.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.QueuedCount">
+            <summary>Cell writes still queued across all pending transactions.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.CreateWorldPort">
+            <summary>Internal txn participant view. Not part of the public gameplay surface.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.SeedReady(System.UInt64,System.Int32,System.UInt32,System.UInt64)">
+            <summary>Seeds a resident non-air cell for physics and write tests.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Bind(System.UInt64,System.Int32,System.String)">
+            <summary>Binds an entity to a cell, the way native <c>binding_set</c> would.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.BindingGet(System.UInt64,System.Int32)">
+            <summary>Reads the sparse entity binding for a cell.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.SeedSectionBindings(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry},System.UInt64)">
+            <summary>Seeds one Section Ready with a committed binding table, the way a successful load would.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.MarkSectionPending(System.UInt64)">
+            <summary>Marks one Section Pending (not yet resident), the state every unseeded key starts in.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.MarkSectionUnavailable(System.UInt64)">
+            <summary>Marks one Section Unavailable (never loaded, released or unloaded).</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.MarkSectionDirty(System.UInt64)">
+            <summary>Marks a resident Section dirty, so <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.UnloadSection(System.UInt64,System.UInt64,System.UInt64)"/> refuses until an ack covers it.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.TryReadSectionBindings(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.AcknowledgeSectionDurability(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Applies one Section-keyed durability receipt for the block half, mirroring voxel_section_durability_ack_v1.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.UnloadSection(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Authority unload of one Ready, clean, unpinned Section, mirroring voxel_section_unload_v1.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.ReleaseSection(System.UInt64)">
+            <summary>Client release of one held Section, mirroring voxel_section_release_v1. Not held is a no-op success.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.LoadSection(System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry})">
+            <summary>
+            Authority restore of one non-resident Section, mirroring voxel_section_load_v1. Also seeds the
+            per-cell <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.BindingGet(System.UInt64,System.Int32)"/> store from <paramref name="bindings"/>, the way a real Native
+            double must: <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.TryReadSectionBindings(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)"/> (the Section-level table) and
+            <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.BindingGet(System.UInt64,System.Int32)"/> (the single-cell read a client replica uses) are two views of the same
+            committed table, never two independent stores (R-00727 acceptance 4).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.ReplaceCellBindings(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry})">
+            <summary>Replaces every <see cref="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.BindingGet(System.UInt64,System.Int32)"/> entry under one Section with a fresh committed table.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Read(System.UInt64,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Read(System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.UInt64,System.Int32}})">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.SweepMiss">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.SweepUnresolved">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Sweep(Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Raycast(Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Overlap(Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.Write(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelWriteEntry},System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.DigThrough(System.UInt64,System.Int32,System.UInt64,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.CommitVoxel">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.TransactionState(System.String)">
+            <summary>Lifecycle state of one transaction inside this double.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.CommitTransaction(System.String)">
+            <summary>Applies exactly one transaction. Returns false when it is unknown, applied or aborted.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.RecordingVoxelProvider.AbortTransaction(System.String)">
+            <summary>Abandons one transaction's queued work. Returns false when it was already applied.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelCellQuery">
+            <summary>One cell from a batch read. Pending/Unavailable keep <c>HasBlockId</c> false and are never air.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCellQuery.#ctor(System.Boolean,Lumio.GameRuntime.Coordination.VoxelPresence,System.UInt32,System.UInt64)">
+            <summary>One cell from a batch read. Pending/Unavailable keep <c>HasBlockId</c> false and are never air.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelCommitSession">
+             <summary>
+             Tick façade for the voxel participant.
+            
+             Voxel mutations are owned by one process and become visible at the single
+             tick commit point. Prepare freezes submission order for the commit phase;
+             the decision callback remains a no-op. This session does not create a journal,
+             a reservation, or
+             a second transaction coordinator for voxel writes.
+             </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.VoxelCommitSession.LastTxnId">
+            <summary>Last transaction id supplied for diagnostics.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCommitSession.Create(Lumio.GameRuntime.Coordination.RecordingVoxelProvider)">
+            <summary>Creates a local tick session around the recording voxel double.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCommitSession.Create(Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter)">
+            <summary>Creates a local tick session around the production host adapter.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCommitSession.NoteTxn(System.String,System.String)">
+            <summary>Records the transaction id used by the next voxel write.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCommitSession.Prepare">
+            <summary>
+            Phase hook retained for the host tick layout. Voxel writes are already
+            prepared in memory by <c>Write</c>/<c>DigThrough</c>.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCommitSession.Decide">
+            <summary>Phase hook retained for the host tick layout.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelCommitSession.Commit">
+            <summary>Applies all prepared voxel batches at the single voxel commit phase.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelDigResult">
+            <summary>Staging correlation identity; this value does not prove Native publication.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelDigResult.#ctor(System.String)">
+            <summary>Staging correlation identity; this value does not prove Native publication.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelGameplayBinding">
+            <summary>Manager-scoped access to the host's existing voxel adapter; leases never own Native resources.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelGameplayBinding.Bind(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter)">
+            <summary>Publishes an adapter owned by this manager and returns a generation-specific lease.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelGameplayBinding.Resolve(Lumio.GameRuntime.Ecs.WorldManager)">
+            <summary>Resolves the current host adapter. Writes only stage work for the normal frame-end commit.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.VoxelTransactionResult.BatchTransactionId">
+            <summary>Physical receipt transaction when distinct from the logical TransactionId; null means TransactionId.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelOverlapHit">
+            <summary>Overlap outcome. Unresolved is never treated as an empty air volume.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelOverlapHit.#ctor(Lumio.GameRuntime.Coordination.VoxelQueryResolution,System.Int32,System.Boolean)">
+            <summary>Overlap outcome. Unresolved is never treated as an empty air volume.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelPackedSection">
+            <summary>Runtime's existing packed Section key representation, shared by prediction and adapters.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelPresence">
+            <summary>Four presence states. Pending and Unavailable are never treated as air.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelPresence.Ready">
+            <summary>Section is resident and the cell value is authoritative.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelPresence.Unchanged">
+            <summary>Pinned revision matches the previously observed value.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelPresence.Pending">
+            <summary>Section is not yet ready. Never treat as air.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelPresence.Unavailable">
+            <summary>Section cannot be queried. Never treat as air.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelQueryResolution">
+            <summary>Physics query outcomes. Unresolved is never collapsed into Miss or Hit.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelQueryResolution.Hit">
+            <summary>The query collided with a resident solid cell.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelQueryResolution.Miss">
+            <summary>The query travelled the full path through resident empty space.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Coordination.VoxelQueryResolution.Unresolved">
+            <summary>A section on the path is not resident. Not a miss and not a hit.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelRaycastHit">
+            <summary>Raycast outcome. Unresolved must not fill a miss travel distance.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelRaycastHit.#ctor(Lumio.GameRuntime.Coordination.VoxelQueryResolution,System.Boolean,System.Double)">
+            <summary>Raycast outcome. Unresolved must not fill a miss travel distance.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelSweepHit">
+            <summary>Sweep outcome. Miss travel fraction is 1.0; Unresolved must not fill that fraction.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelSweepHit.#ctor(System.Boolean,System.Double,System.Boolean)">
+            <summary>Sweep outcome. Miss travel fraction is 1.0; Unresolved must not fill that fraction.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelTxnNumber">
+            <summary>
+            Derives the 64-bit native transaction number from the contract transaction id.
+            </summary>
+            <remarks>
+            <see cref="M:System.String.GetHashCode"/> is randomized per process and only 32 bits wide, so the same
+            txn id produced a different native number on every replay and two different ids collided far too
+            easily (R-00469 §f). This derivation is a pure function of the contract id: identical across
+            processes, machines and replays, and 64 bits wide.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelTxnNumber.From(System.String)">
+            <summary>Maps a contract txn id to the stable native transaction number.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelWorldBinding">
+            <summary>Wraps a host voxel world handle. Does not allocate a second native world.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.VoxelWorldBinding.Handle">
+            <summary>Host world handle wrapped by this binding. Never a newly allocated native world.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Coordination.VoxelWorldBinding.Abi">
+            <summary>Optional caller-supplied ABI. Null means the handle is wrapped but queries are unavailable.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelWorldBinding.Create(System.IntPtr)">
+            <summary>Wraps <paramref name="hostWorldHandle"/>. Zero handle throws; the same handle returns the same wrapper.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelWorldBinding.Create(System.IntPtr,Lumio.GameRuntime.Coordination.INativeVoxelAbi)">
+            <summary>Wraps a host world with a caller-supplied ABI. Production Create without ABI still only wraps the handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelWorldBinding.BindAdapter">
+            <summary>Binds the wrapped handle to the supplied ABI. Throws when no ABI was provided.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelWorldPoint">
+            <summary>World-space continuous point or vector.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelWorldPoint.#ctor(System.Single,System.Single,System.Single)">
+            <summary>World-space continuous point or vector.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.VoxelWriteEntry">
+            <summary>Structured voxel write: section key, cell offset, block id, and expected section revision.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelWriteEntry.#ctor(System.UInt64,System.Int32,System.UInt32,System.UInt64)">
+            <summary>Structured voxel write: section key, cell offset, block id, and expected section revision.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Coordination.WorldEcsCommandCommitPort">
+            <summary>
+            Production ECS commit participant: structural Destroy commands enqueue
+            QueueDestroy on the live World. There is no Always-applied default.
+            </summary>
+        </member>
+    </members>
+</doc>

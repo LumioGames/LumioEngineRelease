@@ -1,0 +1,59 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.1/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
+      "Lumio.Client.Gameplay.GAS/1.0.0": {
+        "dependencies": {
+          "Lumio.Client.Log": "1.0.0",
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Gameplay.GAS.dll": {}
+        }
+      },
+      "System.Threading.Channels/10.0.0": {
+        "runtime": {
+          "lib/netstandard2.1/System.Threading.Channels.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.52411"
+          }
+        }
+      },
+      "Lumio.Client.Log/1.0.0": {
+        "dependencies": {
+          "System.Threading.Channels": "10.0.0"
+        },
+        "runtime": {
+          "Lumio.Client.Log.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Lumio.Client.Gameplay.GAS/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.Threading.Channels/10.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-fwRdkJpKisUEVNaEdsL5w5EwidzuVw0BOTfzDvYB1Yg8sq1pqNfUZxBOVFgSj6i6tNhpT3HP8BEDXf1+kFkTDA==",
+      "path": "system.threading.channels/10.0.0",
+      "hashPath": "system.threading.channels.10.0.0.nupkg.sha512"
+    },
+    "Lumio.Client.Log/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

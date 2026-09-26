@@ -1,0 +1,300 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.Engine.SDK</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson">
+            <summary>Explicit schema-1 Native codec; no reflection and no omitted zero fields.</summary>
+        </member>
+        <member name="F:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson.MaxRecordBytes">
+            <summary>Maximum schema-1 object plus LF (all 256 words at u64 maximum fit).</summary>
+        </member>
+        <member name="F:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson.MaxStatusBytes">
+            <summary>Maximum full Native status object.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson.WriteNativeRecord(System.Span{System.Byte},Lumio.Engine.NativeLoader.ChangeObservationRecordV1@)">
+            <summary>Writes a whole JSONL row, or returns zero without touching destination.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson.WriteNativeStatus(System.Span{System.Byte},Lumio.Engine.NativeLoader.ChangeObservationStatsV1@)">
+            <summary>Writes a whole status object, or zero without touching destination.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson.WriteNativeRecord(System.Text.Json.Utf8JsonWriter,Lumio.Engine.NativeLoader.ChangeObservationRecordV1@)">
+            <summary>Writes one full object to an already bounded reusable writer (no LF).</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureNativeJson.WriteNativeStatus(System.Text.Json.Utf8JsonWriter,Lumio.Engine.NativeLoader.ChangeObservationStatsV1@)">
+            <summary>Writes every source status field, including zero values (no LF).</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureStreamKind">
+            <summary>Raw source schema, never an event envelope.</summary>
+        </member>
+        <member name="F:Lumio.Engine.SDK.Capture.CaptureStreamKind.Execution">
+            <summary>Raw managed execution attempts.</summary>
+        </member>
+        <member name="F:Lumio.Engine.SDK.Capture.CaptureStreamKind.Causal">
+            <summary>Raw managed causal evidence.</summary>
+        </member>
+        <member name="F:Lumio.Engine.SDK.Capture.CaptureStreamKind.Native">
+            <summary>Raw Native publication observations.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureStreamId">
+            <summary>Capture-local registered source handle.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureStreamId.#ctor(System.Int32)">
+            <summary>Capture-local registered source handle.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureStreamDeclaration">
+            <summary>Immutable source declaration supplied before recording.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureStreamDeclaration.#ctor(Lumio.Engine.SDK.Capture.CaptureStreamId,Lumio.Engine.SDK.Capture.CaptureStreamKind,System.String)">
+            <summary>Immutable source declaration supplied before recording.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureIdentityEvidence">
+            <summary>Host supplied loaded identities and owner binding provenance.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureIdentityEvidence.#ctor(System.String,System.String)">
+            <summary>Host supplied loaded identities and owner binding provenance.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureCloseMetadata">
+            <summary>Frozen exact source descriptors; absent mappings stay absent.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureCloseMetadata.#ctor(System.Boolean,System.String,System.String,System.String)">
+            <summary>Frozen exact source descriptors; absent mappings stay absent.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureCloseResult">
+            <summary>Writer acknowledgement, not proof of power-loss directory durability.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureCloseResult.#ctor(System.Boolean,System.String,System.String,System.Int64,System.Int64)">
+            <summary>Writer acknowledgement, not proof of power-loss directory durability.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureWriterSnapshot">
+            <summary>Fixed accounting snapshot, with no calls into source owners.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureWriterSnapshot.#ctor(System.Int64,System.Int64,System.Int64,System.Int64,System.Int32,System.Boolean,System.Boolean)">
+            <summary>Fixed accounting snapshot, with no calls into source owners.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.PredictionCaptureOptions">
+            <summary>All limits are explicit; source recorder/scratch budgets are separate.</summary>
+            <remarks>CloseTimeout is the complete-seal admission deadline. Once the flushed manifest's
+            final rename is admitted, only actual I/O success/failure can finish the operation; this
+            timeout does not cancel an admitted OS operation or release its resources.</remarks>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureOptions.#ctor(System.String,System.Int32,System.Int32,System.Int32,System.Int64,System.Int64,System.Int32,System.Int64,System.Int64,System.Int32,System.Int32,System.Int64,System.TimeSpan)">
+            <summary>All limits are explicit; source recorder/scratch budgets are separate.</summary>
+            <remarks>CloseTimeout is the complete-seal admission deadline. Once the flushed manifest's
+            final rename is admitted, only actual I/O success/failure can finish the operation; this
+            timeout does not cancel an admitted OS operation or release its resources.</remarks>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureBatchLease">
+            <summary>One-use owner lease. All memory aliases expire at commit/dispose.</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.Capture.CaptureBatchLease.Memory">
+            <summary>Exclusive fixed payload; never retain an alias after commit/dispose.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureBatchLease.Dispose">
+            <summary>Returns an unused reservation, on the owner thread.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.CaptureJsonBuffer">
+            <summary>Reusable non-growing JSON destination; caller owns and budgets the memory.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureJsonBuffer.#ctor(System.Memory{System.Byte})">
+            <summary>Reusable non-growing JSON destination; caller owns and budgets the memory.</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.Capture.CaptureJsonBuffer.WrittenCount">
+            <summary>Bytes advanced since reset.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureJsonBuffer.Reset(System.Memory{System.Byte})">
+            <summary>Call only between records, then reset the associated Utf8JsonWriter.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureJsonBuffer.Advance(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureJsonBuffer.GetMemory(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.CaptureJsonBuffer.GetSpan(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="T:Lumio.Engine.SDK.Capture.PredictionCaptureWriter">
+            <summary>Opt-in bounded raw capture exporter. All disk I/O runs on its single worker.</summary>
+            <remarks>
+            BindOwner must run on the actual gameplay owner after preparation, never a temporary await
+            continuation. The memory reservation bounds owned payload and fixed control allowances, not RSS:
+            BCL JSON/hash/task/stream objects, GC headers, Native HFSM allocations and OS cache are additional.
+            Flush(true) and same-directory rename do not prove power-loss directory durability.
+            </remarks>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.PrepareAsync(Lumio.Engine.SDK.Capture.PredictionCaptureOptions,Lumio.Engine.SDK.Capture.CaptureIdentityEvidence,System.Collections.Generic.IReadOnlyList{Lumio.Engine.SDK.Capture.CaptureStreamDeclaration},System.Threading.CancellationToken)">
+            <summary>Prepares a new exclusive directory and initial incomplete manifest off-owner.</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.Completion">
+            <summary>Worker acknowledgement; observing this task never invokes Native lifecycle.</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.Snapshot">
+            <summary>Conservative admitted accounting, including reserved manifest capacity.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.BindOwner(Lumio.Engine.NativeLoader.INativeHfsmAbi)">
+            <summary>Exactly once, synchronously on the real source owner.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.MarkIncomplete(System.String)">
+            <summary>Sticky loss evidence; bounded reason, no source sampling.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.TryReserve(Lumio.Engine.SDK.Capture.CaptureStreamId,System.Int32,System.Int32,System.Int64,Lumio.Engine.SDK.Capture.CaptureBatchLease@)">
+            <summary>Reserves all capacity before a destructive source drain.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.TryCommit(Lumio.Engine.SDK.Capture.CaptureBatchLease,System.Int32,System.Int32)">
+            <summary>Transfers a complete JSONL batch once; malformed or partial lines fail closed.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.RequestClose(Lumio.Engine.SDK.Capture.CaptureCloseMetadata)">
+            <summary>Freezes producer cuts; outstanding leases make this close incomplete.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.PollOwner">
+            <summary>Consumes the worker acknowledgement through Native, only on owner.</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.Capture.PredictionCaptureWriter.Dispose">
+            <summary>Owner-only; pending I/O retains resources and requires a later owner retry.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.LumioEngineSdk">
+            <summary>
+            SDK 包的唯一入口：把 Native 引擎装进本进程，换回一个 <see cref="T:Lumio.Engine.SDK.LumioEngineLease"/>。
+            消费方（引包的玩法工程）只需要这一个静态类，不必直接引用 <c>Lumio.Engine.NativeLoader</c>。
+            </summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineSdk.LoadNative(System.String)">
+            <summary>
+            按 <paramref name="nativePath"/> 旁边的 <c>build-info.json</c> 校验并装载 Native 引擎。
+            </summary>
+            <remarks>
+            装载前做两道校验：sidecar 必须存在；sidecar 里的 <c>abiHash</c> 必须等于**本程序集编译期**
+            烘进去的 ABI 摘要。后者是刻意的——生产者自带的 sidecar 不得定义消费者的 ABI 期望，
+            否则换个 native 就能悄悄改口径。两道都过才真正 <c>LoadLibrary</c>。
+            </remarks>
+            <param name="nativePath">
+            Native 引擎动态库的路径（<c>lumio_engine_native.dll</c> / <c>liblumio_engine_native.so</c> /
+            <c>.dylib</c>）。相对路径会被展开成绝对路径。引包使用时它由 SDK 包的
+            <c>runtimes/&lt;rid&gt;/native</c> 随包带来，构建时拷进 <c>bin/</c>。
+            </param>
+            <returns>已完成校验的租约；用完必须 <see cref="M:Lumio.Engine.SDK.LumioEngineLease.Dispose"/>。</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="nativePath"/> 为 null、空或全空白。</exception>
+            <exception cref="T:Lumio.Engine.NativeLoader.NativeEngineLoadException">
+            sidecar 不存在（<c>MissingFile</c>）、sidecar 的 ABI 与本程序集不符（<c>AbiMismatch</c>）、
+            或动态库本身装不起来（<c>InvalidNativeImage</c>）。失败码见
+            <see cref="T:Lumio.Engine.NativeLoader.NativeEngineLoadFailure"/>，错误码参考见包内 <c>content/docs/error-codes.md</c>。
+            </exception>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineSdk.InspectNative(System.String)">
+            <summary>
+            在**不装载**的前提下体检一份 Native 产物：能不能装、不能装是哪一项不匹配、怎么重建。
+            </summary>
+            <remarks>
+            与 <see cref="M:Lumio.Engine.SDK.LumioEngineSdk.LoadNative(System.String)"/> 用同一套判断（ABI 摘要、产物 RID、二进制 SHA），因此
+            「体检说能装」与「真能装」不会有两套口径。给启动自检和测试 fixture 用：拿到一份不匹配
+            的产物时，先报清楚差在哪，而不是等 <see cref="T:Lumio.Engine.NativeLoader.NativeEngineLoadException"/>（R-00651）。
+            </remarks>
+            <param name="nativePath">Native 动态库路径；相对路径会展开成绝对路径。</param>
+            <returns>体检结论，<see cref="P:Lumio.Engine.NativeLoader.NativeArtifactReport.IsLoadable"/> 为真表示可以装。</returns>
+        </member>
+        <member name="P:Lumio.Engine.SDK.LumioEngineSdk.HostRid">
+            <summary>
+            本进程的 RID（<c>osx-arm64</c> / <c>osx-x64</c> / <c>linux-x64</c> / <c>win-x64</c> …）。
+            取的是**进程**架构：arm64 Mac 上跑 Rosetta 的 x64 .NET 只能装 <c>osx-x64</c> 的产物。
+            </summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.LumioEngineLease">
+            <summary>
+            一次成功装载的 Native 引擎租约：既是身份证明（路径与三个指纹），也是拿引擎各门面的入口。
+            </summary>
+            <remarks>
+            生命周期由调用方持有：<see cref="M:Lumio.Engine.SDK.LumioEngineLease.Dispose"/> 之后本对象上的任何成员都会抛
+            <see cref="T:System.ObjectDisposedException"/>。由本租约创建、且归本租约所有的子对象
+            （如 <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.IntPtr)"/> 建出来的世界）应先于租约释放。
+            </remarks>
+        </member>
+        <member name="P:Lumio.Engine.SDK.LumioEngineLease.NativePath">
+            <summary>装载时使用的 Native 动态库绝对路径。</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.LumioEngineLease.BuildId">
+            <summary>Native 产物的构建 id（32 位十六进制），取自 <c>build-info.json</c>，与二进制内嵌值同源。</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.LumioEngineLease.AbiHash">
+            <summary>本次装载生效的 ABI 摘要（64 位十六进制）。已确认与本程序集编译期的 ABI 定义一致。</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.LumioEngineLease.BinarySha256">
+            <summary>Native 二进制的 SHA-256，用于把运行期实际装载的文件钉死在证据里。</summary>
+        </member>
+        <member name="P:Lumio.Engine.SDK.LumioEngineLease.Log">
+            <summary>
+            ADR-081 的 <c>log_*</c> 门面：宿主用它建 <c>LumioNativeLoggerProvider</c>
+            和 <c>NativeLogDrainPump</c>。
+            </summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.Ping">
+            <summary>
+            往 Native 打一次往返，确认这份库真的活着、根表可调用。
+            </summary>
+            <remarks>接好之后的自检用；不改变任何引擎状态。</remarks>
+            <exception cref="T:System.ObjectDisposedException">租约已释放。</exception>
+            <exception cref="T:Lumio.Engine.NativeLoader.NativeEngineLoadException">
+            Native 返回非成功状态或没有写回预期标记（<c>InvalidNativeImage</c>）——说明这份库不是它自称的东西。
+            </exception>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateKernelContext(Lumio.Engine.NativeLoader.KernelConfig)">
+            <summary>Creates a native resource domain with explicit budgets and an independent library lifetime.</summary>
+            <remarks>
+            Close and dispose the returned context before disposing this lease. If closing is pending,
+            retain the context and retry; disposing this lease does not release a live context's resources.
+            </remarks>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.IntPtr)">
+            <summary>
+            包裹一个**外部已经创建好**的 Native 体素世界句柄。
+            </summary>
+            <remarks>
+            本重载**不取得所有权**：释放返回的对象不会销毁该 Native 世界，销毁仍归句柄的原主人。
+            服务端把 DS 侧建好的世界交给玩法层时走这条。
+            </remarks>
+            <param name="world">非零的 Native 世界句柄。</param>
+            <returns>包裹该句柄的门面。</returns>
+            <exception cref="T:System.ObjectDisposedException">租约已释放。</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="world"/> 为 0。</exception>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(Lumio.Engine.SDK.VoxelWorldHandle)">
+            <summary>
+            Same unowned attach as <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.IntPtr)"/>, taking the
+            assembly-root <see cref="T:Lumio.Engine.SDK.VoxelWorldHandle"/> record Runtime attach uses.
+            </summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.IntPtr)">
+            <summary>
+            新建一个由本租约**拥有**的 Native 体素世界。
+            </summary>
+            <remarks>
+            与 <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.IntPtr)"/> 相反，本重载取得所有权：释放返回的对象会真正销毁
+            该 Native 世界，因此它必须先于本租约释放。
+            </remarks>
+            <param name="role">世界角色标识，不得为 null 或空。</param>
+            <param name="residentSectionBudget">常驻 Section 预算，交由 Native 侧按体素设计裁剪驻留集。</param>
+            <param name="materialClassTable">材质类表句柄；语义见体素契约，本层原样透传。</param>
+            <returns>拥有该世界的门面。</returns>
+            <exception cref="T:System.ObjectDisposedException">租约已释放。</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="role"/> 为 null 或空。</exception>
+            <exception cref="T:System.InvalidOperationException">
+            这份 Native 构建没有接上 <c>voxel_world_create</c> 槽——不返回哑实现，直接报缺口。
+            </exception>
+            <exception cref="T:Lumio.Engine.SDK.VoxelNativeException">Native 侧返回非成功状态；状态码见体素错误码表。</exception>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte})">
+            <summary>Creates a world owning a catalog parsed from versioned UTF-8 JSON and explicit budgets.</summary>
+            <remarks>The caller may release or change catalog bytes after return; no Native capability fallback.</remarks>
+        </member>
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.Dispose">
+            <summary>
+            释放租约。幂等——重复调用无副作用。
+            </summary>
+            <remarks>
+            只有当本租约派生的 Native 令牌全部归还后，底层动态库才会真正卸载；
+            因此仍在使用中的子对象应先释放。
+            </remarks>
+        </member>
+    </members>
+</doc>

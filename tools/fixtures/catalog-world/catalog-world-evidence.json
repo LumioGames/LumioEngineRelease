@@ -1,0 +1,20 @@
+{
+  "BuildId": "27279d6e313dcd6a3f23cb79bc1360d4",
+  "AbiHash": "f1c895dfa9fe3202ae140f165458e8619f2dae0f72bd7a24750e6dd505cab10a",
+  "BinarySha256": "47f36424aea160f3a96f518886900b8b06e210725eee2b07922db79bd4864996",
+  "wall": [
+    4,
+    4,
+    4
+  ],
+  "open": [
+    8,
+    4,
+    4
+  ],
+  "blockId": 65536,
+  "sectionRevision": 2,
+  "worldRevision": 1,
+  "captureSha256": "409b913ebd3186d55e15b6d61e5dd600027eee7ebe89d385b40d078efd6f06ce",
+  "preparation": "Native author-time seed_ready_cells of air plus capture/restore verify; managed Restore -\u003E PrepareWriteV2 -\u003E GetOutputRequirements -\u003E one CommitV3 places packed BlockId65536; Capture produces snapshot"
+}

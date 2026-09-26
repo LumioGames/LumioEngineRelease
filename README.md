@@ -14,11 +14,11 @@ Lumio 引擎的编译产物。这里没有一行引擎源码；内容由引擎�
 | `sdk/Lumio.Engine.SDK.<版本>.nupkg` | 编译玩法代码用的 SDK 包（作本地包源） |
 | `server/<rid>/` | 专用服务器的引擎那一半：`lumio-ds`、`Application/`、`SDK/Managed/`、`SDK/Native/<rid>/` |
 | `bot/<rid>/` | 无渲染的机器人客户端宿主（`dotnet Lumio.Client.Bot.Host.dll`），`native/` 下是同平台的 Native 库 |
-| `web/` | 旁观页共享零件（`*.mjs`）与体素 wasm |
+| `web/` | 旁观页共享零件：`*.mjs` 平铺、体素模块 `lumio_voxel_wasm.wasm`、`replica/netstandard2.1/` 下浏览器副本的三个程序集（`Lumio.Client.Gameplay.ECS.dll`、`Lumio.Client.Log.dll`、`Lumio.Client.Spectator.dll`） |
 | `tools/` | 运行编排脚本：`process-tools.mjs`、`verify-release.mjs` |
 | `platform/docker-compose.yml` | 本地开发用的账号与大厅服务，按版本号引用公开镜像 |
 
-`<rid>` 取 `win-x64`、`osx-arm64`、`linux-x64`；某个 tag 缺哪个平台，`manifest.json` 就如实不列，不拿别的平台凑。`osx-arm64` 是开发档：能装能跑，但没有经过 CI 的 ABI 验证。
+`<rid>` 目前取 `win-x64`、`linux-x64`（macOS 暂不发布）；某个 tag 缺哪个平台，`manifest.json` 就如实不列，不拿别的平台凑。SDK 包里只带 `win-x64` 与 `linux-x64` 的 Native，并带 `lib/net10.0`（服务端与 Bot 的玩法构建）与 `lib/netstandard2.1`（浏览器玩法构建）两档托管程序集。发布物里没有任何源码文件。
 
 ## 在游戏仓里引用
 

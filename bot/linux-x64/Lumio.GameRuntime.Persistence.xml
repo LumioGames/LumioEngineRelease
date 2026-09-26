@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Persistence</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Persistence.DualCutCheckpointPayload">
+            <summary>
+            Same-barrier ECS + voxel checkpoint bytes. <see cref="P:Lumio.GameRuntime.Persistence.DualCutCheckpointPayload.SectionCount"/> is the
+            public <c>sectionPresence.*</c> key count on <see cref="P:Lumio.GameRuntime.Persistence.DualCutCheckpointPayload.Voxel"/> (empty world 0).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.DualCutCheckpointPayload.#ctor(System.Byte[],System.Byte[],System.UInt64,System.String,System.String,System.String,System.UInt32)">
+            <summary>
+            Same-barrier ECS + voxel checkpoint bytes. <see cref="P:Lumio.GameRuntime.Persistence.DualCutCheckpointPayload.SectionCount"/> is the
+            public <c>sectionPresence.*</c> key count on <see cref="P:Lumio.GameRuntime.Persistence.DualCutCheckpointPayload.Voxel"/> (empty world 0).
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.DualCutCaptureResult">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Capture(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,System.String)"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.DualCutCaptureResult.#ctor(System.Boolean,System.Nullable{Lumio.GameRuntime.Persistence.DualCutCheckpointPayload},System.String)">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Capture(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,System.String)"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.DualCutRestoreResult">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Restore(Lumio.GameRuntime.Persistence.DualCutCheckpointPayload@,Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldConfigBinding,Lumio.GameRuntime.Ecs.WorldIngressBudget)"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.DualCutRestoreResult.#ctor(System.Boolean,System.Boolean,System.String,Lumio.GameRuntime.Ecs.WorldManager,System.String[])">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Restore(Lumio.GameRuntime.Persistence.DualCutCheckpointPayload@,Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldConfigBinding,Lumio.GameRuntime.Ecs.WorldIngressBudget)"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.DualCutCheckpoint">
+            <summary>
+            Same-barrier ECS + voxel checkpoint. Voxel bytes stay opaque.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Restore(Lumio.GameRuntime.Persistence.DualCutCheckpointPayload@,Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldConfigBinding,Lumio.GameRuntime.Ecs.WorldIngressBudget)">
+            <summary>
+            Restores a same-barrier ECS and voxel checkpoint into a caller-provided
+            voxel target.
+            </summary>
+            <remarks>
+            The <paramref name="voxel"/> target must be newly allocated and
+            uninitialized for this restore. Its underlying voxel world or snapshot
+            target must not have previously accepted a snapshot or otherwise carried
+            voxel state. This method does not clear, replace, or validate existing
+            target state;
+            callers must provide a fresh <see cref="T:Lumio.GameRuntime.Persistence.IVoxelSnapshotPort"/> target for
+            each restore candidate.
+            </remarks>
+            <param name="checkpoint">The complete ECS and voxel checkpoint to restore.</param>
+            <param name="registry">The registry used to hydrate the restored ECS world.</param>
+            <param name="voxel">A fresh, uninitialized voxel snapshot target for this restore.</param>
+            <param name="loggerFactory">Optional logger factory for the restored world.</param>
+            <param name="config">Caller-selected config version for this restore candidate.</param>
+            <param name="ingressBudget">Candidate delivery and ingress limits; null uses the default budget.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.TryCountSectionPresence(System.Byte[],System.UInt32@)">
+            <summary>
+            Counts <c>sectionPresence.*</c> members on the canonical voxel capture
+            object. Empty world (no such keys) is 0. Non-object bytes are not a count.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.InProcessDurableTxnJournalPort">
+            <summary>
+            Staging in-process transaction journal. Process death drops the log; it is
+            useful for local composition tests but does not provide cross-restart recovery.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.IVoxelResultSnapshotPort">
+            <summary>Optional same-cut delivery participant for a fresh voxel snapshot target.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.SectionBlockHalf">
+            <summary>
+            One Section's captured block half (ADR-119 决策 7, 12): the canonical Section payload, self-describing
+            per the voxel contract, plus the metadata Native reported while exporting it. Runtime does not parse
+            <see cref="P:Lumio.GameRuntime.Persistence.SectionBlockHalf.Payload"/>; only <see cref="P:Lumio.GameRuntime.Persistence.SectionBlockHalf.PayloadSha256"/> and <see cref="P:Lumio.GameRuntime.Persistence.SectionBlockHalf.SectionRevision"/> are compared.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionBlockHalf.#ctor(System.ReadOnlyMemory{System.Byte},Lumio.GameRuntime.Coordination.SectionLoadEncoding,System.ReadOnlyMemory{System.Byte},System.UInt64,System.UInt64)">
+            <summary>
+            One Section's captured block half (ADR-119 决策 7, 12): the canonical Section payload, self-describing
+            per the voxel contract, plus the metadata Native reported while exporting it. Runtime does not parse
+            <see cref="P:Lumio.GameRuntime.Persistence.SectionBlockHalf.Payload"/>; only <see cref="P:Lumio.GameRuntime.Persistence.SectionBlockHalf.PayloadSha256"/> and <see cref="P:Lumio.GameRuntime.Persistence.SectionBlockHalf.SectionRevision"/> are compared.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort">
+            <summary>
+            Section-scoped residency port (ADR-119 决策 7): the opaque block-half capture plus the five
+            <c>voxel_residency</c> ABI operations, at the same calling convention <c>HostVoxelWorldAdapter</c> uses
+            (Section key, no world handle — the implementation already owns one bound world). Runtime's Section
+            residency orchestrator (R5) is the only caller; it never touches Native directly.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort.CaptureBlockHalf(System.UInt64)">
+            <summary>
+            Captures the Section's current committed block half as an opaque, self-describing payload
+            (reuses the same Section export Native already exposes for replication). Null when the Section
+            is not Ready (Pending/Unavailable): there is nothing to capture.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort.AcknowledgeSectionDurability(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Applies one Section-keyed durability receipt for the block half up to a SectionRevision.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort.UnloadSection(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Authority unload of one Ready, clean, unpinned Section; blocks and bindings drop together.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort.ReleaseSection(System.UInt64)">
+            <summary>Client release of one held Section back to not-received. Not held is a successful no-op.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort.LoadSection(System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})">
+            <summary>Authority restore of one non-resident Section from its durable record.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.RecordingSectionResidencyPort">
+            <summary>
+            In-memory conformance double for <see cref="T:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort"/> (mirrors
+            <c>RecordingVoxelProvider</c>'s residency behavior). Used by this repo's own tests where a
+            <c>RecordingVoxelProvider</c> cannot stand in directly because production code speaks the real
+            <c>voxel_section_load_v1</c> payload convention, not the double's decoded-bindings convenience overload.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.RecordingSectionResidencyPort.Seed(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry},System.UInt64,System.Byte[],Lumio.GameRuntime.Coordination.SectionLoadEncoding)">
+            <summary>Seeds a Ready Section with its committed bindings and block bytes, the way a successful load would.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.IVoxelSnapshotPort">
+            <summary>
+            Opaque voxel capture/restore. Runtime does not parse the bytes.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSnapshotPort.Capture">
+            <summary>Returns the voxel cut, or null when the voxel half is absent.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.IVoxelSnapshotPort.TryRestore(System.ReadOnlySpan{System.Byte},System.String@)">
+            <summary>
+            Restores an opaque voxel cut into a fresh, uninitialized target. A target
+            that has previously accepted a snapshot or carried voxel state must
+            reject the request with <c>restore_target_not_fresh</c>. Missing sections
+            remain unresolved and are not treated as air.
+            </summary>
+            <param name="snapshot">The opaque voxel cut to restore.</param>
+            <param name="errorCode">The stable rejection code when restore fails.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Persistence.IVoxelSnapshotPort.HasUnresolvedRequiredSections">
+            <summary>
+            True when entities still wait on a Block/Section that is Pending or Unavailable
+            after restore. That is <c>load_suspended_missing_voxel</c>, not air.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.RuntimeCheckpointEnvelope">
+            <summary>Versioned same-cut binding carried by the Runtime half of a dual checkpoint.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload">
+            <summary>
+            One Section's durable partition record (ADR-119 决策 7–8, 12): both halves captured in the same
+            Tick-between step, tagged with the residency generation the world checkpoint must register to use it
+            on restore. Bytes stay opaque; only digests and the generation are compared.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload.#ctor(System.UInt64,System.UInt64,System.UInt64,System.Byte[],System.String,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.Byte[],System.String,Lumio.GameRuntime.Coordination.SectionLoadEncoding,System.UInt64)">
+            <summary>
+            One Section's durable partition record (ADR-119 决策 7–8, 12): both halves captured in the same
+            Tick-between step, tagged with the residency generation the world checkpoint must register to use it
+            on restore. Bytes stay opaque; only digests and the generation are compared.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.SectionPartitionCaptureResult">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.Compose(System.UInt64,System.UInt64,System.UInt64,System.Byte[],System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},Lumio.GameRuntime.Persistence.SectionBlockHalf)"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionPartitionCaptureResult.#ctor(System.Boolean,System.Nullable{Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload},System.String)">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.Compose(System.UInt64,System.UInt64,System.UInt64,System.Byte[],System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},Lumio.GameRuntime.Persistence.SectionBlockHalf)"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.SectionPartitionVerifyResult">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.VerifyForRestore(Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload@,System.Collections.Generic.IReadOnlyDictionary{System.UInt64,System.UInt64})"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionPartitionVerifyResult.#ctor(System.Boolean,System.String)">
+            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.VerifyForRestore(Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload@,System.Collections.Generic.IReadOnlyDictionary{System.UInt64,System.UInt64})"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint">
+            <summary>
+            Captures, verifies and selects Section partition records for a world checkpoint (ADR-119 决策 8).
+            Durable storage and fsync belong to the host (S3/S4); this type only produces and validates the bytes.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.Compose(System.UInt64,System.UInt64,System.UInt64,System.Byte[],System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},Lumio.GameRuntime.Persistence.SectionBlockHalf)">
+            <summary>
+            Captures both halves of one Section's partition record in the current Tick-between step. Callers
+            must already have taken the entities out of the live world (<see cref="M:Lumio.GameRuntime.Ecs.WorldManager.CapturePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64)"/>)
+            and read the block half (<see cref="M:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort.CaptureBlockHalf(System.UInt64)"/>) before calling this;
+            this method only composes and digests what it is handed — it performs no world or Native side effect.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.VerifyForRestore(Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload@,System.Collections.Generic.IReadOnlyDictionary{System.UInt64,System.UInt64})">
+            <summary>
+            Verifies one candidate record against the world checkpoint's registered (Section key, generation)
+            and recomputes both digests. A registered record that is missing or whose digest does not match is
+            a fatal error (ADR-119 决策 8); an unregistered, newer record is discarded, not an error.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionPartitionCheckpoint.SelectRegistered(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Persistence.SectionPartitionCheckpointPayload},System.Collections.Generic.IReadOnlyDictionary{System.UInt64,System.UInt64},System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.UInt64,System.String}}@)">
+            <summary>
+            Selects the durable records a recovery pass must use: exactly the registered (Section key,
+            generation) pairs, each present with a matching digest. Unregistered newer candidates for the same
+            Section key are silently discarded (ADR-119 决策 8), never returned.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.SectionResidencyRegistry">
+            <summary>
+            The world checkpoint's registered Section partition records (ADR-119 决策 8): Section key → residency
+            generation. This is a same-cut sidecar to the ECS checkpoint (which already carries the entity half's
+            <c>PartitionRegistration</c> through <c>WorldSnapshotCodec</c>); the registry adds the one fact that
+            codec has no field for — which generation of each Section's durable record the checkpoint depends on.
+            A checkpoint taken while no generation is registered for a Section key means that Section's records,
+            however many exist in durable storage, are not depended on by this checkpoint and must not be used to
+            restore it.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Persistence.SectionResidencyRegistry.Generations">
+            <summary>Snapshot of the current registrations (Section key → generation), for checkpoint capture.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionResidencyRegistry.Register(System.UInt64,System.UInt64)">
+            <summary>Registers (or updates) the generation a Section's durable partition record is at.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionResidencyRegistry.Unregister(System.UInt64)">
+            <summary>Drops a Section's registration once it is resident again (no partition record is depended on).</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionResidencyRegistry.Encode">
+            <summary>Encodes the registry for a same-cut checkpoint sidecar. Deterministic: keys ascending.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Persistence.SectionResidencyRegistry.Decode(System.Byte[])">
+            <summary>Replaces every registration with the checkpoint sidecar's own set (restore).</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Persistence.VoxelResultCheckpointCodec">
+            <summary>Bounded binary encoding of typed, unconsumed voxel delivery facts.</summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,442 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.Engine.NativeLoader.Hfsm</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmTransitionKind">
+            <summary>How a transition leaves and re-enters states.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmTransitionKind.Internal">
+            <summary>Runs actions without leaving the source state.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmTransitionKind.Local">
+            <summary>Re-enters only below the source state; target must be a strict descendant.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmTransitionKind.External">
+            <summary>Exits the source state and enters the target.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmLifecycle">
+            <summary>Where a machine is in its life.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmLifecycle.NotStarted">
+            <summary>Never started; no active path.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmLifecycle.Running">
+            <summary>Started and holding an active path.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmLifecycle.Stopped">
+            <summary>Stopped; no further events are accepted.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmActionPhase">
+            <summary>Which phase of a transition an action belongs to.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmActionPhase.Exit">
+            <summary>Leaving a state; the action belongs to that state's exit list.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmActionPhase.Transition">
+            <summary>The transition's own action list, between exit and enter.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmActionPhase.Enter">
+            <summary>Entering a state; the action belongs to that state's entry list.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmOutcome">
+            <summary>What one evaluated step produced.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmOutcome.NotEvaluated">
+            <summary>Filler; the kernel never produces it.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmOutcome.Started">
+            <summary>The machine entered its initial configuration.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmOutcome.Transitioned">
+            <summary>A transition fired; see <see cref="P:Lumio.Engine.NativeLoader.HfsmPlan.Transition"/>.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmOutcome.Unhandled">
+            <summary>No transition matched the event; the machine did not move.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmOutcome.Stopped">
+            <summary>The machine stopped.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmOutcome.Rejected">
+            <summary>The step was illegal; see <see cref="P:Lumio.Engine.NativeLoader.HfsmPlan.RejectReason"/>.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmRejectReason">
+            <summary>Why the kernel refused a step.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.StaleDelivery">
+            <summary>
+            An async completion arrived for an activation that is gone. Only reachable when the event
+            carried an <see cref="T:Lumio.Engine.NativeLoader.HfsmDeliveryScope"/>; without one the kernel has nothing to compare.
+            </summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.LifecycleViolation">
+            <summary>The step does not fit the machine's lifecycle (starting a running machine, and so on).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.UnknownEvent">
+            <summary>The definition declares no transition for this event.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.GuardMissing">
+            <summary>A candidate transition has a guard the caller did not answer.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.GuardFrameInvalid">
+            <summary>The guard array is malformed (duplicate or unsorted ids).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.MachineKeyMismatch">
+            <summary>The snapshot belongs to a different machine.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.InvalidSnapshot">
+            <summary>The snapshot does not match the definition (usually a stale fingerprint).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.HfsmRejectReason.CounterOverflow">
+            <summary>A sequence counter would overflow.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmStateDefinition">
+            <summary>One state in a definition. Entry/exit actions are ids the host will execute.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmStateDefinition.Id">
+            <summary>Graph-local state id.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmStateDefinition.Parent">
+            <summary>Parent state, or <see langword="null"/> for a top-level state.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmStateDefinition.Initial">
+            <summary>Initial child; required for composite states, must be null for leaves.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmStateDefinition.Entry">
+            <summary>Action ids to run when this state is entered, in order.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmStateDefinition.Exit">
+            <summary>Action ids to run when this state is exited, in order.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmTransitionDefinition">
+            <summary>One transition in a definition.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Id">
+            <summary>Graph-local transition id; reported back as <see cref="P:Lumio.Engine.NativeLoader.HfsmPlan.Transition"/>.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Source">
+            <summary>State the transition leaves from.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Event">
+            <summary>Event that offers this transition.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Target">
+            <summary>Target state; ignored for <see cref="F:Lumio.Engine.NativeLoader.HfsmTransitionKind.Internal"/>.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Priority">
+            <summary>Unique within (source, event); lower runs first.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Guard">
+            <summary>Guard the host must answer, or <see langword="null"/> for an unguarded transition.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Kind">
+            <summary>Exit/enter relationship with the source state.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmTransitionDefinition.Actions">
+            <summary>Action ids to run between exit and enter, in order.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmActiveStateEntry">
+            <summary>One state on the active path, with the generation it was entered at.</summary>
+            <param name="State">State id.</param>
+            <param name="ActivationSeq">Activation generation; starts at 1 and never wraps.</param>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.HfsmActiveStateEntry.#ctor(System.UInt32,System.UInt64)">
+            <summary>One state on the active path, with the generation it was entered at.</summary>
+            <param name="State">State id.</param>
+            <param name="ActivationSeq">Activation generation; starts at 1 and never wraps.</param>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActiveStateEntry.State">
+            <summary>State id.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActiveStateEntry.ActivationSeq">
+            <summary>Activation generation; starts at 1 and never wraps.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmDeliveryScope">
+            <summary>
+            Identifies the activation an asynchronous completion belongs to.
+            </summary>
+            <remarks>
+            Attach this to an event that carries the completion of something started earlier — an ability
+            finishing, a timer firing, an awaited reply. The kernel rejects the step with
+            <see cref="F:Lumio.Engine.NativeLoader.HfsmRejectReason.StaleDelivery"/> when that activation is gone (cancelled,
+            superseded by a re-activation, or from an older epoch), so a late completion cannot be applied
+            to whatever happens to be running now. Take the values from the plan that started the work:
+            <see cref="P:Lumio.Engine.NativeLoader.HfsmActionEntry.State"/> and <see cref="P:Lumio.Engine.NativeLoader.HfsmActionEntry.ActivationSeq"/>, plus the
+            snapshot's <see cref="P:Lumio.Engine.NativeLoader.HfsmSnapshot.Epoch"/>.
+            </remarks>
+            <param name="State">The state that was active when the work started.</param>
+            <param name="ActivationSeq">That state's activation generation.</param>
+            <param name="Epoch">The machine epoch the work started under.</param>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.HfsmDeliveryScope.#ctor(System.UInt32,System.UInt64,System.UInt64)">
+            <summary>
+            Identifies the activation an asynchronous completion belongs to.
+            </summary>
+            <remarks>
+            Attach this to an event that carries the completion of something started earlier — an ability
+            finishing, a timer firing, an awaited reply. The kernel rejects the step with
+            <see cref="F:Lumio.Engine.NativeLoader.HfsmRejectReason.StaleDelivery"/> when that activation is gone (cancelled,
+            superseded by a re-activation, or from an older epoch), so a late completion cannot be applied
+            to whatever happens to be running now. Take the values from the plan that started the work:
+            <see cref="P:Lumio.Engine.NativeLoader.HfsmActionEntry.State"/> and <see cref="P:Lumio.Engine.NativeLoader.HfsmActionEntry.ActivationSeq"/>, plus the
+            snapshot's <see cref="P:Lumio.Engine.NativeLoader.HfsmSnapshot.Epoch"/>.
+            </remarks>
+            <param name="State">The state that was active when the work started.</param>
+            <param name="ActivationSeq">That state's activation generation.</param>
+            <param name="Epoch">The machine epoch the work started under.</param>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmDeliveryScope.State">
+            <summary>The state that was active when the work started.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmDeliveryScope.ActivationSeq">
+            <summary>That state's activation generation.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmDeliveryScope.Epoch">
+            <summary>The machine epoch the work started under.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmActionEntry">
+            <summary>One action the host must run, in plan order.</summary>
+            <param name="Ordinal">0-based position within this plan.</param>
+            <param name="Phase">Exit, Transition or Enter.</param>
+            <param name="Action">Action id declared in the definition.</param>
+            <param name="State">The state this action belongs to.</param>
+            <param name="ActivationSeq">That state's activation generation.</param>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.HfsmActionEntry.#ctor(System.UInt32,Lumio.Engine.NativeLoader.HfsmActionPhase,System.UInt32,System.UInt32,System.UInt64)">
+            <summary>One action the host must run, in plan order.</summary>
+            <param name="Ordinal">0-based position within this plan.</param>
+            <param name="Phase">Exit, Transition or Enter.</param>
+            <param name="Action">Action id declared in the definition.</param>
+            <param name="State">The state this action belongs to.</param>
+            <param name="ActivationSeq">That state's activation generation.</param>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActionEntry.Ordinal">
+            <summary>0-based position within this plan.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActionEntry.Phase">
+            <summary>Exit, Transition or Enter.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActionEntry.Action">
+            <summary>Action id declared in the definition.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActionEntry.State">
+            <summary>The state this action belongs to.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmActionEntry.ActivationSeq">
+            <summary>That state's activation generation.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmSnapshot">
+            <summary>
+            The machine state the host persists. Immutable: every step returns the next one, so a
+            rejected step cannot leave a half-updated machine behind.
+            </summary>
+            <param name="Fingerprint">Definition fingerprint this snapshot belongs to.</param>
+            <param name="MachineKey">Host-assigned stable machine identity.</param>
+            <param name="Epoch">Host-assigned isolation epoch (rebuild / restore / version change).</param>
+            <param name="StepSeq">Count of committed legal events.</param>
+            <param name="NextActivationSeq">Next activation generation to hand out.</param>
+            <param name="Lifecycle">Where the machine is in its life.</param>
+            <param name="ActivePath">Top-level to leaf; empty unless Running.</param>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.HfsmSnapshot.#ctor(System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,Lumio.Engine.NativeLoader.HfsmLifecycle,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmActiveStateEntry})">
+            <summary>
+            The machine state the host persists. Immutable: every step returns the next one, so a
+            rejected step cannot leave a half-updated machine behind.
+            </summary>
+            <param name="Fingerprint">Definition fingerprint this snapshot belongs to.</param>
+            <param name="MachineKey">Host-assigned stable machine identity.</param>
+            <param name="Epoch">Host-assigned isolation epoch (rebuild / restore / version change).</param>
+            <param name="StepSeq">Count of committed legal events.</param>
+            <param name="NextActivationSeq">Next activation generation to hand out.</param>
+            <param name="Lifecycle">Where the machine is in its life.</param>
+            <param name="ActivePath">Top-level to leaf; empty unless Running.</param>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.Fingerprint">
+            <summary>Definition fingerprint this snapshot belongs to.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.MachineKey">
+            <summary>Host-assigned stable machine identity.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.Epoch">
+            <summary>Host-assigned isolation epoch (rebuild / restore / version change).</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.StepSeq">
+            <summary>Count of committed legal events.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.NextActivationSeq">
+            <summary>Next activation generation to hand out.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.Lifecycle">
+            <summary>Where the machine is in its life.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmSnapshot.ActivePath">
+            <summary>Top-level to leaf; empty unless Running.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.HfsmSnapshot.NotStarted(System.UInt64,System.UInt64)">
+            <summary>A machine that has never been started.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.HfsmPlan">
+            <summary>
+            The read-only result of one step: what the machine becomes and what the host must run.
+            The host executes the actions; the kernel never does.
+            </summary>
+            <param name="Outcome">What happened.</param>
+            <param name="Transition">Transition id when <see cref="F:Lumio.Engine.NativeLoader.HfsmOutcome.Transitioned"/>, else null.</param>
+            <param name="RejectReason">Why the step was refused when <see cref="F:Lumio.Engine.NativeLoader.HfsmOutcome.Rejected"/>, else null.</param>
+            <param name="Next">The snapshot to persist; null when the step was rejected.</param>
+            <param name="Actions">Actions to run, in order.</param>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.HfsmPlan.#ctor(Lumio.Engine.NativeLoader.HfsmOutcome,System.Nullable{System.UInt32},System.Nullable{Lumio.Engine.NativeLoader.HfsmRejectReason},Lumio.Engine.NativeLoader.HfsmSnapshot,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmActionEntry})">
+            <summary>
+            The read-only result of one step: what the machine becomes and what the host must run.
+            The host executes the actions; the kernel never does.
+            </summary>
+            <param name="Outcome">What happened.</param>
+            <param name="Transition">Transition id when <see cref="F:Lumio.Engine.NativeLoader.HfsmOutcome.Transitioned"/>, else null.</param>
+            <param name="RejectReason">Why the step was refused when <see cref="F:Lumio.Engine.NativeLoader.HfsmOutcome.Rejected"/>, else null.</param>
+            <param name="Next">The snapshot to persist; null when the step was rejected.</param>
+            <param name="Actions">Actions to run, in order.</param>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmPlan.Outcome">
+            <summary>What happened.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmPlan.Transition">
+            <summary>Transition id when <see cref="F:Lumio.Engine.NativeLoader.HfsmOutcome.Transitioned"/>, else null.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmPlan.RejectReason">
+            <summary>Why the step was refused when <see cref="F:Lumio.Engine.NativeLoader.HfsmOutcome.Rejected"/>, else null.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmPlan.Next">
+            <summary>The snapshot to persist; null when the step was rejected.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.HfsmPlan.Actions">
+            <summary>Actions to run, in order.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.NativeHfsmDefinition">
+            <summary>
+            A compiled HFSM definition living in native memory.
+            </summary>
+            <remarks>
+            <para>
+            This is the managed door to NativeCore <c>lumio-hfsm</c>, the engine's only transition
+            semantics implementation (ADR-069 rule 1, R-00571). <b>The kernel computes the transition;
+            this class does not.</b> Nothing here walks the state graph, resolves priorities or decides
+            what to exit and enter — it marshals PODs across the ABI and marshals the plan back.
+            </para>
+            <para>
+            The division of labour is fixed: the host holds the <see cref="T:Lumio.Engine.NativeLoader.HfsmSnapshot"/>, answers
+            guards up front (native never calls back into managed code — ADR-006), and executes the
+            actions the plan names. Writing a second transition table in C# is exactly what this type
+            exists to stop.
+            </para>
+            <para>
+            <b>Cost</b>: every <c>Start</c> / <c>Send</c> / <c>Stop</c> allocates the output buffers
+            (sized from <see cref="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.MaxPath"/> / <see cref="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.MaxActions"/>), pins four arrays and makes
+            three unmanaged allocations; the native side adds its own scratch. This is <i>not</i> a
+            zero-cost call. A caller stepping many machines per tick — a GAS ability machine per entity,
+            say — should measure before putting it on the hot path; batching several machines into one
+            crossing is a known follow-up, not something this shape gives for free today.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.Fingerprint">
+            <summary>Stamp every <see cref="T:Lumio.Engine.NativeLoader.HfsmSnapshot"/> for this definition carries.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.StateCount">
+            <summary>Number of compiled states.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.TransitionCount">
+            <summary>Number of compiled transitions.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.MaxPath">
+            <summary>Deepest active path this definition can produce.</summary>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.NativeHfsmDefinition.MaxActions">
+            <summary>Most actions one plan can produce.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeHfsmDefinition.Compile(Lumio.Engine.NativeLoader.INativeHfsmAbi,System.UInt32,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmStateDefinition},System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmTransitionDefinition})">
+            <summary>
+            Compiles against an arbitrary <see cref="T:Lumio.Engine.NativeLoader.INativeHfsmAbi"/>.
+            </summary>
+            <remarks>
+            This is the entry point for a consumer that has no native artifact on disk — a pure
+            managed unit test with its own <see cref="T:Lumio.Engine.NativeLoader.INativeHfsmAbi"/> double, or the wasm32 path.
+            A host that has loaded the engine uses <c>NativeKernelContext.CompileHfsm</c> instead,
+            which fills in the root-table implementation of this same interface.
+            </remarks>
+            <param name="abi">The four <c>hfsm_*</c> entry points.</param>
+            <param name="initialState">Initial top-level state id.</param>
+            <param name="states">Every state in the definition.</param>
+            <param name="transitions">Every transition in the definition.</param>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeHfsmDefinition.Start(System.UInt64,System.UInt64)">
+            <summary>Enters the initial configuration. <paramref name="epoch"/> isolates a rebuild or restore.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeHfsmDefinition.Send(Lumio.Engine.NativeLoader.HfsmSnapshot,System.UInt32,System.Collections.Generic.IReadOnlyDictionary{System.UInt32,System.Boolean},System.Nullable{Lumio.Engine.NativeLoader.HfsmDeliveryScope})">
+            <summary>
+            Offers an event. <paramref name="guards"/> must answer every guard the candidate
+            transitions declare; an unanswered guard comes back as
+            <see cref="F:Lumio.Engine.NativeLoader.HfsmRejectReason.GuardMissing"/> rather than being guessed.
+            </summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeHfsmDefinition.Stop(Lumio.Engine.NativeLoader.HfsmSnapshot)">
+            <summary>Stops the machine, running the exit actions of everything still active.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeHfsmDefinition.Dispose">
+            <summary>Releases the native definition; a failed release retains ownership for retry.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.INativeHfsmAbi">
+            <summary>
+            The four native <c>hfsm_*</c> root slots behind an interface, so the managed facade's own
+            marshalling can be tested without loading a native artifact — the same seam
+            <c>INativeTimerAbi</c>, <c>INativeLogAbi</c> and <c>INativeClockAbi</c> use (those three stay
+            in <c>Lumio.Engine.NativeLoader</c>, which references this assembly, so they cannot be
+            <c>cref</c>-linked from here).
+            </summary>
+            <remarks>
+            <para>
+            This is a Context-bound projection of native handles and caller-owned buffers, not the shape gameplay
+            code should use. Consumers go through <see cref="T:Lumio.Engine.NativeLoader.NativeHfsmDefinition"/>.
+            </para>
+            <para>
+            It is public because implementing it is the supported way to drive the facade without a
+            native artifact (R-00578): a consumer's own test double, and the wasm32 path, which cannot
+            go through <c>Marshal.GetDelegateForFunctionPointer</c> over the root table at all.
+            Implementing this interface does <b>not</b> make a second transition table legal — the
+            semantics still come from <c>lumio-hfsm</c> alone (ADR-069 rule 1).
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Lumio.Engine.NativeLoader.INativeHfsmAbi.IsClosed">
+            <summary>Whether this ABI's owning Context has completely closed.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.INativeHfsmAbi.Retain">
+            <summary>Retains the host/library until disposed; rejects new work after Context closing.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.INativeHfsmAbi.Compile(System.IntPtr,Lumio.Engine.NativeLoader.KernelHandle@)">
+            <summary>Compiles a definition. <paramref name="spec"/> points at a <c>lumio_hfsm_definition_spec_t</c>.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.INativeHfsmAbi.DestroyDefinition(Lumio.Engine.NativeLoader.KernelHandle@)">
+            <summary>Releases a compiled definition; the generation becomes stale.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.INativeHfsmAbi.DefinitionInfo(Lumio.Engine.NativeLoader.KernelHandle@,Lumio.Engine.NativeLoader.HfsmDefinitionInfo@)">
+            <summary>Reads identity and ceilings for a compiled definition.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.INativeHfsmAbi.Evaluate(Lumio.Engine.NativeLoader.KernelHandle@,System.IntPtr,System.IntPtr)">
+            <summary>Evaluates one step. <paramref name="item"/> and <paramref name="io"/> point at the ABI PODs.</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.NativeClosePendingException">
+            <summary>Native close retained ownership and needs another caller-driven attempt.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeClosePendingException.#ctor">
+            <summary>Creates a retryable close result.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeClosePendingException.#ctor(System.String)">
+            <summary>Creates a retryable close result with operation details.</summary>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeClosePendingException.#ctor(System.String,System.Exception)">
+            <summary>Creates a retryable close result preserving an underlying cause.</summary>
+        </member>
+    </members>
+</doc>

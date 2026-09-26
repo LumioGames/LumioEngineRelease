@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Replication</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Replication.Binding.RestorableConnection">
+            <summary>Runtime-owned connection index entry retained across an in-process restore.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.RestorableConnection.#ctor(System.String,Lumio.GameRuntime.Replication.Binding.ConnectionBinding)">
+            <summary>Runtime-owned connection index entry retained across an in-process restore.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Binding.ExpireEntityResult">
+            <summary>Internal result for an owner-thread expiry request.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Binding.ResolveBindingResult">
+            <summary>Internal result for an owner-thread binding resolution request.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Binding.AttributeQueryResult">
+            <summary>Internal result for an owner-thread attribute query request.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery">
+            <summary>Admission and typed AttributeId queries over the single World Manager.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.SnapshotConnections">
+            <summary>Captures active connection indexes before an in-process snapshot restore.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.RestoreRoomBindings(System.String)">
+            <summary>Restores room ownership for live bindable entities without activating connections.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.RestoreConnection(Lumio.GameRuntime.Replication.Binding.RestorableConnection)">
+            <summary>Reattaches one previously active host connection after an in-process restore.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.IsEntityType(System.String)">
+             <summary>
+             admit 的 <c>entityType</c> 是**真闭集** <c>player | bot</c>（契约 <c>lumio.entity-binding-query.v1</c> 的
+             <c>runtimeManagerControls.admit.entityType</c> 与 <c>identityModel.entityType</c>）：它说的是「这条连接是
+             真人还是机器人」，由服务端按已认证登录名分类创建，客户端不得提交任意 EntityType。它与
+             <c>WorldChange.creates[].entityType</c>（游戏自己声明的实体类型线名，**开集**，词表随游戏变；
+             见 <c>WireCodec.DecodeWorldChange</c> 与 <c>CreateRecordEntityTypeVocabularyTests</c>）不是同一个字段，
+             契约把两者都指向 <c>enum:entityType</c> 是契约自身的缺陷，另有卡处理。
+            
+             闭集判在**解析出来的类型**上而不是入参字符串上，理由是绑定记录的 <c>entityType</c> 正由
+             <c>Registry.WireName(TypeOf(id).ClrType)</c> 产出（见 <see cref="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.BindingOf(System.String,Lumio.GameRuntime.Ecs.NetEntityId)"/> 与 <see cref="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.TryBinding(Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Replication.Binding.ConnectionBinding@,System.String@)"/>），而 Rust 宿主按同一
+             闭集拒绝绑定查询结果（<c>LumioServer Engine/src/clr.rs</c>）。判在解析后的类型上，准入接受的
+             东西与宿主稍后接受的绑定记录才咬得住；同时这也保持了 <c>TryResolveEntityType</c> 今天的 wire 名 / CLR 名
+             两种拼写都收的口径不变（本卡只收紧类别，不裁拼写）。
+            
+             顺序上必须先过 <c>TryResolveEntityType</c>：闭集通过但游戏根本没注册该类型（例如某个游戏没有 BotEntity）时
+             仍要落在 <c>invalid_binding_shape</c>，不能让后面的 <see cref="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.ResolveEntity(System.String)"/> 抛 InvalidOperationException。
+             </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.IsBoundConnectionKind(System.String)">
+            <summary>契约 <c>identityModel.entityType</c> 的两个取值，与 Rust 侧 <c>BoundEntityKind</c> 一一对应。</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.IsBindableEntityType(System.Type)">
+             <summary>
+             「这个实体类型能不能承载一条绑定」——**只吃 <see cref="T:System.Type"/>**，不创建任何实体，供 <see cref="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.Admit(Lumio.GameRuntime.Replication.Binding.AdmitRequest)"/>
+             在 <c>Commands.CreateFor</c> 之前拦掉不可绑定的类型。
+            
+             判定与 <c>CreateFor</c> 之后那两道栅栏是同一套算法，只是喂样本组件而不是活组件：
+             <c>EntityOrder</c> 的组件包正由 <c>World.RentComponents</c> → <see cref="M:Lumio.GameRuntime.Ecs.EcsRegistry.CreateComponents(System.Type)"/>
+             产出（见 <c>EntityRecord.cs</c> 的 <c>EntityOrder</c> 构造函数），与这里的 <c>sample</c> 同一个工厂、同样的槽位顺序；
+             <c>EntityOrder.NamedComponent</c> 也是拿 <see cref="M:Lumio.GameRuntime.Ecs.EcsRegistry.ComponentIndex(System.Type,System.String)"/> 取槽，所以按同一个
+             Registry 在样本包上取槽得到的**判定**逐字相同，只有取回来的实例不同（样本 / 活组件）。
+            
+             三个判据都是类型属性：<c>EcsRegistry.Generated</c> 是 <c>as IGeneratedComponent</c>；
+             <c>TryGetSyncField("accountId", …)</c> 是生成的编译期字符串表；只有两者都不成立时才会落到
+             <c>ReadField("accountId")</c>，而那条路只对**非 Sync 的普通字段**生效，此时 order 上的那一份同样是刚构造、
+             尚未写过 accountId（写在本方法之后），与样本状态一致——<c>BindFields</c> 只重绑 <c>Sync&lt;T&gt;</c>，不改任何值。
+             </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.SlotComponent(Lumio.GameRuntime.Ecs.Component[],System.Type,System.String)">
+            <summary>样本包上的槽位取法，与 <c>EntityOrder.NamedComponent</c> 逐字同构。</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.FindAccountComponent(Lumio.GameRuntime.Ecs.Component[],System.Type)">
+            <summary>样本包上的 accountId 组件查找，与 <see cref="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.FindAccountComponent(Lumio.GameRuntime.Ecs.EntityOrder,System.Type)"/> 逐字同构。</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Chat.ChatCommandRuntime">
+            <summary>Host-facing chat path: InputCommand → WorldManager inbox → ApplyInputs → ClientRpc outbox.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Chat.ChatMapping.RegisterWireMapping">
+            <summary>
+            Registers the chat input mapping with the wire codec. Call this explicitly from whoever owns
+            the process's wire surface.
+            </summary>
+            <remarks>
+            This used to run from a static constructor, so merely touching any ChatMapping constant
+            registered the mapping as a side effect — and the generated registry registers the very same
+            "chat.input" id from its own static constructor, so which validator won depended on which type
+            a process happened to touch first (R-00516). Registration is now explicit, and a world built
+            from a generated registry needs no call here at all: its registry already registers it.
+            </remarks>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Chat.ChatMessageEvent">
+            <summary>UI-facing projection of a ClientRpc chat invocation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Chat.ChatMessageEvent.#ctor(System.UInt64,System.UInt64,System.String,System.String,System.UInt64)">
+            <summary>UI-facing projection of a ClientRpc chat invocation.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Chat.ChatEnvelope">
+            <summary>Thin chat-facing adapter over the Runtime-owned C-1 codec.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Chat.ChatTypedMapping">
+            <summary>Applies decoded Runtime WorldChange records to a UI event stream.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeMessageType">
+            <summary>Ordinal authority: ids/index.json:MessageType.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeMessageTypeWire.Value(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeMessageType)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeReliability">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeReliabilityWire.Value(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeReliability)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeIntegrityAlgorithm">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeIntegrityAlgorithmWire.Value(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeIntegrityAlgorithm)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicyAuthBinding">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicyAuthBindingWire.Value(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicyAuthBinding)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicyErrorClass">
+            <summary>Ordinal authority: schema declaration order.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicyErrorClassWire.Value(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicyErrorClass)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeIntegrity">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelopeTransportPolicy">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelope">
+            <summary>Fields in schema declaration order.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.BaselineStore.Release(System.String)">
+            <summary>Releases one baseline and returns whether storage was reclaimed.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.BaselineStore.ReleaseObsolete(System.String)">
+            <summary>Reclaims acknowledged baselines older than the selected acknowledgement.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.BaselineStore.Reset">
+            <summary>Clears same-generation baseline state without reopening a terminal store.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.DeltaHistory.RegisterBaseline(System.String,System.UInt64,System.UInt64)">
+            <summary>Associates a base snapshot with its authoritative sequence and revision.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.DeltaHistory.Acknowledge(System.String,System.UInt64,System.UInt64)">
+            <summary>Releases acknowledged records while retaining the acknowledgement cursor.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.DeltaHistory.Reset">
+            <summary>Clears same-generation history without reopening a terminal store.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.History.DeltaHistory.ResetForBaseline(System.String)">
+            <summary>A new baseline invalidates every delta chain for this connection.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.IBase64Encoder">
+            <summary>
+            Standard Base64 for canonical keys and hash inputs on the Tick path (architecture ADR-122):
+            RFC 4648 §4 alphabet, <c>=</c> padding, no line breaks, so for the same bytes the result equals
+            <c>Convert.ToBase64String</c> character for character. The only implementation is NativeCore
+            <c>lumio-codec</c> behind the engine root slot <c>codec_base64_encode_v1</c>; on net10.0 the
+            Simulation session assembly binds it (<c>NativeTickBase64</c>) and hands it to the modules that
+            encode. There is no managed encoder to fall back to: <c>Convert.ToBase64String</c> is compiled on
+            first use, which the first Tick must not pay (ADR-118 decision 5).
+            </summary>
+            <remarks>
+            Declared here because both callers reach this module: Replication builds projection identity keys
+            with it, and Simulation, which depends on Replication, encodes the revision vector's canonical
+            value. Implementations must be immutable and safe to share across threads.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.IBase64Encoder.EncodeToString(System.ReadOnlySpan{System.Byte})">
+            <summary>Encodes <paramref name="input"/> into a new string.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Identity.EntityIdentityValidator">
+            <summary>Semantic checks frozen by the generated entity-identity contract.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Identity.NetEntityId">
+            <summary>Namespace-compatible view of the generated 128-bit network identity.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Identity.NetEntityId.#ctor(System.String)">
+            <summary>Namespace-compatible view of the generated 128-bit network identity.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Identity.IdentityStoreToken">
+            <summary>Facade token corresponding to a generation-scoped identity store.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Identity.NetEntityMappingTable">
+            <summary>Identity namespace facade over the canonical mapping table.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Mapping.IdentityStoreState">
+            <summary>Lifecycle state shared by generation-scoped identity stores.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Mapping.IdentityStoreToken">
+            <summary>
+            Narrow capability used by Wave 2 to fence retained identity-store references.
+            Tokens are issued by a store and become stale after Reset or Invalidate.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.NetEntityMappingTable.Remove(Lumio.GameRuntime.Replication.Mapping.NetEntityId,System.UInt64)">
+            <summary>Removes a mapping while retaining the identity through a direct horizon.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.NetEntityMappingTable.Reset(System.UInt64)">
+            <summary>Clears state and advances to an explicit connection generation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.NetEntityMappingTable.Reset">
+            <summary>Clears state and advances by one generation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.NetEntityMappingTable.Invalidate">
+            <summary>Invalidates this store for the current lifecycle and clears all state.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.TombstoneHorizonResult.CanCollect(System.UInt64)">
+            <summary>All retention pins have advanced beyond the tombstone revision.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.TombstoneHorizonResult.IsValidFor(System.UInt64)">
+            <summary>Returns false for unknown or understated horizons.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Mapping.TombstoneRegistry.Add(Lumio.GameRuntime.Replication.Mapping.NetEntityId,System.UInt64,Lumio.GameRuntime.Replication.Mapping.TombstoneHorizonResult@)">
+            <summary>
+            Records a destroy fence. Unknown or understated horizons are retained
+            forever rather than being clamped to the destroy revision.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Lifecycle.ReplicationContext.BindPredictionRemaps(Lumio.GameRuntime.Ecs.WorldManager)">
+            <summary>Binds authority identity remaps to the manager that owns the predicted World.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Projection.ReplicationProjection.#ctor(Lumio.GameRuntime.Replication.ReplicationBudget,Lumio.GameRuntime.Replication.IBase64Encoder)">
+            <param name="budget">Retention and projection limits.</param>
+            <param name="base64">
+            Encodes the mapping set's canonical bytes into the identity keys: the session assembly's
+            NativeCore encoder (ADR-122), never <c>Convert.ToBase64String</c>.
+            </param>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Projection.ReplicationProjection.ReplaySequenceLedger">
+            <summary>
+            Stores only the sequence needed to replay an accepted request. Entries
+            remain until an explicit lifecycle reset/release ends their retry
+            authority; while full, a new request is rejected before allocation.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.ReplicationBudget">
+            <summary>Root-namespace projection of the bounded replication budget.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.ReplicationBudget.#ctor(System.Int32,System.Int64,System.Int32,System.Int64)">
+            <summary>Root-namespace projection of the bounded replication budget.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.ReplicationScheduler">
+            <summary>Owns bounded replication pacing and fair service ordering.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.RevisionVector">
+            <summary>Immutable replication-side view of the generated SessionRevisionVector.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Replication.Validation.ProtocolGate.RejectPrecedence">
+            <summary>Rejection precedence when more than one check fails (ADR-048).</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Replication.Validation.ProtocolGate.DeclaredOnlyReasons">
+            <summary>Reasons the session owner declares and the gate never derives.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ProtocolGate.Evaluate(Lumio.GameRuntime.Replication.Validation.GateInput,System.String@)">
+            <summary>Runs the gate. A null reason means Accept. The messageId clause
+            is enforced only as far as the architecture source publishes it: the id
+            must be registered. No role-to-message table exists, so none is invented.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Validation.ReplicationAdmissionContext">
+            <summary>
+            Immutable admission facts supplied by the connection/session owner before an
+            envelope is parsed or queued.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ReplicationAdmissionContext.#ctor(System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.UInt64,System.String,System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.UInt64)">
+            <summary>Constructs a context carrying the complete generated gate input set.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Validation.ReplicationEnvelopeValidator">
+            <summary>
+            Validates generated replication envelopes before they enter an owner-thread
+            queue. The pre-queue overloads run the generated ADR-022 gate before body
+            parsing so rejected input cannot reach application or queue state.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ReplicationEnvelopeValidator.ValidateEnvelope(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelope,System.String,System.String,System.String,System.String,System.Int32,System.Nullable{System.UInt64})">
+            <summary>Legacy overload retained fail-closed; queue admission requires an explicit context.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ReplicationEnvelopeValidator.ValidatePreQueue(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelope,Lumio.GameRuntime.Replication.Validation.ReplicationAdmissionContext,System.String,System.String,System.String,System.String,System.Int32,System.Nullable{System.UInt64})">
+            <summary>Validates admission and envelope metadata at the pre-queue boundary.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ReplicationEnvelopeValidator.ValidatePreQueue(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelope,Lumio.GameRuntime.Replication.Validation.ReplicationAdmissionContext,System.String,System.Int32,System.Nullable{System.UInt64})">
+            <summary>Validates using identities supplied by the admission context.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ReplicationEnvelopeValidator.ValidateEnvelope(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelope,System.String,System.String,System.String,System.String,System.Int32,Lumio.GameRuntime.Replication.Validation.ReplicationAdmissionContext,System.Nullable{System.UInt64})">
+            <summary>Alias retained for callers that use ValidateEnvelope for pre-queue validation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Validation.ReplicationEnvelopeValidator.ValidatePreQueue(Lumio.GameRuntime.Replication.Contracts.ReplicationEnvelope,Lumio.GameRuntime.Replication.Validation.GateInput,System.String,System.String,System.String,System.String,System.Int32,System.Nullable{System.UInt64})">
+            <summary>Runs the generated gate directly when a caller already owns GateInput.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Replication.Validation.StructuredJsonCanonicalizer">
+            <summary>CanonicalJsonV1 writer shared by every production target.</summary>
+        </member>
+    </members>
+</doc>

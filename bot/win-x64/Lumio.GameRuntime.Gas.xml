@@ -1,0 +1,864 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Gas</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityActivateResult">
+            <summary>Public result of <c>Activate&lt;T&gt;</c>. RejectedStep is 1-based admit step when State is Rejected; otherwise 0.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityActivateResult.#ctor(System.Boolean,Lumio.GameRuntime.Gas.AbilityState,System.Int32,System.UInt64)">
+            <summary>Public result of <c>Activate&lt;T&gt;</c>. RejectedStep is 1-based admit step when State is Rejected; otherwise 0.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityActivateResult.FailureCode">
+            <summary>Classified admission refusal, when supplied by the ability or query port.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityPhysicsBinding">
+            <summary>Manager-scoped query references. A lease never owns the Native world.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityPhysicsBinding.Bind(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Gas.IAbilityPhysicsPort)">
+            <summary>Replaces this Manager's query reference and returns a generation-specific lease.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityPhysicsBinding.Resolve(Lumio.GameRuntime.Ecs.WorldManager)">
+            <summary>Returns the currently bound query port, if any.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityState">
+            <summary>Ability instance eight-state machine (gas.md M2 / ADR-064). Terminal: Completed, Rejected, Cancelled, Expired, RolledBack.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityType">
+            <summary>Gameplay ability content base. Generated registry maps T → this type; no gameplay reflection.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityType.CanActivate">
+            <summary>Content-layer admit step 5. Default is allow.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityType.End">
+            <summary>Called after Execute; instant abilities complete the same tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityType`1">
+            <summary>
+            Ability content that consumes a gameplay-owned input payload. The payload type
+            travels with the ability, so <see cref="T:Lumio.GameRuntime.Ecs.AbilityComponent"/> never names one.
+            </summary>
+            <typeparam name="TInput">Gameplay payload for this ability.</typeparam>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityType`1.CanActivate(`0@)">
+            <summary>Content-layer admit step 5 for the typed payload. Default is allow.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityType`1.CanActivate(`0@,Lumio.GameRuntime.Ecs.AbilityComponent,System.String@)">
+            <summary>Read-only admission with the owning entity and a classified refusal code.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityType`1.Execute(`0@,Lumio.GameRuntime.Ecs.AbilityComponent)">
+            <summary>Runs while the instance is Executing, with the owning table in hand.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IAbilityInput">
+            <summary>
+            Ability activation payload. Gameplay owns the shape and its serialization;
+            the engine only moves the argument vector, so no gameplay type reaches the
+            public Ability API. No reflection: each payload writes and reads itself.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.IAbilityInput.Write(System.Collections.Generic.IList{System.Object})">
+            <summary>Appends this payload's upstream RPC arguments in a stable order.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.IAbilityInput.TryRead(System.Collections.Generic.IReadOnlyList{System.Object},System.Int32)">
+            <summary>
+            Reads this payload back from <paramref name="args"/> starting at
+            <paramref name="start"/>. Returns false when the vector does not decode.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IAbilityPhysicsPort">
+            <summary>
+            Per-World physics queries for Ability Execute. Signatures take/return Runtime types.
+            Server adapter wraps the authoritative voxel world; client adapter wraps the local replica.
+            This card ships the port + a test double. Do not reimplement DDA.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.IAbilityPhysicsPort.Sweep(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
+            <summary>Sweeps a sphere along <paramref name="displacement"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.IAbilityPhysicsPort.SweepBox(System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>Sweeps an axis-aligned box; implementations must not substitute a sphere.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.IAbilityPhysicsPort.Raycast(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
+            <summary>Raycasts from <paramref name="origin"/> along <paramref name="direction"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.IAbilityPhysicsPort.Overlap(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>Overlaps an AABB at <paramref name="center"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilitySweepHit">
+            <summary>Sweep query result.</summary>
+            <param name="Collided">True when the sweep hit geometry.</param>
+            <param name="TravelFraction">Fraction of displacement travelled before a hit; 1.0 is a miss.</param>
+            <param name="Point">Contact or end point.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilitySweepHit.#ctor(System.Boolean,System.Single,System.Numerics.Vector3)">
+            <summary>Sweep query result.</summary>
+            <param name="Collided">True when the sweep hit geometry.</param>
+            <param name="TravelFraction">Fraction of displacement travelled before a hit; 1.0 is a miss.</param>
+            <param name="Point">Contact or end point.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilitySweepHit.Collided">
+            <summary>True when the sweep hit geometry.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilitySweepHit.TravelFraction">
+            <summary>Fraction of displacement travelled before a hit; 1.0 is a miss.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilitySweepHit.Point">
+            <summary>Contact or end point.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityRayHit">
+            <summary>Raycast query result.</summary>
+            <param name="Hit">True when the ray hit geometry.</param>
+            <param name="Distance">Distance along the ray.</param>
+            <param name="Point">Hit or end point.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityRayHit.#ctor(System.Boolean,System.Single,System.Numerics.Vector3)">
+            <summary>Raycast query result.</summary>
+            <param name="Hit">True when the ray hit geometry.</param>
+            <param name="Distance">Distance along the ray.</param>
+            <param name="Point">Hit or end point.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityRayHit.Hit">
+            <summary>True when the ray hit geometry.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityRayHit.Distance">
+            <summary>Distance along the ray.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityRayHit.Point">
+            <summary>Hit or end point.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityOverlapHit">
+            <summary>Overlap query result.</summary>
+            <param name="Overlaps">True when any overlap was found.</param>
+            <param name="Count">Number of overlapping shapes.</param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityOverlapHit.#ctor(System.Boolean,System.Int32)">
+            <summary>Overlap query result.</summary>
+            <param name="Overlaps">True when any overlap was found.</param>
+            <param name="Count">Number of overlapping shapes.</param>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityOverlapHit.Overlaps">
+            <summary>True when any overlap was found.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityOverlapHit.Count">
+            <summary>Number of overlapping shapes.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.RecordingAbilityPhysicsPort">
+            <summary>In-process double. Empty space: sweep miss fraction is 1.0.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.RecordingAbilityPhysicsPort.SweepBox(System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.RecordingAbilityPhysicsPort.Sweep(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.RecordingAbilityPhysicsPort.Raycast(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.RecordingAbilityPhysicsPort.Overlap(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <inheritdoc />
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityPhysicsRejectedException">
+            <summary>A known read-only query refusal; internal faults must retain their original exception.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityPhysicsRejectedException.#ctor(System.String,System.String)">
+            <summary>Creates a classified query refusal.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityPhysicsRejectedException.Code">
+            <summary>Stable code returned by fifth-step admission.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.NoInput">
+            <summary>
+            Empty activation payload. Abilities that take no input derive from
+            <see cref="T:Lumio.GameRuntime.Gas.AbilityType`1"/> with this payload, so every ability reaches
+            the one activation entry point instead of needing a second one.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.NoInput.Write(System.Collections.Generic.IList{System.Object})">
+            <summary>Appends nothing; the wire layout stays [typeName, sequence].</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.NoInput.TryRead(System.Collections.Generic.IReadOnlyList{System.Object},System.Int32)">
+            <summary>Always succeeds; there is nothing to decode.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AttributeWrite">
+            <summary>Attribute writes that require an active <see cref="T:Lumio.GameRuntime.Gas.IEffectWriteGuard"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AttributeWrite.Apply``1(Lumio.GameRuntime.Gas.IEffectWriteGuard,Lumio.GameRuntime.Ecs.Sync{``0},``0)">
+            <summary>Writes <paramref name="field"/> when <paramref name="guard"/> allows it.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AttributeWrite.Apply(Lumio.GameRuntime.Gas.IEffectWriteGuard,Lumio.GameRuntime.Gas.GuardedLongField,System.Int64)">
+            <summary>Writes a guarded long ledger when <paramref name="guard"/> allows it.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GuardedLongField">
+            <summary>Long ledger handle that forbids SetSilent. Writes go through <see cref="T:Lumio.GameRuntime.Gas.AttributeWrite"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IEffectWriteGuard">
+            <summary>Allows Attribute writes only inside an ability execution context. Tests must never call SetSilent.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectFrameOrder">
+            <summary>
+            Same-frame event order table. Only hit → remove is implemented this slice.
+            Overflow / snapshot-replace / duration / period throw so they are not disguised as working.
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Gas.EffectFrameOrder.ImplementedSteps">
+            <summary>Implemented named steps in this slice.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectFrameOrder.OnOverflow">
+            <summary>Overflow is not implemented this slice.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectFrameOrder.OnSnapshotReplace">
+            <summary>Snapshot replace is not implemented this slice.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectFrameOrder.OnDuration">
+            <summary>Duration is not implemented this slice.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectFrameOrder.OnPeriod">
+            <summary>Period is not implemented this slice.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.Effects">
+            <summary>Unique write: queues an instant Effect slip. Settlement runs at phase-9 after CommitCreates.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.Effects.Apply``2(Lumio.GameRuntime.Ecs.World,Lumio.GameRuntime.Ecs.NetEntityId,``1@,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Queues <typeparamref name="TEffect"/> against <paramref name="target"/>. Does not write ledgers.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectTypeCatalog">
+            <summary>Registry mapping Effect types to TypeId and settlement handlers. No gameplay hardcoding.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeCatalog.Register``2(System.UInt32,System.Action{Lumio.GameRuntime.Ecs.NetEntityId,System.Int64},System.Func{Lumio.GameRuntime.Ecs.NetEntityId,System.Boolean})">
+            <summary>Registers an effect type with its closed TypeId, settlement callback and admission rule.</summary>
+            <param name="typeId">Wire type id declared by the effect.</param>
+            <param name="onSettle">Applies the effect to the target.</param>
+            <param name="canSettle">
+            Optional gameplay admission rule. Whether a target may receive this effect at all — "a corpse
+            takes no more damage", say — is a game decision, so it is registered by game code rather than
+            hardcoded in the settler (B-00081). Unregistered effects are admitted.
+            </param>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeCatalog.CanSettle(System.Type,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Asks the effect's registered admission rule whether the target may receive it.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeCatalog.TypeIdOf(System.Type)">
+            <summary>TypeId lookup used by Apply and settlement.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeCatalog.Settle(System.Type,Lumio.GameRuntime.Ecs.NetEntityId,System.Int64)">
+            <summary>Settles an effect by dispatching to its registered handler.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeCatalog.Reset">
+            <summary>Resets registered types (primarily for testing).</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectSettlement">
+            <summary>Phase-9 settler owned by gas. Called from simulation after CommitCreates. ecs ↛ gas.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectSettlement.LastRejectedState(Lumio.GameRuntime.Ecs.World)">
+            <summary>Last rejected state observed in this World's most recent settlement.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectSettlement.LastZeroCrossingTick(Lumio.GameRuntime.Ecs.World)">
+            <summary>Last Tick that drove any attribute in this World from positive to zero or below.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectSettlement.Settle(Lumio.GameRuntime.Ecs.World)">
+            <summary>Settles queued instant slips against BASE ledgers, then recomputes CURRENT once.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectSettlement.EmitOnFx(Lumio.GameRuntime.Ecs.World)">
+            <summary>Emits OnFx ClientRpcs recorded during settle. Called from phase 10 after ConsumeSave.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectStateTable">
+            <summary>
+            Explicit six-state transitions. Instant effects fold same tick.
+            Edges are evaluated by NativeCore lumio-hfsm via <see cref="T:Lumio.GameRuntime.Gas.GasHfsmFacade"/>;
+            this type does not walk a C# switch.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectStateTable.CanEnter(Lumio.GameRuntime.Gas.EffectState,Lumio.GameRuntime.Gas.EffectState)">
+            <summary>True when <paramref name="from"/> may legally become <paramref name="to"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectStateTable.Transition(Lumio.GameRuntime.Gas.EffectState,Lumio.GameRuntime.Gas.EffectState)">
+            <summary>Returns <paramref name="to"/> when legal; otherwise throws.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectSettlementContext">
+            <summary>Thread-local write guard for phase-9 Effect settle. Instant modifiers write BASE through Sync.Value while entered.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectSettlementContext.Enter(Lumio.GameRuntime.Ecs.World)">
+            <summary>Installs this context as the thread-local write guard for one World settle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectState">
+            <summary>Effect instance six-state machine. Instant subset folds Pending → Active → Expired same tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectType">
+            <summary>Gameplay effect content base. Generated registry maps T → this type; no gameplay reflection.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectType.Apply(Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Writes instant modifiers against the target BASE ledger while settlement is entered.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectType`1">
+            <summary>Generic Effect base requiring typed parameters conforming to <see cref="T:Lumio.GameRuntime.Gas.IEffectParameters"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectType`1.Apply(Lumio.GameRuntime.Ecs.NetEntityId,`0@)">
+            <summary>Writes instant modifiers with parameters against target BASE ledger.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectTypeAttribute">
+            <summary>Marks a closed Effect type. Registry is generated; no gameplay reflection.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeAttribute.#ctor">
+            <summary>Declares a closed Effect TypeId. Named argument TypeId is the closed registry key.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeAttribute.#ctor(System.UInt32)">
+            <summary>Declares a closed Effect TypeId. <paramref name="typeId"/> is the named argument TypeId.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectTypeAttribute.TypeId">
+            <summary>Closed TypeId used by Apply and the generated registry.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectTypeAttribute.Instant">
+            <summary>True when the effect folds Pending → Active → Expired on the same tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IEffectParameters">
+            <summary>
+            Effect parameter payload. Gameplay owns the shape and its fields;
+            the engine only passes the parameters to the effect implementation and extracts
+            the magnitude and fx_key for settlement and client RPC notification.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.IEffectParameters.Magnitude">
+            <summary>Magnitude written or applied during phase-9 settlement.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.IEffectParameters.FxKey">
+            <summary>Visual/audio effect key emitted during phase-10 OnFx.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.OnFxCapture">
+            <summary>One OnFx emission captured for tests and bomber scene hashes. Not a WorldChange field.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.OnFxCapture.#ctor(System.String,System.Int64,System.Boolean,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>One OnFx emission captured for tests and bomber scene hashes. Not a WorldChange field.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.OnFxLog">
+            <summary>World-local OnFx diagnostics for the most recent settled Tick.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.OnFxLog.ForWorld(Lumio.GameRuntime.Ecs.World)">
+            <summary>Captured OnFx rows in apply order for this World's most recent settle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AttributeEvaluator">
+            <summary>
+            Integer attribute evaluator. Formula (all long, trunc toward 0):
+            current = (base + Σadd) * (1000 + Σpermille) / 1000.
+            Adds and permilles ordered by (applyOrder, entryIndex). Recompute once at phase-9 tail.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AttributeEvaluator.LastRecomputeCount">
+            <summary>Recompute count of the most recent settle. Four slips that dirty the same attr still increment once.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.AttributeEvaluator.RecomputeCount">
+            <summary>Session counter incremented once per <see cref="M:Lumio.GameRuntime.Gas.AttributeEvaluator.Recompute(Lumio.GameRuntime.Ecs.World)"/> call.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AttributeEvaluator.Evaluate(System.Int64,System.Int64[],System.Int64[])">
+            <summary>Evaluates one attribute. Persistent additives never mutate <paramref name="baseValue"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AttributeEvaluator.Recompute(Lumio.GameRuntime.Ecs.World)">
+            <summary>Recomputes CURRENT from BASE (+ persistent modifiers that do not mutate BASE) once per settle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PersistentModifier">
+            <summary>One persistent modifier. Enters CURRENT only; never mutates BASE.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PersistentModifier.#ctor(System.String,System.Int64,System.Int64,System.Int32,System.Int32)">
+            <summary>One persistent modifier. Enters CURRENT only; never mutates BASE.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PersistentModifierTable">
+            <summary>World-local persistent modifier table. Entry + test only; stacking/duration/period are out of this slice.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PersistentModifierTable.Add(Lumio.GameRuntime.Ecs.World,Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Gas.PersistentModifier)">
+            <summary>Adds a persistent modifier to a live entity with AttributeComponent without mutating BASE.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PersistentModifierTable.TryGet(Lumio.GameRuntime.Ecs.World,Lumio.GameRuntime.Ecs.NetEntityId,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Gas.PersistentModifier}@)">
+            <summary>Looks up persistent modifiers for <paramref name="entity"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PersistentModifierTable.Clear(Lumio.GameRuntime.Ecs.World)">
+            <summary>Clears all persistent modifiers. Tests reset between worlds.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasModule">
+            <summary>GAS module facade. World contexts are independent and do not share handle tables.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasServices">
+            <summary>Stable candidate facade: type registry and World-local context factory.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasHfsmFacade">
+            <summary>
+            Managed door from GAS eight-state / six-state tables to NativeCore lumio-hfsm.
+            Hosts that already hold an <see cref="T:Lumio.Engine.NativeLoader.INativeHfsmAbi"/> (native lease or wasm)
+            inject it here. There is no C# transition-table fallback.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasHfsmFacade.BindNative(Lumio.Engine.NativeLoader.KernelConfig)">
+            <summary>Creates the module-owned Context with explicit Host limits.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasHfsmFacade.Unbind">
+            <summary>Releases definitions and any Context this module itself owns.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasHfsmFacade.Bind(Lumio.Engine.NativeLoader.INativeHfsmAbi)">
+            <summary>
+            Injects the four <c>hfsm_*</c> slots. Null is rejected. Production never
+            substitutes a recording or managed table.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.NativeEngineGasLease">
+            <summary>
+            Process-wide native lease used to bind <see cref="T:Lumio.Engine.NativeLoader.INativeHfsmAbi"/> for GAS
+            eight-state / six-state tables. Missing artifact fails closed — there is no
+            C# transition-table substitute.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityHandle">
+            <summary>World-bound Ability handle. Equality is WorldId + instance + generation, never an object address.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityHandle.#ctor(Lumio.GameRuntime.Ecs.WorldId,Lumio.GameRuntime.Gas.AbilityInstanceId,System.UInt32)">
+            <summary>World-bound Ability handle. Equality is WorldId + instance + generation, never an object address.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityHandleResult">
+            <summary>Issue result for a World-bound Ability handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityHandleResult.#ctor(System.Boolean,Lumio.GameRuntime.Gas.AbilityHandle,System.String)">
+            <summary>Issue result for a World-bound Ability handle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasResolveResult">
+            <summary>Handle resolve result. Failed resolves never return a live instance.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasResolveResult.#ctor(System.Boolean,System.String)">
+            <summary>Handle resolve result. Failed resolves never return a live instance.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasRetireResult">
+            <summary>Handle retire result. Stale handles stay permanently invalid.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasRetireResult.#ctor(System.Boolean,System.String)">
+            <summary>Handle retire result. Stale handles stay permanently invalid.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityInstanceId">
+            <summary>ECS instance-row identity for one Ability. Not a type and not a handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityInstanceId.#ctor(System.UInt64)">
+            <summary>ECS instance-row identity for one Ability. Not a type and not a handle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.AbilityTypeId">
+            <summary>Stable generated Ability type identity. Not an instance and not a handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.AbilityTypeId.#ctor(System.UInt32)">
+            <summary>Stable generated Ability type identity. Not an instance and not a handle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectHandle">
+            <summary>World-bound Effect handle. Equality is WorldId + instance + generation, never an object address.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectHandle.#ctor(Lumio.GameRuntime.Ecs.WorldId,Lumio.GameRuntime.Gas.EffectInstanceId,System.UInt32)">
+            <summary>World-bound Effect handle. Equality is WorldId + instance + generation, never an object address.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectHandleResult">
+            <summary>Issue result for a World-bound Effect handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectHandleResult.#ctor(System.Boolean,Lumio.GameRuntime.Gas.EffectHandle,System.String)">
+            <summary>Issue result for a World-bound Effect handle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectInstanceId">
+            <summary>ECS instance-row identity for one Effect. Not a type and not a handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectInstanceId.#ctor(System.UInt64)">
+            <summary>ECS instance-row identity for one Effect. Not a type and not a handle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectTypeId">
+            <summary>Stable generated Effect type identity. Not an instance and not a handle.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectTypeId.#ctor(System.UInt32)">
+            <summary>Stable generated Effect type identity. Not an instance and not a handle.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasTypeDescriptor">
+            <summary>Caller-supplied generated type metadata. Bytes are copied at registration.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasTypeDescriptor.#ctor(System.String,System.UInt32,System.Int32,System.ReadOnlyMemory{System.Byte})">
+            <summary>Caller-supplied generated type metadata. Bytes are copied at registration.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasRegistrationStatus">
+            <summary>Type registration outcome. Compatible duplicates are not errors.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasRegistrationResult">
+            <summary>Type registration result. Fatal conflicts keep the original descriptor.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasRegistrationResult.#ctor(Lumio.GameRuntime.Gas.GasRegistrationStatus,System.String)">
+            <summary>Type registration result. Fatal conflicts keep the original descriptor.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasTypeRegistry">
+            <summary>Generated Ability/Effect metadata registry. Frozen at Ready and then immutable.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasFrameworkState">
+            <summary>Exact V1.4 GAS framework lifecycle names. Game content cannot add synonyms.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasLifecycleResult">
+            <summary>Lifecycle mutation result carrying a generated catalog error id on rejection.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasLifecycleResult.#ctor(System.Boolean,Lumio.GameRuntime.Gas.GasFrameworkState,System.String)">
+            <summary>Lifecycle mutation result carrying a generated catalog error id on rejection.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasWorldContext">
+            <summary>World-local GAS framework owner. Holds handle indexes only; ECS remains the authority store.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasJointPrediction">
+            <summary>GAS owner of a bounded joint input journal and its Native voxel session.</summary>
+            <remarks>Session ownership transfers only when construction succeeds. On failure the caller must close
+            the session; the host world remains borrowed and must outlive successful session close.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.ApplyAuthority(System.Action)">
+            <summary>Host wraps section and ECS authority application in the same closed publication interval.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.Stage(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelWriteEntry},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingOp})">
+            <summary>Called by the normal gameplay write adapter during an admitted input, including nested abilities.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.TryEnableExecutionTelemetry(System.UInt64,Lumio.GameRuntime.Gas.PredictionExecutionTelemetryOptions@,System.Func{System.UInt64})">
+            <summary>Enables one window before any input admission. Invalid bounds/allocation failure return false without changing prediction.</summary>
+            <remarks>The host assigns a nonzero windowId unique across exported sessions. A window cannot be replaced;
+            create a new prediction session for another window. Host retains ownership of the clock.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.DisableExecutionTelemetry">
+            <summary>Stops collection; preserves buffered records and final counters for draining, including after session retirement.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.DrainExecutionTelemetry(System.Span{Lumio.GameRuntime.Gas.PredictionExecutionRecord})">
+            <summary>Copies/removes at most destination.Length records, without allocation. Zero capacity is a no-op.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.GasJointPrediction.Metrics">
+            <summary>Actual operations since this connection-generation session opened.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.CopyInputNativeKeys(System.UInt64,System.Span{System.UInt64})">
+            <summary>Copies an input's physical keys without allocation; returns required length and writes nothing if too small.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PredictionUnavailableException">
+            <summary>Prediction refused without inferring a server rejection or resending the admitted input.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PredictionCausalRecord">
+            <summary>Schema 1 observation. Missing evidence never establishes a negative claim; joins require an external capture manifest.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PredictionCausalTelemetryStatus">
+            <summary>Loss-independent lower bounds. Omission counters count incidents, not unvisited items. No collateral classification is performed.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PredictionExecutionTelemetryOptions">
+            <summary>Required host bounds. The window starts at the first execution/publication observation and expires at an observation checkpoint.</summary>
+            <remarks>MaxBytes bounds the fixed record payload plus a conservative 1024-byte object/array/delegate allowance;
+            it is not a measurement of GC allocation. The host clock must be a once-bound Native monotonic nanosecond reader.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PredictionExecutionTelemetryOptions.#ctor(System.Int32,System.Int64,System.UInt64,System.UInt64)">
+            <summary>Required host bounds. The window starts at the first execution/publication observation and expires at an observation checkpoint.</summary>
+            <remarks>MaxBytes bounds the fixed record payload plus a conservative 1024-byte object/array/delegate allowance;
+            it is not a measurement of GC allocation. The host clock must be a once-bound Native monotonic nanosecond reader.</remarks>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PredictionExecutionRecord">
+            <summary>ElapsedNanos is meaningful only when HasElapsed is true. Returned execution does not imply publication.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PredictionExecutionRecord.#ctor(System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,Lumio.GameRuntime.Gas.PredictionExecutionRecordKind,Lumio.GameRuntime.Gas.PredictionExecutionOutcome,System.Boolean,System.Boolean)">
+            <summary>ElapsedNanos is meaningful only when HasElapsed is true. Returned execution does not imply publication.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.PredictionExecutionTelemetryStatus">
+            <summary>Totals cover observed calls only, including dropped records; totals freeze after stop. Elapsed totals include timed calls only.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.PredictionExecutionTelemetryStatus.#ctor(System.UInt64,System.Boolean,Lumio.GameRuntime.Gas.PredictionExecutionStopReason,System.UInt64,System.UInt64,System.UInt64,System.Boolean,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.Int32,System.Int32,System.Int64)">
+            <summary>Totals cover observed calls only, including dropped records; totals freeze after stop. Elapsed totals include timed calls only.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasEcsComponentTypes">
+            <summary>The four ECS containers GAS may project. fx_key is an Effect field, not FxComponent.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasAuthoritativeField">
+            <summary>Public Command/ECS field identity. ComponentFieldId is not a public ECS type.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasAuthoritativeField.#ctor(System.String,System.String)">
+            <summary>Public Command/ECS field identity. ComponentFieldId is not a public ECS type.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasProjectionReadResult">
+            <summary>Authoritative field read. Canonical bytes are a copy of the projection payload.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasProjectionReadResult.#ctor(System.Boolean,System.ReadOnlyMemory{System.Byte},System.String)">
+            <summary>Authoritative field read. Canonical bytes are a copy of the projection payload.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasProjectionWriteResult">
+            <summary>Authoritative field write. Success means the projection port accepted the bytes.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasProjectionWriteResult.#ctor(System.Boolean,System.String)">
+            <summary>Authoritative field write. Success means the projection port accepted the bytes.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IGasEcsProjectionPort">
+            <summary>Narrow ECS/Command projection. GAS never keeps a second Attribute/Tag/Ability/Effect store.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.CommandBufferGasProjectionPort">
+            <summary>Write-only adapter over the public CommandBuffer writer. Reads do not invent a store.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AbilityComponent">
+            <summary>
+            ECS-owned Ability table. Lives in the gas assembly (ecs ↛ gas).
+            Entries occupy a bounded array; terminal states leave the table.
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityComponent.Capacity">
+            <summary>Bounded in-flight table size.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityComponent.Entries">
+            <summary>Read-only capacity slots; the first Count rows are live.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityComponent.Count">
+            <summary>Number of live rows in <see cref="P:Lumio.GameRuntime.Ecs.AbilityComponent.Entries"/>.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityComponent.Physics">
+            <summary>Per-World physics queries used by Ability Execute.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityComponent._activationContextFactoryRaw">
+            <summary>
+            Read on the Tick path (<c>Activate&lt;TAbility, TInput&gt;</c>) whenever set. No production code
+            sets it today; Tick path warmup coverage tracked in Gas.Tests.TickPathCallbackCompletenessTests
+            (R-00763 follow-up 1).
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityComponent.RetryCapacity">
+            <summary>Explicit retries are recognized for the most recent successful admissions.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityComponent.GetCooldown(System.UInt32)">
+            <summary>Returns the tick until which the ability TypeId is on cooldown.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityComponent.SetCooldown(System.UInt32,System.UInt64)">
+            <summary>Sets the tick until which the ability TypeId is on cooldown.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityComponent.Activate``2(``1@,System.UInt64)">
+            <summary>Unique write: Self.Get&lt;AbilityComponent&gt;().Activate&lt;T, TInput&gt;(in input).</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityComponent.ActivationContext">
+            <summary>Sets or gets the world-local activation context providing cost ledger accessors.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityComponent.ActivationContextFactory">
+            <summary>Selects cost accessors per ability; null results use the ability's built-in context.</summary>
+            <remarks>Setting either context binding clears the other binding and the cached context.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityComponent.ExpireOpenEntries(System.UInt64)">
+            <summary>Expires rows whose ExpiryFrame is exceeded by the tick clock.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AbilityEntry">
+            <summary>One in-flight Ability row. Terminal states must leave the table (Count shrinks).</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityEntry.TypeId">
+            <summary>Closed Ability TypeId.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityEntry.State">
+            <summary>Current eight-state value.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityEntry.Sequence">
+            <summary>Activation sequence used for duplicate detection.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityEntry.ActivateFrame">
+            <summary>World tick when the row entered Executing.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityEntry.ExpiryFrame">
+            <summary>Tick after which an open row expires; 0 means no expiry.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.AbilityEntry.Generation">
+            <summary>Handle generation for this row.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AbilityStateTable">
+            <summary>
+            Explicit eight-state transitions. Instant abilities fold same tick.
+            Edges are evaluated by NativeCore lumio-hfsm via <see cref="T:Lumio.GameRuntime.Gas.GasHfsmFacade"/>;
+            this type does not walk a C# switch.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityStateTable.CanEnter(Lumio.GameRuntime.Gas.AbilityState,Lumio.GameRuntime.Gas.AbilityState)">
+            <summary>True when <paramref name="from"/> may legally become <paramref name="to"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityStateTable.Transition(Lumio.GameRuntime.Gas.AbilityState,Lumio.GameRuntime.Gas.AbilityState)">
+            <summary>Returns <paramref name="to"/> when legal; otherwise throws.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AbilityActivationContext">
+            <summary>World-local activation context. GAS holds indexes only; ledgers stay on ECS fields.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityActivationContext.#ctor(System.Func{System.Int64},System.Action{System.Int64},System.Action{System.Int64})">
+            <summary>Binds ledger accessors for one World-local activation run.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityActivationContext.Enter">
+            <summary>Installs this context as the thread-local write guard.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityActivationContext.Activate``2(Lumio.GameRuntime.Ecs.AbilityComponent,``1@,System.UInt64)">
+            <summary>Runs admit, execute, and End for <typeparamref name="TAbility"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AbilityRegistration">
+            <summary>
+            One registered ability: the ability type, the payload type it decodes, and the
+            TypeId its declaration carries. This is the shape a bot vocabulary enumerates to
+            list what is actually activatable, so it must not leak the engine's internal maps.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityRegistration.#ctor(System.Type,System.Type,System.UInt32,System.String)">
+            <summary>Creates one registration row.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityRegistration.AbilityType">
+            <summary>The registered ability type.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityRegistration.InputType">
+            <summary>The payload type upstream Activate calls decode into.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityRegistration.TypeId">
+            <summary>The declared TypeId; never 0 for a registered ability.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityRegistration.Cost">
+            <summary>Named Attribute BASE ledger consumed at admit step 3, if any.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AbilityRegistration.TypeName">
+            <summary>The name upstream Activate routes by, i.e. the ability's simple type name.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityRegistration.Equals(Lumio.GameRuntime.Ecs.AbilityRegistration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityRegistration.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityRegistration.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityRegistration.op_Equality(Lumio.GameRuntime.Ecs.AbilityRegistration,Lumio.GameRuntime.Ecs.AbilityRegistration)">
+            <summary>Value equality.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityRegistration.op_Inequality(Lumio.GameRuntime.Ecs.AbilityRegistration,Lumio.GameRuntime.Ecs.AbilityRegistration)">
+            <summary>Value inequality.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AbilityTypeCatalog">
+            <summary>
+            TypeId and upstream-dispatch table for Ability content. Gameplay (or the generated
+            registry) registers each ability with its payload type; the engine holds no
+            gameplay names, so an unregistered upstream call is ignored rather than guessed.
+            Re-declaring the same ability is idempotent, but a second declaration that changes
+            a TypeId or reuses one is refused rather than silently overwriting the first.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.Register``2(System.UInt32)">
+            <summary>Registers one ability with its payload type, TypeId, and upstream decoder.</summary>
+            <exception cref="T:System.InvalidOperationException">
+            The TypeId is 0, already belongs to a different ability, or this ability was
+            already declared with a different TypeId or payload type.
+            </exception>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.CostOf(System.Type)">
+            <summary>Returns the declared cost attribute name for <paramref name="abilityType"/>, or null.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.Admit(System.Type,System.Type,System.UInt32,System.String)">
+            <summary>
+            Decides whether one declaration may be written. Returns false when the exact same
+            declaration is already present (idempotent re-registration, e.g. two bootstraps
+            running in one process); throws when it would change or collide with another.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.Reset">
+            <summary>Drops every registration. Test isolation only; never part of the public surface.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.TypeIdOf(System.Type)">
+            <summary>TypeId lookup used by Activate; 0 when the ability was never registered.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.RegisteredAbilities">
+            <summary>
+            Every registered ability in registration order. This is the enumeration entry a
+            bot vocabulary builds from, so it lists only abilities that can actually be
+            activated rather than every type that happens to look like one.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.Activate(Lumio.GameRuntime.Ecs.AbilityComponent,System.String,System.Object[],System.UInt64)">
+            <summary>Routes one upstream Activate call to its registered ability, if any.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AbilityTypeCatalog.ActivateWithResult(Lumio.GameRuntime.Ecs.AbilityComponent,System.String,System.Object[],System.UInt64)">
+            <summary>Dispatches once and returns the actual admission or execution result.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AttributeComponent">
+            <summary>
+            Two-ledger Attribute component. Phase-9 evaluator writes CURRENT from BASE (+ persistent CURRENT-only modifiers).
+            Attributes are declared and accessed dynamically by name; no gameplay attributes are hardcoded in the engine.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AttributeComponent.AttributeLedger">
+            <summary>Two ledgers (Base + Current) for a named attribute.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AttributeComponent.AttributeValue">
+            <summary>Stable value access to a ledger whose sync binding remains component-owned.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.AttributeComponent.AttributeNames">
+            <summary>Names of all attributes tracked on this component.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.GetOrAdd(System.String)">
+            <summary>Gets or registers the two-ledger pair for <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.GetBase(System.String)">
+            <summary>Returns a reference to the BASE ledger of <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.GetCurrent(System.String)">
+            <summary>Returns a reference to the CURRENT ledger of <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.GetBaseValue(System.String)">
+            <summary>Returns the current value of the BASE ledger for <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.SetBaseValue(System.String,System.Int64)">
+            <summary>Sets the BASE ledger value for <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.GetCurrentValue(System.String)">
+            <summary>Returns the current value of the CURRENT ledger for <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.SetCurrentValue(System.String,System.Int64)">
+            <summary>Sets the CURRENT ledger value for <paramref name="attributeName"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.RebindOrdinals">
+            <summary>
+            Assigns sync ordinals as a pure function of (declaration order, attribute name set).
+            </summary>
+            <remarks>
+            Ordinals used to be handed out in dictionary insertion order, i.e. in the order each side
+            happened to touch an attribute first. Two peers that touched attributes in different orders
+            therefore disagreed on what ordinal N means, and the wire silently mismatched (B-00081 / P1-6).
+            Declared attributes now occupy their declaration index unconditionally — whether or not this
+            component instance has touched them yet — so both ends agree; attributes that no declaration
+            mentions are appended in ordinal name order, which is still touch-order independent.
+            </remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AttributeComponent.ReadDeclaredOrder(Lumio.GameRuntime.Ecs.ISyncHost)">
+            <summary>Attribute names this world's registry declares for AttributeComponent, in declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.EffectComponent">
+            <summary>
+            ECS-owned Effect table. Lives in the gas assembly (ecs ↛ gas).
+            Instant rows fold to zero bytes same tick (Count shrinks).
+            Conceptual SyncList Scope.Owner is flattened: no nested snapshot this slice.
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectComponent.Capacity">
+            <summary>Bounded in-flight table size.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.EffectComponent.Entries">
+            <summary>Read-only capacity slots; the first Count rows are live.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.EffectComponent.Count">
+            <summary>Number of live rows in <see cref="P:Lumio.GameRuntime.Ecs.EffectComponent.Entries"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.EffectComponent.EmitOnFx(System.String,System.Int64,System.Boolean,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Server produce path. Args: (fxKey, magnitude, crossedZero, sourceEntityCounter).</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.EffectComponent.OnFx(System.String,System.Int64,System.Boolean,System.UInt64)">
+            <summary>Handwritten ClientRpc receiver. Empty on the server; records on the client.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.EffectEntry">
+            <summary>One in-flight Effect row. Instant terminal states leave the table.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.TypeId">
+            <summary>Closed Effect TypeId.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.State">
+            <summary>Current six-state value.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.Source">
+            <summary>Source entity that applied the slip.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.ApplyOrder">
+            <summary>Order among same-tick slips.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.FxKey">
+            <summary>OnFx key (e.g. hit).</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.Magnitude">
+            <summary>Signed magnitude written to BASE.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.RemainingFrames">
+            <summary>Remaining frames for persistent rows. Instant is 0.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.EffectEntry.Stacks">
+            <summary>Stack count. Instant is 1.</summary>
+        </member>
+    </members>
+</doc>

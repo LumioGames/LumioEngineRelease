@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Lumio.GameRuntime.Observability/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Observability.dll": {}
+        }
+      },
+      "Lumio.GameRuntime.Primitives/0.1.0": {
+        "runtime": {
+          "Lumio.GameRuntime.Primitives.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Lumio.GameRuntime.Observability/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Primitives/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lumio.GameRuntime.Primitives</name>
+    </assembly>
+    <members>
+        <member name="T:Lumio.GameRuntime.Primitives.CanonicalForm">
+            <summary>
+            The canonical JSON form: how bytes are shaped before they are hashed.
+            Server and client must agree on every one of these to get the same digest.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.CanonicalGolden">
+            <summary>One frozen digest vector for <see cref="T:Lumio.GameRuntime.Primitives.CanonicalForm"/>.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.CanonicalGoldens">
+            <summary>Frozen digest vectors. These values are the regression fence — do not edit them.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.LumioBinForm">
+            <summary>The binary canonical form for public payload bytes.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.OpaqueJson">
+            <summary>
+            Marks a string as already-canonical JSON: downstream must not re-serialise,
+            reorder members or reformat it, because doing so changes the digest.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.RuntimeSchema">
+            <summary>Repo-wide schema stamp.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Primitives.RuntimeSchema.SchemaEpoch">
+            <summary>
+            Version stamp written into snapshot headers and replication deltas.
+            This value crosses the wire — changing it changes bytes.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.StableErrorIds">
+            <summary>
+            The repo-wide error-code vocabulary. Every module reports failures with one of these
+            exact strings instead of inventing its own, so the same event carries the same name in
+            ECS, in the log and on the wire.
+            </summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Primitives.StableErrorIds.All">
+            <summary>All 53 stable error ids, in their frozen declaration order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.TickPhase">
+            <summary>
+            一帧 13 相。**相名与顺序是公共语义**——架构仓 <c>.spec/knowledge/features/tick.md</c>
+            以本枚举为准，改它等于改公共语义，必须同步该活文档或先开 ADR。
+            序数即执行顺序；相名字符串进 <c>CommandSortKey</c>，改名会改字节。
+            唯一权威提交点是 <see cref="F:Lumio.GameRuntime.Primitives.TickPhase.GasAndEventFinalize"/>（见 simulation 的 PhaseContractTable）。
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Primitives.TickPhaseWire">
+            <summary>相名的 wire 形式。这些字符串进排序键与记录,不得改动。</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Primitives.TickPhaseWire.Value(Lumio.GameRuntime.Primitives.TickPhase)">
+            <summary>The value that crosses the wire, which the identifier may not equal.</summary>
+        </member>
+    </members>
+</doc>
