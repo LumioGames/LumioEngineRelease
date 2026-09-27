@@ -19,8 +19,37 @@
         <member name="T:Lumio.GameRuntime.Replication.Binding.AttributeQueryResult">
             <summary>Internal result for an owner-thread attribute query request.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility">
+            <summary>
+            Client-owned view of fields committed to one replica. Publish delivery and revocation only after
+            successful authority and prediction application; invalidate on failed apply, rebuild or retirement,
+            and remove an entity's fields when it leaves AOI.
+            This is a host integration port, not a caller-supplied claim or identity.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.World">
+            <summary>The exact confirmed World instance whose committed records this view tracks.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.RoomId">
+            <summary>The admitted room of this replica session.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.ConnectionGeneration">
+            <summary>The Welcome generation for which the fields were delivered.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.ObservedRevision">
+            <summary>Last successfully published authority revision; zero while unpublished or invalidated.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.ObservedTick">
+            <summary>The authority frame tick belonging to <see cref="P:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.ObservedRevision"/>.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility.IsDelivered(Lumio.GameRuntime.Ecs.NetEntityId,System.String)">
+            <summary>True only for a field delivered to this generation and not subsequently revoked or removed.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery">
             <summary>Admission and typed AttributeId queries over the single World Manager.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.CreateReplica(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Replication.Binding.IReplicaAttributeVisibility)">
+            <summary>Binds pure replica reads to the host's committed delivery view and the World's actual Self.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.SnapshotConnections">
             <summary>Captures active connection indexes before an in-process snapshot restore.</summary>

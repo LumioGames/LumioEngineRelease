@@ -1667,6 +1667,9 @@
         <member name="M:Lumio.GameRuntime.Ecs.World.EnsureSimulationWrite">
             <summary>Checks the Owner before a simulation port queues or applies work.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetSelf(Lumio.GameRuntime.Ecs.Entity@)">
+            <summary>Reads the current Self binding without throwing before Welcome has bound it.</summary>
+        </member>
         <member name="P:Lumio.GameRuntime.Ecs.World.IssuedIds">
             <summary>Issued identities; a joint predicted world's history is compacted to live identities at authority refresh.</summary>
         </member>

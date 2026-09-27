@@ -13,7 +13,7 @@
 //   - 操作系统在任意目录自动生成的三个固定名字:`.DS_Store`、`Thumbs.db`、`desktop.ini`。
 // 其余多出来的文件一律算被改过的发布物。
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
@@ -238,7 +238,14 @@ function parseArgs(argv) {
   return args;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// Standalone by contract (tools/ in the release imports only Node built-ins):
+// the realpath comparison is inlined rather than shared with entry-guard.mjs.
+const isCliEntry = () => {
+  if (!process.argv[1]) return false;
+  try { return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url)); }
+  catch { return false; }
+};
+if (isCliEntry()) {
   try {
     const args = parseArgs(process.argv.slice(2));
     const result = verifyRelease({
