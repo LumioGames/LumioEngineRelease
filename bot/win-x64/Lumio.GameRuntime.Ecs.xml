@@ -358,9 +358,6 @@
         <member name="T:Lumio.GameRuntime.Ecs.IPersistReader">
             <summary>Reads persistable members from a snapshot.</summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Ecs.EcsModule">
-            <summary>Composition boundary for the manager-owned ECS runtime.</summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Ecs.EcsSystem">
             <summary>Gameplay system executed by <see cref="T:Lumio.GameRuntime.Ecs.WorldManager"/> during a declared tick phase.</summary>
         </member>
@@ -760,7 +757,7 @@
             Dedicated-server worlds must not silently skip <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/>.
             </summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Create(Lumio.GameRuntime.Ecs.EcsRegistry,System.Nullable{System.UInt64},Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,Lumio.GameRuntime.Ecs.WorldConfigBinding)">
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Create(Lumio.GameRuntime.Ecs.EcsRegistry,System.Nullable{System.UInt64},Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,Lumio.GameRuntime.Ecs.WorldConfigBinding,System.Func{Lumio.GameRuntime.Ecs.WorldHfsmContext})">
             <summary>
             Creates the manager. <paramref name="loggerFactory"/> remains optional so every existing
             call site keeps working; omitting it means components log into <see cref="T:Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory"/>.
@@ -790,16 +787,16 @@
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Enqueue(Lumio.GameRuntime.Ecs.WorldChangeMessage,System.UInt64)">
             <summary>Queues a client world-change with a nonzero process-local correlation id.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.BindCrossWorldParticipants(System.Action,System.Action,System.Action)">
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.BindVoxelTick(System.Action,System.Action)">
             <summary>
-            Optional CrossWorld prepare/decide/voxel-commit participants.
+            Optional terrain batch preparation and voxel commit participants.
             VoxelCommit already runs at TickPhase.VoxelCommit (enum 7) via WorldTickBinding.
             </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.CollectTickDelegates(System.Collections.Generic.List{System.Delegate})">
             <summary>
             Delegates the bound Tick invokes but did not create: the frozen system plan's factories and
-            the cross-world participants. Simulation's Prime warm-up (ADR-118) takes them as roots,
+            the voxel participants. Simulation's Prime warm-up (ADR-118) takes them as roots,
             because the IL of the phases only names <c>Invoke</c>. A new delegate the phases invoke must
             be added here; <c>TickDelegateFieldsAreWarmupRoots</c> fails until it is. A read only: binding
             an unstarted manager still fails where it always did, when the tick loop is bound.
@@ -1264,6 +1261,9 @@
             <c>GeneratedRegistry.Instance</c> as a subclass of this type.
             </summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Ecs.EcsRegistry.CreateWorldServices(Lumio.GameRuntime.Ecs.World)">
+            <summary>Creates module services owned by each World, before entity construction.</summary>
+        </member>
         <member name="P:Lumio.GameRuntime.Ecs.EcsRegistry.Side">
             <summary>Which side this registry describes. The registry carries the side; callers do not pass a mode flag.</summary>
         </member>
@@ -1272,6 +1272,9 @@
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.EcsRegistry.AttributeDeclarations">
             <summary>C-2 declaration rows produced with this registry.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.EcsRegistry.IsLethalAttribute(System.Type,System.String)">
+            <summary>Whether a declared account on this concrete entity type represents life.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.EcsRegistry.Systems">
             <summary>Gameplay systems for this registry. Empty by default.</summary>
@@ -1353,6 +1356,12 @@
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.IWorldControlAdapter.TryResolveConnectionState(System.String,Lumio.GameRuntime.Ecs.NetEntityId@,System.UInt64@)">
             <summary>Resolves the current entity and generation for an authenticated connection.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IWorldService">
+            <summary>A module resource whose preparation and release belong to its World.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.IWorldService.Start">
+            <summary>Freezes preparation before the World executes gameplay.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.IWorldTickLoop">
             <summary>Host-facing World tick driveshaft. Simulation binds this; WorldManager.Tick only forwards.</summary>
@@ -1661,8 +1670,20 @@
         <member name="M:Lumio.GameRuntime.Ecs.World.TryReserveDestroyBatch(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},Lumio.GameRuntime.Ecs.WorldDestroyReservation@)">
             <summary>Prevalidates and reserves headroom in the existing structural destroy queue.</summary>
         </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.Hfsm">
+            <summary>This World's Native or platform-owned HFSM provider. No mutable context is shared with a clone.</summary>
+        </member>
         <member name="P:Lumio.GameRuntime.Ecs.World.LoggerFactory">
             <summary>Post office this world logs into — the one the host handed to the manager (ADR-081).</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.AttachService``1(``0)">
+            <summary>Attaches one World-owned service. A different instance of the same type is rejected.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetService``1(``0@)">
+            <summary>Reads a world-local service instance without consulting process state.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.RemoveService``1(``0)">
+            <summary>Removes a world-local service when its owner is disposed.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.World.EnsureSimulationWrite">
             <summary>Checks the Owner before a simulation port queues or applies work.</summary>
@@ -1704,6 +1725,10 @@
             When true, <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/> refuses an unbound index instead of
             silently dropping dirty entities (which would make later QueryAabb empty).
             </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.CompileHfsm(System.UInt32,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmStateDefinition},System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmTransitionDefinition})">
+            <summary>Compiles an HFSM definition against this World's bound Native Context.</summary>
+            <remarks>The caller owns the returned definition and must dispose it.</remarks>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.World.InvalidateHandles">
             <summary>
@@ -1821,6 +1846,10 @@
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldDestroyReservation">
             <summary>A single-use lease for preallocated destroy queue entries; it does not undo publication.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.WorldHfsmContext">
+            <summary>A platform HFSM provider and its exclusively owned World resource.</summary>
+            <remarks>A factory must return a fresh context for each World, including predicted clones.</remarks>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldIngressBudget">
             <summary>Limits retained serialized message bytes (including routing metadata) and work per Tick.</summary>

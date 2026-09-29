@@ -8,7 +8,8 @@
     ".NETCoreApp,Version=v10.0": {
       "Lumio.Client.Engine/1.0.0": {
         "dependencies": {
-          "Lumio.Engine.SDK": "1.0.0"
+          "Lumio.Engine.SDK": "1.0.0",
+          "Lumio.GameRuntime.Ecs": "0.1.0"
         },
         "runtime": {
           "Lumio.Client.Engine.dll": {}
@@ -63,6 +64,40 @@
             "fileVersion": "1.0.0.0"
           }
         }
+      },
+      "Lumio.GameRuntime.Config/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Primitives": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Config.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Ecs/0.1.0": {
+        "dependencies": {
+          "Lumio.Engine.NativeLoader": "1.0.0",
+          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
+          "Lumio.GameRuntime.Config": "0.1.0",
+          "Lumio.GameRuntime.Primitives": "0.1.0",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.11"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Ecs.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Primitives/0.1.0": {
+        "runtime": {
+          "Lumio.GameRuntime.Primitives.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
       }
     }
   },
@@ -97,6 +132,21 @@
       "sha512": ""
     },
     "Lumio.Engine.SDK/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Config/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Ecs/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lumio.GameRuntime.Primitives/0.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

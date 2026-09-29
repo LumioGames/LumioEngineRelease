@@ -60,12 +60,6 @@
             object. Empty world (no such keys) is 0. Non-object bytes are not a count.
             </summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Persistence.InProcessDurableTxnJournalPort">
-            <summary>
-            Staging in-process transaction journal. Process death drops the log; it is
-            useful for local composition tests but does not provide cross-restart recovery.
-            </summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Persistence.IVoxelResultSnapshotPort">
             <summary>Optional same-cut delivery participant for a fresh voxel snapshot target.</summary>
         </member>
@@ -113,8 +107,8 @@
         <member name="T:Lumio.GameRuntime.Persistence.RecordingSectionResidencyPort">
             <summary>
             In-memory conformance double for <see cref="T:Lumio.GameRuntime.Persistence.IVoxelSectionResidencyPort"/> (mirrors
-            <c>RecordingVoxelProvider</c>'s residency behavior). Used by this repo's own tests where a
-            <c>RecordingVoxelProvider</c> cannot stand in directly because production code speaks the real
+            <c>test residency providers</c>'s residency behavior). Used by this repo's own tests where a
+            <c>test residency providers</c> cannot stand in directly because production code speaks the real
             <c>voxel_section_load_v1</c> payload convention, not the double's decoded-bindings convenience overload.
             </summary>
         </member>

@@ -207,7 +207,7 @@
             <remarks>
             生命周期由调用方持有：<see cref="M:Lumio.Engine.SDK.LumioEngineLease.Dispose"/> 之后本对象上的任何成员都会抛
             <see cref="T:System.ObjectDisposedException"/>。由本租约创建、且归本租约所有的子对象
-            （如 <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.IntPtr)"/> 建出来的世界）应先于租约释放。
+            （如 <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte})"/> 建出来的世界）应先于租约释放。
             </remarks>
         </member>
         <member name="P:Lumio.Engine.SDK.LumioEngineLease.NativePath">
@@ -245,7 +245,7 @@
             retain the context and retry; disposing this lease does not release a live context's resources.
             </remarks>
         </member>
-        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.IntPtr)">
+        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>
             包裹一个**外部已经创建好**的 Native 体素世界句柄。
             </summary>
@@ -260,28 +260,9 @@
         </member>
         <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(Lumio.Engine.SDK.VoxelWorldHandle)">
             <summary>
-            Same unowned attach as <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.IntPtr)"/>, taking the
+            Same unowned attach as <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(Lumio.Engine.NativeLoader.KernelHandle)"/>, taking the
             assembly-root <see cref="T:Lumio.Engine.SDK.VoxelWorldHandle"/> record Runtime attach uses.
             </summary>
-        </member>
-        <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.IntPtr)">
-            <summary>
-            新建一个由本租约**拥有**的 Native 体素世界。
-            </summary>
-            <remarks>
-            与 <see cref="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.IntPtr)"/> 相反，本重载取得所有权：释放返回的对象会真正销毁
-            该 Native 世界，因此它必须先于本租约释放。
-            </remarks>
-            <param name="role">世界角色标识，不得为 null 或空。</param>
-            <param name="residentSectionBudget">常驻 Section 预算，交由 Native 侧按体素设计裁剪驻留集。</param>
-            <param name="materialClassTable">材质类表句柄；语义见体素契约，本层原样透传。</param>
-            <returns>拥有该世界的门面。</returns>
-            <exception cref="T:System.ObjectDisposedException">租约已释放。</exception>
-            <exception cref="T:System.ArgumentException"><paramref name="role"/> 为 null 或空。</exception>
-            <exception cref="T:System.InvalidOperationException">
-            这份 Native 构建没有接上 <c>voxel_world_create</c> 槽——不返回哑实现，直接报缺口。
-            </exception>
-            <exception cref="T:Lumio.Engine.SDK.VoxelNativeException">Native 侧返回非成功状态；状态码见体素错误码表。</exception>
         </member>
         <member name="M:Lumio.Engine.SDK.LumioEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte})">
             <summary>Creates a world owning a catalog parsed from versioned UTF-8 JSON and explicit budgets.</summary>

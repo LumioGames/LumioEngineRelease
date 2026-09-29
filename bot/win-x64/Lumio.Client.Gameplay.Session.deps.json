@@ -207,22 +207,8 @@
           }
         }
       },
-      "Lumio.GameRuntime.Command/0.1.0": {
-        "dependencies": {
-          "Lumio.GameRuntime.Ecs": "0.1.0",
-          "Lumio.GameRuntime.Observability": "0.1.0",
-          "Lumio.GameRuntime.Primitives": "0.1.0"
-        },
-        "runtime": {
-          "Lumio.GameRuntime.Command.dll": {
-            "assemblyVersion": "0.1.0.0",
-            "fileVersion": "0.1.0.0"
-          }
-        }
-      },
       "Lumio.GameRuntime.Config/0.1.0": {
         "dependencies": {
-          "Lumio.GameRuntime.Observability": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0"
         },
         "runtime": {
@@ -235,9 +221,7 @@
       "Lumio.GameRuntime.Coordination/0.1.0": {
         "dependencies": {
           "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
-          "Lumio.GameRuntime.Command": "0.1.0",
           "Lumio.GameRuntime.Ecs": "0.1.0",
-          "Lumio.GameRuntime.Observability": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0"
         },
         "runtime": {
@@ -264,27 +248,13 @@
       "Lumio.GameRuntime.Gas/0.1.0": {
         "dependencies": {
           "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
-          "Lumio.GameRuntime.Command": "0.1.0",
           "Lumio.GameRuntime.Config": "0.1.0",
           "Lumio.GameRuntime.Coordination": "0.1.0",
           "Lumio.GameRuntime.Ecs": "0.1.0",
-          "Lumio.GameRuntime.Observability": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0"
         },
         "runtime": {
           "Lumio.GameRuntime.Gas.dll": {
-            "assemblyVersion": "0.1.0.0",
-            "fileVersion": "0.1.0.0"
-          }
-        }
-      },
-      "Lumio.GameRuntime.Observability/0.1.0": {
-        "dependencies": {
-          "Lumio.GameRuntime.Primitives": "0.1.0",
-          "System.Threading.Channels": "10.0.0"
-        },
-        "runtime": {
-          "Lumio.GameRuntime.Observability.dll": {
             "assemblyVersion": "0.1.0.0",
             "fileVersion": "0.1.0.0"
           }
@@ -315,12 +285,7 @@
       },
       "Lumio.GameRuntime.Replication/0.1.0": {
         "dependencies": {
-          "Lumio.GameRuntime.Command": "0.1.0",
-          "Lumio.GameRuntime.Config": "0.1.0",
-          "Lumio.GameRuntime.Coordination": "0.1.0",
           "Lumio.GameRuntime.Ecs": "0.1.0",
-          "Lumio.GameRuntime.Gas": "0.1.0",
-          "Lumio.GameRuntime.Observability": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0"
         },
         "runtime": {
@@ -332,15 +297,12 @@
       },
       "Lumio.GameRuntime.Simulation/0.1.0": {
         "dependencies": {
-          "Lumio.GameRuntime.Command": "0.1.0",
           "Lumio.GameRuntime.Config": "0.1.0",
           "Lumio.GameRuntime.Coordination": "0.1.0",
           "Lumio.GameRuntime.Ecs": "0.1.0",
           "Lumio.GameRuntime.Gas": "0.1.0",
-          "Lumio.GameRuntime.Observability": "0.1.0",
           "Lumio.GameRuntime.Persistence": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0",
-          "Lumio.GameRuntime.Replication": "0.1.0",
           "System.Threading.Channels": "10.0.0"
         },
         "runtime": {
@@ -461,11 +423,6 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Lumio.GameRuntime.Command/0.1.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "Lumio.GameRuntime.Config/0.1.0": {
       "type": "project",
       "serviceable": false,
@@ -482,11 +439,6 @@
       "sha512": ""
     },
     "Lumio.GameRuntime.Gas/0.1.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Lumio.GameRuntime.Observability/0.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

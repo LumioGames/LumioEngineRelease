@@ -61,13 +61,6 @@
             This is not a native pointer and does not come from a private SDK field.
             </summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.TryAttach(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.KernelConfig)">
-            <summary>
-            Binds spatial index + Authority voxel world onto an existing manager.
-            Returns null when the native artifact cannot be loaded — callers must not
-            invent a handle.
-            </summary>
-        </member>
         <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.TryAttach(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[])">
             <summary>Binds a Native world using the host's official block catalog configuration.</summary>
         </member>
@@ -75,7 +68,7 @@
             <summary>
             Binds a Native world, then restores the operator-named base-map capture
             onto that fresh Authority world. First boot of an empty store is this
-            path, not <see cref="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory)"/>:
+            path, not <see cref="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],Microsoft.Extensions.Logging.ILoggerFactory)"/>:
             RestoreNew hydrates a DualCut runtime half, which empty-store boot does
             not have.
             </summary>
@@ -83,7 +76,7 @@
         <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.TryAttachWithSectionExport(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.KernelConfig,Lumio.GameRuntime.Simulation.SectionProducerOptions,System.Byte[],System.Byte[])">
             <summary>Opt-in bounded Section capture, opened only after the optional fresh-world restore.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory)">
+        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],Microsoft.Extensions.Logging.ILoggerFactory)">
             <summary>
             Restores an independent candidate without modifying any existing binding.
             </summary>
@@ -96,19 +89,16 @@
             the candidate.
             </remarks>
         </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget)">
+        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Byte[],Lumio.GameRuntime.Ecs.WorldConfigBinding)">
             <summary>Restores a fresh candidate with the host's explicit ingress and receipt budget.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Byte[])">
             <summary>Restores with the host's original budget and official block catalog configuration.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Byte[],Lumio.GameRuntime.Ecs.WorldConfigBinding)">
-            <summary>Restores a candidate using the caller-selected immutable config binding.</summary>
-        </member>
         <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.Restore(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry)">
             <summary>
             In-place restore is deliberately unavailable. A restore must construct a
-            fresh native world and a fresh Runtime binding through <see cref="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory)"/>
+            fresh native world and a fresh Runtime binding through <see cref="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],Microsoft.Extensions.Logging.ILoggerFactory)"/>
             so the in-memory transaction ledger cannot survive into older world data.
             </summary>
         </member>
@@ -180,17 +170,8 @@
         <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerRestoreResult.#ctor(System.Boolean,Lumio.GameRuntime.Simulation.DedicatedServerHostBinding,System.String)">
             <summary>Only a fully restored candidate transfers ownership to the host.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Determinism.SimulationRevisionSnapshot.CanonicalValue(Lumio.GameRuntime.Replication.IBase64Encoder)">
-            <summary>
-            The revisions as little-endian canonical bytes, Base64-encoded by <paramref name="base64"/>: the
-            session's NativeCore encoder, whose output equals <c>Convert.ToBase64String</c> (ADR-122).
-            </summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Simulation.Determinism.DeterminismContext">
             <summary>Tick-scoped deterministic inputs. Wall time, thread identity and object identity are absent by design.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Determinism.StateHashCoordinator">
-            <summary>Canonical hash registry. Registration order and diagnostic timing never affect the digest.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.Errors.SimulationFailure">
             <summary>Compatibility projection of a generated simulation failure.</summary>
@@ -200,161 +181,6 @@
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.Failure.FailStopController">
             <summary>Failure namespace facade retained for callers following the module layout.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.HostTickRequest">
-            <summary>Host-provided logical tick request. Payloads remain opaque to the simulation boundary.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickInput">
-            <summary>Session-owned logical tick input. Wraps the existing HostTickRequest protocol.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.IRuntimeSession">
-            <summary>Host-facing session surface: identity, lifecycle state, and a single RunTick entry.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock">
-            <summary>
-            Tick elapsed-time source. Production is NativeCore <c>clock_now</c>
-            (NativeTickClock on net10.0). Any future <c>timer_pump(nowMs)</c> must use
-            <see cref="M:Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock.NowMilliseconds"/> from this same clock (nanos / 1e6) — a wall clock
-            puts the single-kernel timer drift back.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeEngineProcessLease">
-            <summary>
-            Process-wide native lease shared by every net10.0 Tick-path facade that has no managed substitute:
-            <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock"/> (<c>clock_now</c>), <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64"/>
-            (<c>codec_base64_encode_v1</c>), and <see cref="T:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding"/>'s voxel-world attach.
-            Follow-up 5 (R-00763): the failure message below must name what is actually missing without
-            pretending a fallback exists, and must not be narrowed back to a single consumer — this class is
-            shared, and a message naming only the first consumer that happened to need it misleads whoever hits
-            it through a different one.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64">
-            <summary>
-            Production Tick-path Base64 (architecture ADR-122): NativeCore <c>lumio-codec</c> through the engine
-            root slot <c>codec_base64_encode_v1</c>, via <see cref="T:Lumio.Engine.NativeLoader.NativeBase64Encoder"/>, on the same process
-            lease as <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock"/>. The Tick runs only this forwarder and the facade's own
-            methods, which Prime compiles ahead of time, plus one unmanaged call.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64.Require">
-            <summary>
-            Binds the slot on the process lease. Throws when the native artifact is missing, predates the
-            slot, or answers the facade's probe wrongly; there is no managed substitute.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock">
-            <summary>
-            Production tick clock: SDK <c>clock_now</c> → <see cref="M:Lumio.Engine.NativeLoader.NativeMonotonicClock.NowNanos"/>.
-            Same NativeCore <c>lumio_platform::MonotonicClock</c> as Server R-00564 / Engine R-00573.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickBase64Resolver">
-            <summary>
-            Resolves the Tick path's Base64 encoder when the session options inject none (architecture
-            ADR-122). On net10.0 it is NativeCore through the engine root table (<c>NativeTickBase64</c>) and
-            resolution fails closed when the native artifact is missing or has no <c>codec_base64_encode_v1</c>
-            slot, which makes session assembly fail. netstandard2.1 has no NativeLoader, so its host injects
-            the encoder. No target falls back to <c>Convert.ToBase64String</c> or any managed encoder.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickClockResolver">
-            <summary>
-            Resolves the Tick elapsed-time clock. Production is NativeTickClock
-            (fail closed when the native artifact is missing). Test assemblies may install
-            a fallback via <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickClockResolver.InstallTestFallback(Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock)"/> so CI can Bind/Tick without
-            liblumio_engine_native. Production hosts never set the fallback — there is no
-            Stopwatch substitute. The setter is internal; only InternalsVisibleTo test
-            assemblies can reach it.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickClockResolver.InstallTestFallback(Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock)">
-            <summary>
-            Test-assembly injection only. Production code in this assembly must not call this.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickClockResolver.NanosFromStopwatchTicks(System.Int64,System.Int64)">
-            <summary>
-            Converts Stopwatch ticks to nanoseconds without a signed <c>ticks * 1e9</c>
-            overflow. Used by test-assembly fallbacks; production never reads Stopwatch.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickExecutionControl">
-            <summary>
-            Per-tick execution guards. ADR-104: the synchronous Tick has no ordinary cancellation;
-            the host decides continue/pause/stop between complete Tick calls. Timeout and budget
-            limits remain internal fault guards, not a cancellation surface.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickExecutionControl.#ctor(System.UInt64,System.TimeSpan,System.UInt64,System.UInt64,System.Boolean)">
-            <summary>
-            Per-tick execution guards. ADR-104: the synchronous Tick has no ordinary cancellation;
-            the host decides continue/pause/stop between complete Tick calls. Timeout and budget
-            limits remain internal fault guards, not a cancellation surface.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickExecutorComposition">
-            <summary>Required authoritative ports for the fixed thirteen-phase Tick.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler">
-            <summary>
-            Opt-in raw Tick sample sink (R-00603 / R-00605). Default off: production ticks
-            do not allocate or write samples when <see cref="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.Enabled"/> is false.
-            Missing values stay empty; they are never filled with 0.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.Enabled">
-            <summary>When false, <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.BeginTick(System.UInt64)"/> / <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.EndPhase(Lumio.GameRuntime.Primitives.TickPhase,System.UInt64,System.Nullable{System.UInt64})"/> / <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.EndTick(System.Int64,System.Int32,System.Int32,System.Int32,System.Nullable{System.Double},System.Int32,System.Int32,System.Int32,System.Nullable{System.Int64})"/> are no-ops.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.LiveEntityOverride">
-            <summary>
-            Optional live-entity count for the current tick. WorldTickBinding sets this
-            from <c>World.LiveEntityCount</c> before EndTick; TickRunner itself has no World.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.RssBytesOverride">
-            <summary>
-            Optional RSS column for the current tick. Never used as allocated_bytes.
-            Hosts that can observe WorkingSet may set this; otherwise the CSV cell is empty.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.ITickPhaseSampleSink">
-            <summary>Receives one raw sample per entered phase and one allocation row per tick.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.InMemoryTickPhaseSampleSink">
-            <summary>
-            In-memory raw samples. Not a cache, not a pool: every row is kept until
-            <see cref="M:Lumio.GameRuntime.Simulation.Tick.InMemoryTickPhaseSampleSink.Clear"/> or the sink is discarded.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickStructureCounter">
-            <summary>
-            PendingCreates + PendingDestroys observed at EcsCommandBufferCommit.
-            Reset at BeginTick; recorded by WorldTickBinding when the sampler is on.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickSamplePercentiles">
-            <summary>
-            Percentiles from a raw numeric column. Sorts a copy; does not invent values.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickRssProbe">
-            <summary>
-            Best-effort process WorkingSet. Separate from allocated_bytes; never a substitute.
-            Returns null when the host cannot observe RSS.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickRunnerOptions.Base64">
-            <summary>Tick-path Base64 (ADR-122); null resolves NativeCore through <see cref="T:Lumio.GameRuntime.Simulation.Tick.TickBase64Resolver"/>.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickRunner.FromComposition(Lumio.GameRuntime.Simulation.Tick.TickRunnerOptions,Lumio.GameRuntime.Simulation.Tick.TickExecutorComposition)">
-            <summary>Creates a runner only from an explicit executor/capability composition.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickRunner.CollectPhaseExecutors(System.Collections.Generic.List{System.Delegate})">
-            <summary>Adds the phase executors, which the frame shell reaches only through <see cref="T:Lumio.GameRuntime.Simulation.Tick.PhaseHandler"/>.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickRunner.SetHandler(Lumio.GameRuntime.Primitives.TickPhase,Lumio.GameRuntime.Simulation.Tick.PhaseHandler)">
-            <summary>Registers a phase executor for an explicit composition; not a public execution surface.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.HostSectionResidencyPort">
             <summary>
@@ -381,38 +207,11 @@
         <member name="M:Lumio.GameRuntime.Simulation.HostSectionResidencyPort.#ctor(Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter,Lumio.Engine.SDK.NativeVoxelSectionExport,System.Boolean)">
             <summary>Borrows an export arena another owner (e.g. <see cref="T:Lumio.GameRuntime.Simulation.VoxelSectionProducer"/>) already opened; never disposes it.</summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Ingress.IngressBudget">
-            <summary>Named projection of the generated bounded ingress configuration.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Ingress.IngressBudget.#ctor(System.Int32,System.Int64)">
-            <summary>Named projection of the generated bounded ingress configuration.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Native.NativeCompletionBudget">
-            <summary>Named projection of the bounded native completion configuration.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Native.NativeCompletionBudget.#ctor(System.Int32,System.Int64)">
-            <summary>Named projection of the bounded native completion configuration.</summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Simulation.Phases.PhaseContractTable">
             <summary>Hand-maintained projection of the published phase contract (engine/wire/engine-capabilities-v1.json, ADR-104: no ordinary Tick cancellation).</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.Phases.PhaseGraph">
             <summary>Fixed, plugin-free phase graph. Its order is the generated contract order.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Planning.ProcessorDescriptorRole">
-            <summary>Ordinal authority: schema declaration order.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Planning.ProcessorDescriptorDeterminismClass">
-            <summary>Ordinal authority: schema declaration order.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Planning.ProcessorDescriptor">
-            <summary>Fields in schema declaration order.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Planning.ProcessorDescriptor.Before">
-            <summary>Optional in the schema.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Planning.ProcessorDescriptor.After">
-            <summary>Optional in the schema.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.SectionResidencyState">
             <summary>One Section's residency state (ADR-119 决策 7): 驻留 → 卸载中 → 非驻留 → 加载中 → 驻留, plus one abort edge.</summary>
@@ -529,9 +328,6 @@
         <member name="T:Lumio.GameRuntime.Simulation.Session.SimulationOwnerThread">
             <summary>Owner token for a single authoritative World. It never exposes a scheduler or a wall clock.</summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Session.ICoordinationReadPort">
-            <summary>Forwards Revision/Txn reads to Coordination. The session never caches a mutable copy.</summary>
-        </member>
         <member name="P:Lumio.GameRuntime.Simulation.Session.SimulationSessionOptions.Base64">
             <summary>
             Base64 encoder for the Tick path (architecture ADR-122). Null on net10.0 binds NativeCore through
@@ -561,6 +357,163 @@
         </member>
         <member name="M:Lumio.GameRuntime.Simulation.SimulationModule.#ctor(Lumio.Engine.NativeLoader.INativeHfsmAbi)">
             <summary>Borrows an existing provider; each Session owns its definition, not the provider Context.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.CanonicalInputBatch">
+            <summary>Inputs in the order the host received them. WebSocket ordering is the canonical order per connection.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.HostTickRequest">
+            <summary>Host-provided logical tick request. Payloads remain opaque to the simulation boundary.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickInput">
+            <summary>Session-owned logical tick input. Wraps the existing HostTickRequest protocol.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.IRuntimeSession">
+            <summary>Host-facing session surface: identity, lifecycle state, and a single RunTick entry.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock">
+            <summary>
+            Tick elapsed-time source. Production is NativeCore <c>clock_now</c>
+            (NativeTickClock on net10.0). Any future <c>timer_pump(nowMs)</c> must use
+            <see cref="M:Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock.NowMilliseconds"/> from this same clock (nanos / 1e6) — a wall clock
+            puts the single-kernel timer drift back.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeEngineProcessLease">
+            <summary>
+            Process-wide native lease shared by every net10.0 Tick-path facade that has no managed substitute:
+            <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock"/> (<c>clock_now</c>), <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64"/>
+            (<c>codec_base64_encode</c>), and <see cref="T:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding"/>'s voxel-world attach.
+            Follow-up 5 (R-00763): the failure message below must name what is actually missing without
+            pretending a fallback exists, and must not be narrowed back to a single consumer — this class is
+            shared, and a message naming only the first consumer that happened to need it misleads whoever hits
+            it through a different one.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64">
+            <summary>
+            Production Tick-path Base64 (architecture ADR-122): NativeCore <c>lumio-codec</c> through the engine
+            root slot <c>codec_base64_encode</c>, via <see cref="T:Lumio.Engine.NativeLoader.NativeBase64Encoder"/>, on the same process
+            lease as <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock"/>. The Tick runs only this forwarder and the facade's own
+            methods, which Prime compiles ahead of time, plus one unmanaged call.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64.Require">
+            <summary>
+            Binds the slot on the process lease. Throws when the native artifact is missing, predates the
+            slot, or answers the facade's probe wrongly; there is no managed substitute.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock">
+            <summary>
+            Production tick clock: SDK <c>clock_now</c> → <see cref="M:Lumio.Engine.NativeLoader.NativeMonotonicClock.NowNanos"/>.
+            Same NativeCore <c>lumio_platform::MonotonicClock</c> as Server R-00564 / Engine R-00573.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickBase64Resolver">
+            <summary>
+            Resolves the Tick path's Base64 encoder when the session options inject none (architecture
+            ADR-122). On net10.0 it is NativeCore through the engine root table (<c>NativeTickBase64</c>) and
+            resolution fails closed when the native artifact is missing or has no <c>codec_base64_encode</c>
+            slot, which makes session assembly fail. netstandard2.1 has no NativeLoader, so its host injects
+            the encoder. No target falls back to <c>Convert.ToBase64String</c> or any managed encoder.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickClockResolver">
+            <summary>
+            Resolves the Tick elapsed-time clock. Production is NativeTickClock
+            (fail closed when the native artifact is missing). Test assemblies may install
+            a fallback via <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickClockResolver.InstallTestFallback(Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock)"/> so CI can Bind/Tick without
+            liblumio_engine_native. Production hosts never set the fallback — there is no
+            Stopwatch substitute. The setter is internal; only InternalsVisibleTo test
+            assemblies can reach it.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickClockResolver.InstallTestFallback(Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock)">
+            <summary>
+            Test-assembly injection only. Production code in this assembly must not call this.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickClockResolver.NanosFromStopwatchTicks(System.Int64,System.Int64)">
+            <summary>
+            Converts Stopwatch ticks to nanoseconds without a signed <c>ticks * 1e9</c>
+            overflow. Used by test-assembly fallbacks; production never reads Stopwatch.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickExecutionControl">
+            <summary>
+            Per-tick execution guards. ADR-104: the synchronous Tick has no ordinary cancellation;
+            the host decides continue/pause/stop between complete Tick calls. Timeout and budget
+            limits remain internal fault guards, not a cancellation surface.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickExecutionControl.#ctor(System.UInt64,System.TimeSpan,System.UInt64,System.UInt64,System.Boolean)">
+            <summary>
+            Per-tick execution guards. ADR-104: the synchronous Tick has no ordinary cancellation;
+            the host decides continue/pause/stop between complete Tick calls. Timeout and budget
+            limits remain internal fault guards, not a cancellation surface.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickExecutorComposition">
+            <summary>Explicit executors for the fixed thirteen-phase Tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler">
+            <summary>
+            Opt-in raw Tick sample sink (R-00603 / R-00605). Default off: production ticks
+            do not allocate or write samples when <see cref="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.Enabled"/> is false.
+            Missing values stay empty; they are never filled with 0.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.Enabled">
+            <summary>When false, <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.BeginTick(System.UInt64)"/> / <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.EndPhase(Lumio.GameRuntime.Primitives.TickPhase,System.UInt64,System.Nullable{System.UInt64})"/> / <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.EndTick(System.Int64,System.Int32,System.Int32,System.Int32,System.Nullable{System.Double},System.Int32,System.Int32,System.Int32,System.Nullable{System.Int64})"/> are no-ops.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.LiveEntityOverride">
+            <summary>
+            Optional live-entity count for the current tick. WorldTickBinding sets this
+            from <c>World.LiveEntityCount</c> before EndTick; TickRunner itself has no World.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.RssBytesOverride">
+            <summary>
+            Optional RSS column for the current tick. Never used as allocated_bytes.
+            Hosts that can observe WorkingSet may set this; otherwise the CSV cell is empty.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.ITickPhaseSampleSink">
+            <summary>Receives one raw sample per entered phase and one allocation row per tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.InMemoryTickPhaseSampleSink">
+            <summary>
+            In-memory raw samples. Not a cache, not a pool: every row is kept until
+            <see cref="M:Lumio.GameRuntime.Simulation.Tick.InMemoryTickPhaseSampleSink.Clear"/> or the sink is discarded.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickStructureCounter">
+            <summary>
+            PendingCreates + PendingDestroys observed at EcsCommandBufferCommit.
+            Reset at BeginTick; recorded by WorldTickBinding when the sampler is on.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickSamplePercentiles">
+            <summary>
+            Percentiles from a raw numeric column. Sorts a copy; does not invent values.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickRssProbe">
+            <summary>
+            Best-effort process WorkingSet. Separate from allocated_bytes; never a substitute.
+            Returns null when the host cannot observe RSS.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.Tick.TickSampleCsvWriter">
+            <summary>
+            Writes raw Tick sample CSVs. Empty cells mean missing, never a filled-in 0.
+            N19: <c>tick_id,phase,elapsed_nanos,queue_wait_nanos</c>.
+            N21: <c>tick_id,allocated_bytes,gen0,gen1,gen2,pause_ms,query_count,structure_count,live_entities,rss_bytes</c>.
+            </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Simulation.IBase64Encoder">
+            <summary>Base64 codec for explicit simulation tools; production Tick does not encode state evidence.</summary>
+            <remarks>The NativeCore adapter uses the ABI v2 root slot <c>codec_base64_encode</c>.</remarks>
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.VoxelSectionProducer">
             <summary>Bounded exact physical capture. All access and cleanup belong to the creating world owner thread.</summary>
@@ -739,13 +692,25 @@
             <summary>The derived method set, without compiling it; tests use it to check what Prime covers.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Simulation.Warmup.TickPathWarmup.RootsKey(Lumio.GameRuntime.Simulation.Warmup.TickPathWarmupRoots)">
-            <summary>Identifies the roots and their receiver types. Null when any of it is collectible.</summary>
+            <summary>
+            Identifies the roots and their receiver types. Collectible parts carry their context's load id:
+            handles are unique only among the assemblies currently loaded, so the id — not the handle alone —
+            is what separates one live load of collectible code from the next (B-00129).
+            </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Simulation.Warmup.TickPathWarmup.RootSetKey(System.String)">
             <summary>
             Identifies what the derivation depends on: the roots (<paramref name="rootsKey"/>) and the loaded
-            application assemblies, from which virtual dispatch takes implementers. Null when any of them is
-            collectible.
+            application assemblies, from which virtual dispatch takes implementers. Collectible assemblies
+            enter by load id and module id: a load that has been unloaded since can never be matched again,
+            because a fresh load takes a fresh id.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Simulation.Warmup.TickPathWarmup.LoadId(System.Reflection.Assembly)">
+            <summary>
+            The identity of the context <paramref name="assembly"/> was loaded into, as one monotonic,
+            never-reused number per live load. Keys are held weakly, so the table neither keeps a collectible
+            context alive nor outlives it.
             </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Simulation.Warmup.TickPathWarmup.Analysis.ReasonFor(System.Reflection.MethodBase)">

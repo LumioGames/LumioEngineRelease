@@ -59,22 +59,10 @@
       },
       "Lumio.GameRuntime.Config/0.1.0": {
         "dependencies": {
-          "Lumio.GameRuntime.Observability": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0"
         },
         "runtime": {
           "Lumio.GameRuntime.Config.dll": {
-            "assemblyVersion": "0.1.0.0",
-            "fileVersion": "0.1.0.0"
-          }
-        }
-      },
-      "Lumio.GameRuntime.Observability/0.1.0": {
-        "dependencies": {
-          "Lumio.GameRuntime.Primitives": "0.1.0"
-        },
-        "runtime": {
-          "Lumio.GameRuntime.Observability.dll": {
             "assemblyVersion": "0.1.0.0",
             "fileVersion": "0.1.0.0"
           }
@@ -121,11 +109,6 @@
       "sha512": ""
     },
     "Lumio.GameRuntime.Config/0.1.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Lumio.GameRuntime.Observability/0.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

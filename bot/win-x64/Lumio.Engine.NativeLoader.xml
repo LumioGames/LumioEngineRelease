@@ -13,6 +13,9 @@
         <member name="F:Lumio.Engine.NativeLoader.VoxelOperationStatus.SnapshotBaseMismatch">
             <summary>Native status <c>LUMIO_STATUS_SNAPSHOT_BASE_MISMATCH</c>.</summary>
         </member>
+        <member name="F:Lumio.Engine.NativeLoader.VoxelOperationStatus.ResourceFaulted">
+            <summary>The resource caught a panic and only destruction is permitted.</summary>
+        </member>
         <member name="T:Lumio.Engine.NativeLoader.VoxelPresence">
             <summary>ABI enum <c>lumio_voxel_presence_t</c>.</summary>
         </member>
@@ -490,6 +493,102 @@
         <member name="M:Lumio.Engine.NativeLoader.NativeLogFields.AsSpan(Lumio.Engine.NativeLoader.NativeLogFields@)">
             <summary>Views the 8 inline elements as one span, without copying.</summary>
         </member>
+        <member name="T:Lumio.Engine.NativeLoader.NativeStatus">
+            <summary>Shared status codes returned by the native ABI.</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.Success">
+            <summary>Native status Success (0).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.InvalidArgument">
+            <summary>Native status InvalidArgument (1).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.UnsupportedVersion">
+            <summary>Native status UnsupportedVersion (2).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ClrInitFailed">
+            <summary>Native status ClrInitFailed (3).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ClrEntryFailed">
+            <summary>Native status ClrEntryFailed (4).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.BufferTooSmall">
+            <summary>Native status BufferTooSmall (5).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerStaleHandle">
+            <summary>Native status TimerStaleHandle (6).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScopeInvalid">
+            <summary>Native status TimerScopeInvalid (7).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScopeGenerationMismatch">
+            <summary>Native status TimerScopeGenerationMismatch (8).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerInvalidDueTick">
+            <summary>Native status TimerInvalidDueTick (9).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerInvalidInterval">
+            <summary>Native status TimerInvalidInterval (10).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScheduleBudgetExceeded">
+            <summary>Native status TimerScheduleBudgetExceeded (11).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotClosed">
+            <summary>Native status TimerSlotClosed (12).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotUnbound">
+            <summary>Native status TimerSlotUnbound (13).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotDispatchMismatch">
+            <summary>Native status TimerSlotDispatchMismatch (14).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotQueueFull">
+            <summary>Native status TimerSlotQueueFull (15).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerLateCompletion">
+            <summary>Native status TimerLateCompletion (16).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerManagerShutdown">
+            <summary>Native status TimerManagerShutdown (17).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.LogMailboxUnavailable">
+            <summary>Native status LogMailboxUnavailable (18).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.InternalFault">
+            <summary>Native status InternalFault (19).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SnapshotBaseMismatch">
+            <summary>Native status SnapshotBaseMismatch (20).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ContextClosing">
+            <summary>Native status ContextClosing (21).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.CapacityExceeded">
+            <summary>Native status CapacityExceeded (22).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionResyncNeeded">
+            <summary>Native status PredictionResyncNeeded (23).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionTokenInvalid">
+            <summary>Native status PredictionTokenInvalid (24).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionFaulted">
+            <summary>Native status PredictionFaulted (25).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionDataUnavailable">
+            <summary>Native status PredictionDataUnavailable (26).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportRevisionMismatch">
+            <summary>Native status SectionExportRevisionMismatch (27).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportDataUnavailable">
+            <summary>Native status SectionExportDataUnavailable (28).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportBaselineMismatch">
+            <summary>Native status SectionExportBaselineMismatch (29).</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ResourceFaulted">
+            <summary>Native status ResourceFaulted (30).</summary>
+        </member>
         <member name="T:Lumio.Engine.NativeLoader.PredictionAbi">
             <summary>Voxel prediction capability versions, root table extents and status codes.</summary>
         </member>
@@ -500,10 +599,10 @@
             <summary>Version stamp of the selective prediction V2 structs.</summary>
         </member>
         <member name="P:Lumio.Engine.NativeLoader.PredictionAbi.RootSize">
-            <summary>Root table bytes up to the end of the prediction V1 slots, at this process pointer width.</summary>
+            <summary>Root table bytes up to the end of the prediction slots, at this process pointer width.</summary>
         </member>
         <member name="P:Lumio.Engine.NativeLoader.PredictionAbi.SelectiveRootSize">
-            <summary>Root table bytes up to the end of the selective prediction V2 slots, at this process pointer width.</summary>
+            <summary>Same extent as the complete prediction capability; working queries are always selective.</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.PredictionAbi.PredictionResyncNeeded">
             <summary>Authority moved under a section this session still predicts in. The current authoritative revision of a section holding retained records differs from the revision those records were validated against. Writes to any other section, and the root identity or world_revision moving on their own, are not triggers. Keep public reads closed; GAS obtains authoritative state and uses correction reset, which discards only the affected records, then replays them under the existing token. Records in clean sections stay staged; never overwrite committed authority with stale priors.</summary>
@@ -1520,7 +1619,7 @@
             <summary>Root table bytes up to the end of the codec slots, at this process pointer width.</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.CodecAbi.Base64MaxInputLength">
-            <summary>Longest input <c>codec_base64_encode_v1</c> accepts; its encoded length still fits <see cref="T:System.Int32"/>. Longer input is <c>CapacityExceeded</c>. Same value as C <c>LUMIO_CODEC_BASE64_MAX_INPUT_LEN</c>.</summary>
+            <summary>Longest input <c>codec_base64_encode</c> accepts; its encoded length still fits <see cref="T:System.Int32"/>. Longer input is <c>CapacityExceeded</c>. Same value as C <c>LUMIO_CODEC_BASE64_MAX_INPUT_LEN</c>.</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.CodecAbi.Base64MaxEncodedLength">
             <summary>Encoded length of <see cref="F:Lumio.Engine.NativeLoader.CodecAbi.Base64MaxInputLength"/> input bytes: the longest output the slot ever writes.</summary>
@@ -1566,7 +1665,7 @@
         </member>
         <member name="T:Lumio.Engine.NativeLoader.NativeBase64Encoder">
             <summary>
-            Standard Base64 through the native <c>codec_base64_encode_v1</c> root slot (ADR-122). The slot
+            Standard Base64 through the native <c>codec_base64_encode</c> root slot (ADR-122). The slot
             forwards NativeCore <c>lumio_codec::base64_encode_into</c>, the engine's only Base64 encoder:
             RFC 4648 §4 alphabet (<c>A–Z a–z 0–9 + /</c>), <c>=</c> padding, no line breaks. For the same
             bytes the result equals <see cref="M:System.Convert.ToBase64String(System.Byte[])"/> character for character.
@@ -1600,12 +1699,12 @@
         <member name="M:Lumio.Engine.NativeLoader.NativeBase64Encoder.Create(Lumio.Engine.NativeLoader.NativeEngineLease)">
             <summary>
             Creates an encoder over the lease's root table. Throws <see cref="T:System.InvalidOperationException"/>
-            when the loaded native artifact predates the <c>codec_base64_encode_v1</c> slot, or when the
+            when the loaded native artifact predates the <c>codec_base64_encode</c> slot, or when the
             slot answers the empty-input probe wrongly: there is no managed fallback, because a second
             encoder is exactly what this slot exists to prevent.
             </summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeBase64Encoder.Bind(Lumio.Engine.NativeLoader.NativeEngineLoader.RootApi@,System.Action)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeBase64Encoder.Bind(Lumio.Engine.NativeLoader.RootApiV2@,System.Action)">
             <summary>
             Binds an encoder to an arbitrary root table. The lease path goes through <see cref="M:Lumio.Engine.NativeLoader.NativeBase64Encoder.Create(Lumio.Engine.NativeLoader.NativeEngineLease)"/>;
             this seam lets tests drive the facade with a real unmanaged function pointer and no native artifact.
@@ -1856,7 +1955,7 @@
             <summary>Context identity of the manager that issued the handle.</summary>
         </member>
         <member name="P:Lumio.Engine.NativeLoader.NativeTimerHandle.Owner">
-            <summary>OwnerId of the issuing manager (see <see cref="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ManagerOwner(System.IntPtr,System.UInt64@)"/>).</summary>
+            <summary>OwnerId of the issuing manager (see <see cref="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ManagerOwner(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64@)"/>).</summary>
         </member>
         <member name="T:Lumio.Engine.NativeLoader.NativeTimerDrainRecord">
             <summary>
@@ -1958,49 +2057,49 @@
             serialized on that thread.
             </summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.CreateManager(System.UInt32,System.IntPtr@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.CreateManager(System.UInt32,Lumio.Engine.NativeLoader.KernelHandle@)">
             <summary>Creates a manager. <paramref name="mode"/> 0 is wallClock (monotonic milliseconds), 1 is tickFrame (deterministic ticks).</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ManagerOwner(System.IntPtr,System.UInt64@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ManagerOwner(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64@)">
             <summary>Reads the OwnerId the manager passes back through scope registration and scheduling.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.DestroyManager(System.IntPtr)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.DestroyManager(Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>Moves a running manager to shutdown; the handle stays resolvable as a tombstone.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.RegisterDispatch(System.IntPtr,System.UInt32)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.RegisterDispatch(Lumio.Engine.NativeLoader.KernelHandle,System.UInt32)">
             <summary>Registers a dispatch id (0 is reserved). Native stores the id only, never a callback.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.RegisterScope(System.IntPtr,System.UInt64,System.UInt64,System.UInt32,System.UInt32@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.RegisterScope(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt32,System.UInt32@)">
             <summary>Registers a scope (kind 0 world, 1 session, 2 adapter) and returns its live generation, starting at 1.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.TeardownScope(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.TeardownScope(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <summary>Tears a scope down: its generation advances and every handle under it goes stale.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.CreateSlot(System.IntPtr,System.IntPtr@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.CreateSlot(Lumio.Engine.NativeLoader.KernelHandle,System.IntPtr@)">
             <summary>Allocates a callback slot in the unbound state.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.BindSlot(System.IntPtr,System.IntPtr,System.UInt32)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.BindSlot(Lumio.Engine.NativeLoader.KernelHandle,System.IntPtr,System.UInt32)">
             <summary>Binds an unbound slot to a registered dispatch id, once.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.CloseSlot(System.IntPtr,System.IntPtr)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.CloseSlot(Lumio.Engine.NativeLoader.KernelHandle,System.IntPtr)">
             <summary>Moves a bound slot to its closed terminal state.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ScheduleOneShot(System.IntPtr,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ScheduleOneShot(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
             <summary>Schedules a one-shot timer at <paramref name="due"/> (tick or millisecond by manager mode).</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ScheduleRepeating(System.IntPtr,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.ScheduleRepeating(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
             <summary>Schedules a repeating timer from <paramref name="firstDue"/> every <paramref name="interval"/>.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Advance(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Advance(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <summary>Advances a tickFrame manager to <paramref name="toTick"/> and queues the firings in between for drain.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Pump(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Pump(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <summary>Pumps a wallClock manager to <paramref name="nowMs"/> and queues the firings in between for drain.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Cancel(System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Cancel(Lumio.Engine.NativeLoader.KernelHandle,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
             <summary>Cancels a timer; a second cancel of the same handle returns <see cref="F:Lumio.Engine.NativeLoader.NativeTimerStatus.StaleHandle"/>.</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Drain(System.IntPtr,System.Span{Lumio.Engine.NativeLoader.NativeTimerDrainRecord},System.Int32@)">
+        <member name="M:Lumio.Engine.NativeLoader.INativeTimerAbi.Drain(Lumio.Engine.NativeLoader.KernelHandle,System.Span{Lumio.Engine.NativeLoader.NativeTimerDrainRecord},System.Int32@)">
             <summary>Copies queued deliveries and rejections into <paramref name="records"/>; too small a buffer consumes nothing.</summary>
         </member>
         <member name="T:Lumio.Engine.NativeLoader.NativeKernelContext">
@@ -2068,7 +2167,7 @@
             <summary>
             把 <c>category TAB message</c> 编成 UTF-8 写进载荷。缓冲装不下时在 UTF-8 字符
             边界停下（<see cref="M:System.Text.Unicode.Utf8.FromUtf16(System.ReadOnlySpan{System.Char},System.Span{System.Byte},System.Int32@,System.Int32@,System.Boolean,System.Boolean)"/> 的 <c>DestinationTooSmall</c> 语义），
-            不切出半个码点；余下的截断标志由邮箱按 ADR-081 失败语义 4 置位。
+            不切出半个码点；调用方须留出超过记录上限的空间，让邮箱判定是否截断。
             </summary>
         </member>
         <member name="M:Lumio.Engine.NativeLoader.LumioNativeLoggerProvider.ScopeFrame.Resolve(Lumio.Engine.NativeLoader.LumioNativeLoggerProvider.ScopeFrame,System.UInt64@,System.UInt64@)">
@@ -2244,24 +2343,18 @@
             构建）时抛 <see cref="T:System.InvalidOperationException"/>，不返回哑实现。
             </summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(System.IntPtr)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>接管一个已由 Native 创建的世界句柄；返回的门面不拥有该世界，Dispose 时不销毁它。</summary>
         </member>
         <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(Lumio.Engine.SDK.VoxelWorldHandle)">
             <summary>按装配根记录的世界句柄接管同一个世界；空句柄直接拒绝，不替调用方新建世界。</summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.IntPtr)">
-            <summary>已停用：回执保留条数必须显式给出，总是抛 <see cref="T:System.NotSupportedException"/>；改用四参数重载。</summary>
-        </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.UInt32,System.IntPtr)">
-            <summary>
-            经 <c>voxel_world_create_v2</c> 新建并拥有一个世界：驻留 Section 预算与回执保留条数都显式给出。
-            Native 没有这个槽时抛 <see cref="T:System.NotSupportedException"/>，不回落到旧入口。
-            </summary>
-        </member>
         <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(System.String,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte})">
             <summary>Creates a world owning a validated official catalog parsed from bounded UTF-8 JSON.</summary>
             <remarks>The input is borrowed only during this call. Missing Native capability never falls back.</remarks>
+        </member>
+        <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(Lumio.Engine.NativeLoader.NativeKernelContext,System.String,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte})">
+            <summary>Creates a world owned by the supplied native resource context.</summary>
         </member>
         <member name="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateKernelContext(Lumio.Engine.NativeLoader.KernelConfig)">
             <summary>Creates an explicitly configured native resource domain with its own library lifetime.</summary>
@@ -2301,13 +2394,6 @@
             </remarks>
             <param name="nativePath">Native 动态库路径，相对路径会展开成绝对路径。</param>
             <returns>体检结论；<see cref="P:Lumio.Engine.NativeLoader.NativeArtifactReport.IsLoadable"/> 为真才值得装。</returns>
-        </member>
-        <member name="T:Lumio.Engine.NativeLoader.NativeEngineLoader.RootApi">
-            <summary>
-            根 API 表的托管镜像（engine/abi/native-abi.json 的 root.fields 是唯一真值）。
-            只追加不插入；旧调用方可按 struct_size 使用固定前缀，新调用方按完整布局访问
-            追加槽位。字段偏移由 RootApiLayoutTests 按名字锁定。
-            </summary>
         </member>
         <member name="M:Lumio.Engine.NativeLoader.NativeEngineLoader.Load(System.String,System.String,System.String)">
             <summary>
@@ -2374,74 +2460,68 @@
             build-info.json sidecar and binds the timer slots of its root table.
             </summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Bind(Lumio.Engine.NativeLoader.NativeEngineLease,Lumio.Engine.NativeLoader.NativeEngineLoader.RootApi@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Bind(Lumio.Engine.NativeLoader.NativeEngineLease,Lumio.Engine.NativeLoader.RootApiV2@)">
             <summary>
             Binds a timer adapter to an already validated root table. This is
             internal so managed regression tests can exercise the real lease and
             output-copy paths with function-pointer doubles.
             </summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.CreateManager(System.UInt32,System.IntPtr@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.CreateManager(System.UInt32,Lumio.Engine.NativeLoader.KernelHandle@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ManagerOwner(System.IntPtr,System.UInt64@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ManagerOwner(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.DestroyManager(System.IntPtr)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.DestroyManager(Lumio.Engine.NativeLoader.KernelHandle)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.RegisterDispatch(System.IntPtr,System.UInt32)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.RegisterDispatch(Lumio.Engine.NativeLoader.KernelHandle,System.UInt32)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.RegisterScope(System.IntPtr,System.UInt64,System.UInt64,System.UInt32,System.UInt32@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.RegisterScope(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt32,System.UInt32@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.TeardownScope(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.TeardownScope(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.CreateSlot(System.IntPtr,System.IntPtr@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.CreateSlot(Lumio.Engine.NativeLoader.KernelHandle,System.IntPtr@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.BindSlot(System.IntPtr,System.IntPtr,System.UInt32)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.BindSlot(Lumio.Engine.NativeLoader.KernelHandle,System.IntPtr,System.UInt32)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.CloseSlot(System.IntPtr,System.IntPtr)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.CloseSlot(Lumio.Engine.NativeLoader.KernelHandle,System.IntPtr)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ScheduleOneShot(System.IntPtr,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ScheduleOneShot(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ScheduleRepeating(System.IntPtr,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ScheduleRepeating(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.UInt64,System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Advance(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Advance(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Pump(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Pump(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Cancel(System.IntPtr,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Cancel(Lumio.Engine.NativeLoader.KernelHandle,Lumio.Engine.NativeLoader.NativeTimerHandle@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Drain(System.IntPtr,System.Span{Lumio.Engine.NativeLoader.NativeTimerDrainRecord},System.Int32@)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Drain(Lumio.Engine.NativeLoader.KernelHandle,System.Span{Lumio.Engine.NativeLoader.NativeTimerDrainRecord},System.Int32@)">
             <inheritdoc />
         </member>
         <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.Dispose">
             <summary>
             Disposes the adapter and its lease. The library stays loaded until every
-            manager created here has been destroyed; <see cref="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.DestroyManager(System.IntPtr)"/>
+            manager created here has been destroyed; <see cref="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.DestroyManager(Lumio.Engine.NativeLoader.KernelHandle)"/>
             remains callable for that cleanup.
             </summary>
         </member>
-        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ObserveManagerStatusLocked(System.IntPtr,System.Int32)">
+        <member name="M:Lumio.Engine.NativeLoader.NativeLoaderTimerAbi.ObserveManagerStatusLocked(Lumio.Engine.NativeLoader.KernelHandle,System.Int32)">
             <summary>
-            A native implementation may discover that a manager was shut down by
-            an owner outside this adapter (or report the tombstone while handling a
-            call already admitted by the adapter). Treat that result as a local
-            terminal transition too, releasing the manager's native lease exactly
-            once. This keeps the library resident through the call that observed
-            shutdown and makes all subsequent calls return the local tombstone
-            status without re-entering an obsolete function pointer.
+            A native shutdown retires the manager and releases its library lease once.
             </summary>
         </member>
         <member name="T:Lumio.Engine.NativeLoader.NativeLogDrainPump">
@@ -2559,16 +2639,12 @@
             <summary>Drain oldest whole records into caller storage. Empty span reads stats without consumption.
             Written/Remaining describe this drain. SectionPresent flag determines whether coordinates identify a Section.</summary>
         </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.FromExistingHandle(Lumio.Engine.NativeLoader.NativeEngineLease,System.IntPtr,System.Boolean)">
+        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.FromExistingHandle(Lumio.Engine.NativeLoader.NativeEngineLease,Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>
             Wraps an already-created native voxel world handle. The native pointer stays private.
             </summary>
             <param name="lease">Engine lease whose root table is used for later calls.</param>
             <param name="world">Non-zero native world handle.</param>
-            <param name="ownsWorld">
-            False matches <see cref="M:Lumio.Engine.NativeLoader.NativeEngineLease.CreateVoxelWorld(System.IntPtr)"/>: dispose
-            does not destroy the native world. True matches parameterized create: dispose destroys it.
-            </param>
         </member>
         <member name="P:Lumio.Engine.SDK.NativeVoxelWorld.MaxCellsPerReadRequest">
             <summary>单次批量读允许的最多单元格数；超出按 <see cref="F:Lumio.Engine.SDK.VoxelErrorCode.ReadBudgetExceeded"/> 拒绝。</summary>
@@ -2725,9 +2801,6 @@
         <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionCompleteUpdateV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.PredictionCompleteResultV1@)">
             <summary>Successful completion publishes atomically and consumes token; no public reads open before this boundary. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
         </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionCorrectionResetV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.PredictionCorrectionResultV1@)">
-            <summary>ADR-106 rule 3: discard only the records whose sections drifted or lost data, adopt the current authority base for those sections under the same live token, and leave every other record staged; does not publish or reopen public reads. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
-        </member>
         <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionReleaseCoveredV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,System.UInt64,System.UInt64,Lumio.Engine.NativeLoader.PredictionReleaseResultV1@)">
             <summary>ADR-106 rule 5: drop the inclusive fromInputSequence..throughInputSequence records the caller reports as covered by authority, without restoring their priors and without publishing. fromInputSequence 0 releases the confirmed prefix; equal bounds release one named record; from &gt; through is InvalidArgument. Releasing drops records and nothing else: every surviving record keeps the section revision it was validated against, so a section authority moved still reports PredictionResyncNeeded and GAS re-validates and replays there. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
         </member>
@@ -2746,23 +2819,8 @@
         <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionOverlapV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,Lumio.Engine.NativeLoader.VoxelOverlapRequest@,System.IntPtr,System.UInt32,Lumio.Engine.NativeLoader.VoxelOverlapResult@,Lumio.Engine.NativeLoader.PredictionQueryGateV1@)">
             <summary>Public query: while update open return Success with Pending presence; physics gate is written in this same call and physics result buffers remain untouched. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
         </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionWorkingReadCellV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.VoxelWorldCoordinate@,Lumio.Engine.NativeLoader.VoxelBlockReadResult@)">
-            <summary>Working query requires the correct live token and resolves the same prediction overlay; base identity/revision mismatch requires resync. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
-        </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionWorkingBindingGetV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.VoxelSectionKey@,System.UInt16,System.IntPtr,System.UInt32,System.UInt32@,Lumio.Engine.NativeLoader.PredictionBindingReadResultV1@)">
-            <summary>Working query requires the correct live token and resolves the same prediction overlay; base identity/revision mismatch requires resync. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
-        </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionWorkingRaycastV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.VoxelRaycastRequest@,Lumio.Engine.NativeLoader.VoxelRaycastResult@)">
-            <summary>Working query requires the correct live token and resolves the same prediction overlay; base identity/revision mismatch requires resync. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
-        </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionWorkingSweepV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.VoxelSweepRequest@,Lumio.Engine.NativeLoader.VoxelSweepResult@)">
-            <summary>Working query requires the correct live token and resolves the same prediction overlay; base identity/revision mismatch requires resync. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
-        </member>
-        <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionWorkingOverlapV1(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,Lumio.Engine.NativeLoader.VoxelOverlapRequest@,System.IntPtr,System.UInt32,Lumio.Engine.NativeLoader.VoxelOverlapResult@)">
-            <summary>Working query requires the correct live token and resolves the same prediction overlay; base identity/revision mismatch requires resync. Returns native status without discarding failure progress. Pointer buffers are borrowed for this call only.</summary>
-        </member>
         <member name="P:Lumio.Engine.SDK.NativeVoxelWorld.IsSelectivePredictionAvailable">
-            <summary>Complete selective correction and traced query capability, independent of V1 support.</summary>
+            <summary>True when the complete prediction capability with explicit keys and traces is present.</summary>
         </member>
         <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.PredictionCorrectionResetV2(Lumio.Engine.NativeLoader.PredictionSessionHandleV1@,System.UInt64,System.IntPtr,System.UInt32,System.IntPtr,System.UInt32,Lumio.Engine.NativeLoader.PredictionCorrectionResultV2@)">
             <summary>Borrow buffers until return; preserves native status, required capacities and failure progress.</summary>
@@ -3000,7 +3058,7 @@
             <c>NativeVoxelWorld._world</c>; a zero handle is not a world.
             </summary>
         </member>
-        <member name="M:Lumio.Engine.SDK.VoxelWorldHandle.#ctor(System.IntPtr)">
+        <member name="M:Lumio.Engine.SDK.VoxelWorldHandle.#ctor(Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>
             Assembly-root record for an already-created Native voxel world handle.
             Runtime attach (R-00598) must read this instead of reflecting
@@ -3013,7 +3071,7 @@
         <member name="P:Lumio.Engine.SDK.VoxelWorldHandle.Empty">
             <summary>空句柄。</summary>
         </member>
-        <member name="M:Lumio.Engine.SDK.VoxelWorldHandle.FromNative(System.IntPtr)">
+        <member name="M:Lumio.Engine.SDK.VoxelWorldHandle.FromNative(Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>包装一个 Native 世界句柄；0 不是世界，直接拒绝。</summary>
         </member>
         <member name="M:Lumio.Engine.SDK.VoxelWorldHandle.ToString">
@@ -3367,11 +3425,11 @@
             binding-table entry count and the three revision numbers that fence a follow-up call.</summary>
         </member>
         <member name="T:Lumio.Engine.SDK.VoxelSectionBindingReadResult">
-            <summary>The committed binding table read (`voxel_section_binding_read_v1`); valid on success
+            <summary>The committed binding table read (`voxel_section_binding_read`); valid on success
             or BufferTooSmall (5), never on any other status.</summary>
         </member>
         <member name="M:Lumio.Engine.SDK.VoxelSectionBindingReadResult.#ctor(Lumio.Engine.SDK.VoxelSectionKey,Lumio.Engine.NativeLoader.VoxelPresence,System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt32)">
-            <summary>The committed binding table read (`voxel_section_binding_read_v1`); valid on success
+            <summary>The committed binding table read (`voxel_section_binding_read`); valid on success
             or BufferTooSmall (5), never on any other status.</summary>
         </member>
         <member name="T:Lumio.Engine.SDK.VoxelSectionEncoding">

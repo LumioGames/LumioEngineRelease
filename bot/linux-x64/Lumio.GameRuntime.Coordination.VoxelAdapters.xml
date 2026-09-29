@@ -60,52 +60,52 @@
         <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(Lumio.Engine.SDK.NativeVoxelWorld)">
             <summary>Creates an ABI adapter wrapping a known NativeVoxelWorld instance.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(System.Func{System.IntPtr,Lumio.Engine.SDK.NativeVoxelWorld})">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(System.Func{Lumio.Engine.NativeLoader.KernelHandle,Lumio.Engine.SDK.NativeVoxelWorld})">
             <summary>Creates an ABI adapter that resolves NativeVoxelWorld from world handle.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(Lumio.Engine.NativeLoader.NativeEngineLease)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.#ctor(Lumio.Engine.NativeLoader.NativeEngineLease,Lumio.Engine.NativeLoader.KernelHandle)">
             <summary>Creates an ABI adapter wrapping a NativeEngineLease.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Read(System.IntPtr,System.UInt64,System.Int32)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Read(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Sweep(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Sweep(Lumio.Engine.NativeLoader.KernelHandle,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Raycast(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,System.Single)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Raycast(Lumio.Engine.NativeLoader.KernelHandle,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint,System.Single)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Overlap(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Overlap(Lumio.Engine.NativeLoader.KernelHandle,Lumio.GameRuntime.Coordination.VoxelWorldPoint,Lumio.GameRuntime.Coordination.VoxelWorldPoint)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Apply(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.Apply(Lumio.Engine.NativeLoader.KernelHandle,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ApplyWithResult(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ApplyWithResult(Lumio.Engine.NativeLoader.KernelHandle,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ReplaceBindingContext(System.IntPtr,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingEntityEntry})">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ReplaceBindingContext(Lumio.Engine.NativeLoader.KernelHandle,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingEntityEntry})">
             <inheritdoc />
         </member>
         <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.CloseFaultedWorld">
             <summary>Explicit owner shutdown after a fault; never retries or reclassifies the mutation.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ValidateBatchForCoalescing(System.IntPtr,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ValidateBatchForCoalescing(Lumio.Engine.NativeLoader.KernelHandle,Lumio.GameRuntime.Coordination.VoxelApplyBatch@)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.QueryReceipt(System.IntPtr,System.String)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.QueryReceipt(Lumio.Engine.NativeLoader.KernelHandle,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.BindingGet(System.IntPtr,System.UInt64,System.Int32)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.BindingGet(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.SweepMiss(System.IntPtr)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.SweepMiss(Lumio.Engine.NativeLoader.KernelHandle)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.SweepUnresolved(System.IntPtr)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.SweepUnresolved(Lumio.Engine.NativeLoader.KernelHandle)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.TryReadSectionBindings(System.IntPtr,System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.TryReadSectionBindings(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">
             <inheritdoc />
             <remarks>
             R-00768: LumioGameEngine landed the RootApi slot and <c>NativeVoxelWorld.ReadSectionBindings</c>
@@ -125,16 +125,16 @@
             its 0xFFFF marker). An empty table is just the two count bytes.
             </summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.AcknowledgeSectionDurability(System.IntPtr,System.UInt64,System.UInt64,System.UInt64)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.AcknowledgeSectionDurability(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt64)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.UnloadSection(System.IntPtr,System.UInt64,System.UInt64,System.UInt64)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.UnloadSection(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,System.UInt64,System.UInt64)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ReleaseSection(System.IntPtr,System.UInt64)">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ReleaseSection(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64)">
             <inheritdoc />
         </member>
-        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.LoadSection(System.IntPtr,System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})">
+        <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.LoadSection(Lumio.Engine.NativeLoader.KernelHandle,System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})">
             <inheritdoc />
         </member>
         <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ResidencyWireErrorCode(Lumio.Engine.SDK.VoxelErrorCode)">

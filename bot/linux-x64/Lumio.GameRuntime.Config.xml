@@ -136,9 +136,6 @@
         <member name="M:Lumio.GameRuntime.Config.ConfigModule.Create">
             <summary>Create a module bound to the constructing thread as owner.</summary>
         </member>
-        <member name="P:Lumio.GameRuntime.Config.ConfigModule.Services">
-            <summary>Read/stage/activation facade.</summary>
-        </member>
         <member name="P:Lumio.GameRuntime.Config.ConfigModule.ActiveSnapshot">
             <summary>Current Active snapshot. Throws when none has been activated.</summary>
         </member>
@@ -161,30 +158,6 @@
             <summary>Owner-thread Tick Barrier activation.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Config.ConfigModule.AcquireForTick(Lumio.GameRuntime.Config.TickId)">
-            <summary>Pin Active to a lease for this tick.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Config.ConfigServices">
-            <summary>
-            Stable candidate facade: validator, stage/activation, and the active
-            <see cref="T:Lumio.GameRuntime.Config.IConfigSnapshotView"/>. No compiler, file watcher, or DI container.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Config.ConfigServices.ActiveSnapshot">
-            <summary>Currently activated snapshot. Throws when none has been activated.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Config.ConfigServices.Validate(Lumio.GameRuntime.Config.GeneratedConfigArtifactView@)">
-            <summary>Validate a generated artifact without staging or activation.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Config.ConfigServices.Stage(Lumio.GameRuntime.Config.ConfigSnapshot)">
-            <summary>Stage a constructed snapshot. Does not switch Active.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Config.ConfigServices.StageMerged(Lumio.GameRuntime.Config.ConfigSnapshotId)">
-            <summary>Merge submitted validated layers and stage the resulting snapshot.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Config.ConfigServices.ActivateAtBarrier(Lumio.GameRuntime.Config.TickId)">
-            <summary>Owner-thread Tick Barrier activation.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Config.ConfigServices.AcquireForTick(Lumio.GameRuntime.Config.TickId)">
             <summary>Pin Active to a lease for this tick.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Config.Contracts.ConfigTableColumnsItemType">
