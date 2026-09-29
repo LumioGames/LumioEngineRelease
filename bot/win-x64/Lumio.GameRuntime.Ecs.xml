@@ -671,7 +671,7 @@
             </remarks>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.ApplyPredictionIdentityRemap(Lumio.GameRuntime.Ecs.Identity.EntityIdentity,Lumio.GameRuntime.Ecs.Identity.EntityIdentity)">
-            <summary>Applies a validated authority identity remap inside the closed joint publication interval.</summary>
+            <summary>Rejects network identity remapping and prediction adoption, as required by ADR-063 and ADR-091.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldManager.ClaimListDelta">
             <summary>One Scope.Claim membership list's net change this tick, reduced from <see cref="P:Lumio.GameRuntime.Ecs.World.Dirty"/>.</summary>
@@ -714,7 +714,7 @@
             </summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.ConfirmedWorld">
-            <summary>Confirmed (authoritative) World. Alias of <see cref="P:Lumio.GameRuntime.Ecs.WorldManager.World"/> on both sides.</summary>
+            <summary>Confirmed (authoritative) World, stable while prediction selects a working World.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.PredictedWorld">
             <summary>Client predicted World rebuilt after each successful WorldChange. Null on server.</summary>
@@ -796,7 +796,7 @@
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.CollectTickDelegates(System.Collections.Generic.List{System.Delegate})">
             <summary>
             Delegates the bound Tick invokes but did not create: the frozen system plan's factories and
-            the voxel participants. Simulation's Prime warm-up (ADR-118) takes them as roots,
+            the voxel participants and the platform HFSM factory. Simulation's Prime warm-up (ADR-118) takes them as roots,
             because the IL of the phases only names <c>Invoke</c>. A new delegate the phases invoke must
             be added here; <c>TickDelegateFieldsAreWarmupRoots</c> fails until it is. A read only: binding
             an unstarted manager still fails where it always did, when the tick loop is bound.
