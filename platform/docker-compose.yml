@@ -49,7 +49,7 @@ services:
       retries: 15
 
   platform:
-    image: lumio-platform-local:0.0.4-main.ea82985
+    image: lumio-platform-local:0.0.4-main.ecece8a
     depends_on:
       postgres:
         condition: service_healthy

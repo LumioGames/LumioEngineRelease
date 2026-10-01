@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v10.0": {
       "Lumio.Server.HostEntry/1.0.0": {
         "dependencies": {
-          "Lumio.Engine.SDK": "0.0.4-main.ea82985",
+          "Lumio.Engine.SDK": "0.0.4-main.ecece8a",
           "Microsoft.Extensions.Logging": "10.0.11",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.11"
         },
@@ -16,7 +16,7 @@
           "Lumio.Server.HostEntry.dll": {}
         }
       },
-      "Lumio.Engine.SDK/0.0.4-main.ea82985": {
+      "Lumio.Engine.SDK/0.0.4-main.ecece8a": {
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "10.0.11"
         },
@@ -104,12 +104,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Lumio.Engine.SDK/0.0.4-main.ea82985": {
+    "Lumio.Engine.SDK/0.0.4-main.ecece8a": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wmcA/fs+Ny23dqTDZ6ZPK3T/6awSZEOgID0jfVhEq2EIRAYMHYvEAPnrDLc0SNvlBPN4PbtH007LAsE34kUBeQ==",
-      "path": "lumio.engine.sdk/0.0.4-main.ea82985",
-      "hashPath": "lumio.engine.sdk.0.0.4-main.ea82985.nupkg.sha512"
+      "sha512": "sha512-bEt8MvXeevpYNBqhVrOC+lyvwy6eSUqfhQTu7Wrfynx157nzcrit6TamPUXd5qtHplnjJ9q5qZH68t3gSsIQ0g==",
+      "path": "lumio.engine.sdk/0.0.4-main.ecece8a",
+      "hashPath": "lumio.engine.sdk.0.0.4-main.ecece8a.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyInjection/10.0.11": {
       "type": "package",
