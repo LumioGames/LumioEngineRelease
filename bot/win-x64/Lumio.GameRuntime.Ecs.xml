@@ -671,7 +671,7 @@
             </remarks>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.ApplyPredictionIdentityRemap(Lumio.GameRuntime.Ecs.Identity.EntityIdentity,Lumio.GameRuntime.Ecs.Identity.EntityIdentity)">
-            <summary>Rejects network identity remapping and prediction adoption, as required by ADR-063 and ADR-091.</summary>
+            <summary>Applies a validated authority identity remap inside the closed joint publication interval.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldManager.ClaimListDelta">
             <summary>One Scope.Claim membership list's net change this tick, reduced from <see cref="P:Lumio.GameRuntime.Ecs.World.Dirty"/>.</summary>
