@@ -1,15 +1,14 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v10.0",
+    "name": ".NETStandard,Version=v2.1/",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v10.0": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
       "Lumio.GameRuntime.Ecs/0.1.0": {
         "dependencies": {
-          "Lumio.Engine.NativeLoader": "1.0.0",
-          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
           "Lumio.GameRuntime.Config": "0.1.0",
           "Lumio.GameRuntime.Primitives": "0.1.0",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.11"
@@ -20,7 +19,7 @@
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.11": {
         "runtime": {
-          "lib/net10.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+          "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
             "assemblyVersion": "10.0.0.0",
             "fileVersion": "10.0.1126.37416"
           }
@@ -28,32 +27,32 @@
       },
       "Microsoft.Extensions.Logging.Abstractions/10.0.11": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.11"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.11",
+          "System.Diagnostics.DiagnosticSource": "10.0.11"
         },
         "runtime": {
-          "lib/net10.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
             "assemblyVersion": "10.0.0.0",
             "fileVersion": "10.0.1126.37416"
           }
         }
       },
-      "Lumio.Engine.NativeLoader/1.0.0": {
+      "System.Diagnostics.DiagnosticSource/10.0.11": {
         "dependencies": {
-          "Lumio.Engine.NativeLoader.Hfsm": "1.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.11"
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
         },
         "runtime": {
-          "Lumio.Engine.NativeLoader.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+          "lib/netstandard2.0/System.Diagnostics.DiagnosticSource.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1126.37416"
           }
         }
       },
-      "Lumio.Engine.NativeLoader.Hfsm/1.0.0": {
+      "System.Runtime.CompilerServices.Unsafe/6.1.2": {
         "runtime": {
-          "Lumio.Engine.NativeLoader.Hfsm.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.100.225.20307"
           }
         }
       },
@@ -98,15 +97,19 @@
       "path": "microsoft.extensions.logging.abstractions/10.0.11",
       "hashPath": "microsoft.extensions.logging.abstractions.10.0.11.nupkg.sha512"
     },
-    "Lumio.Engine.NativeLoader/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
+    "System.Diagnostics.DiagnosticSource/10.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QoXcAdDhBudxorzYF1F5Uo7FY0CSWgmTjqVRJjcQaYAkbO3dCPXDJajJwyApTGHCJ+T5PfVyKZqXEKZ8PH+UWQ==",
+      "path": "system.diagnostics.diagnosticsource/10.0.11",
+      "hashPath": "system.diagnostics.diagnosticsource.10.0.11.nupkg.sha512"
     },
-    "Lumio.Engine.NativeLoader.Hfsm/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
+    "System.Runtime.CompilerServices.Unsafe/6.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2hBr6zdbIBTDE3EhK7NSVNdX58uTK6iHW/P/Axmm9sl1xoGSLqDvMtpecn226TNwHByFokYwJmt/aQQNlO5CRw==",
+      "path": "system.runtime.compilerservices.unsafe/6.1.2",
+      "hashPath": "system.runtime.compilerservices.unsafe.6.1.2.nupkg.sha512"
     },
     "Lumio.GameRuntime.Config/0.1.0": {
       "type": "project",

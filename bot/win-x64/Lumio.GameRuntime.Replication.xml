@@ -60,6 +60,13 @@
         <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.RestoreConnection(Lumio.GameRuntime.Replication.Binding.RestorableConnection)">
             <summary>Reattaches one previously active host connection after an in-process restore.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.TryReplaceConnectionEntity(Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>
+            Moves active connection indexes and observer state to a newly created successor entity.
+            The connection generation and input waterline remain unchanged, so a life replacement
+            cannot invalidate the client's next command.
+            </summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Replication.Binding.EntityBindingQuery.IsEntityType(System.String)">
              <summary>
              admit 的 <c>entityType</c> 是**真闭集** <c>player | bot</c>（契约 <c>lumio.entity-binding-query.v1</c> 的

@@ -737,26 +737,6 @@
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.CreatesPerPack">
             <summary>Maximum number of initial create records per observer pack; zero means unlimited.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.BindNativeSpatialIndex(Lumio.Engine.NativeLoader.NativeKernelContext)">
-            <summary>
-            Transfers the supplied Context to this World and creates its spatial index. Repeat upsert of the same id replaces;
-            Remove of a missing id is an error at the native layer, so World keeps a resident set.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.NativeKernelConfig">
-            <summary>The actual bound Context limits, or null when this World has no native Context.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryBindNativeSpatialIndex(Lumio.Engine.NativeLoader.KernelConfig)">
-            <summary>
-            Creates a per-World Context using explicit limits. Returns false when the
-            native artifact is missing; invalid or conflicting configuration throws.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.RequireBoundSpatialIndex">
-            <summary>
-            Dedicated-server worlds must not silently skip <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/>.
-            </summary>
-        </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Create(Lumio.GameRuntime.Ecs.EcsRegistry,System.Nullable{System.UInt64},Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,Lumio.GameRuntime.Ecs.WorldConfigBinding,System.Func{Lumio.GameRuntime.Ecs.WorldHfsmContext})">
             <summary>
             Creates the manager. <paramref name="loggerFactory"/> remains optional so every existing
@@ -813,6 +793,15 @@
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Unbind(Lumio.GameRuntime.Ecs.NetEntityId)">
             <summary>Marks an observer disconnected without destroying its entity.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryReplaceConnectionEntity(Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>
+            Transfers an admitted connection to a distinct successor entity without changing its
+            connection generation. Gameplay successor lifecycles use this before retiring the old life.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.HasConnectionAdapter">
+            <summary>Reports whether this manager has an external connection binding.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.CreateInputCommand(Lumio.GameRuntime.Ecs.NetEntityId,System.String,System.ReadOnlyMemory{System.Byte},System.String,System.Nullable{System.UInt64})">
             <summary>Allocates an input sequence in the Runtime-owned client state.</summary>
@@ -996,19 +985,6 @@
             <summary>
             Optional collision/extents bounding shape parameters for an entity in the spatial index (ADR-065 D06).
             When attached alongside <see cref="T:Lumio.GameRuntime.Ecs.LogicTransform"/>, defines the extent of the entity's AABB.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Ecs.NativeEngineProcessLease">
-            <summary>
-            Process-wide NativeEngine lease used to mint per-World <see cref="T:Lumio.Engine.NativeLoader.NativeSpatialIndex"/>
-            instances. Missing native artifact fails closed — there is no C# BVH substitute.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Ecs.NativeEntitySpatialIndex">
-            <summary>
-            World-facing wrapper over engine <see cref="T:Lumio.Engine.NativeLoader.NativeSpatialIndex"/> (R-00587 / R-00541).
-            The resident set is the caller's in-registry book: Remove is only issued for ids we
-            inserted, because native Remove of a missing id is an error, not a no-op.
             </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.Scope">
@@ -1356,6 +1332,9 @@
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.IWorldControlAdapter.TryResolveConnectionState(System.String,Lumio.GameRuntime.Ecs.NetEntityId@,System.UInt64@)">
             <summary>Resolves the current entity and generation for an authenticated connection.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.IWorldControlAdapter.TryReplaceConnectionEntity(Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Transfers all connection bindings from one live observer entity to its successor.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.IWorldService">
             <summary>A module resource whose preparation and release belong to its World.</summary>
@@ -1718,12 +1697,6 @@
             <summary>
             Flushes dirty LogicTransform and spatial bounds changes to the authoritative spatial index.
             Called at Phase 10 (GasAndEventFinalize) during tick execution.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.RequireBoundSpatialIndex">
-            <summary>
-            When true, <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/> refuses an unbound index instead of
-            silently dropping dirty entities (which would make later QueryAabb empty).
             </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.World.CompileHfsm(System.UInt32,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmStateDefinition},System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmTransitionDefinition})">
