@@ -493,102 +493,6 @@
         <member name="M:Lumio.Engine.NativeLoader.NativeLogFields.AsSpan(Lumio.Engine.NativeLoader.NativeLogFields@)">
             <summary>Views the 8 inline elements as one span, without copying.</summary>
         </member>
-        <member name="T:Lumio.Engine.NativeLoader.NativeStatus">
-            <summary>Shared status codes returned by the native ABI.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.Success">
-            <summary>Native status Success (0).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.InvalidArgument">
-            <summary>Native status InvalidArgument (1).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.UnsupportedVersion">
-            <summary>Native status UnsupportedVersion (2).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ClrInitFailed">
-            <summary>Native status ClrInitFailed (3).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ClrEntryFailed">
-            <summary>Native status ClrEntryFailed (4).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.BufferTooSmall">
-            <summary>Native status BufferTooSmall (5).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerStaleHandle">
-            <summary>Native status TimerStaleHandle (6).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScopeInvalid">
-            <summary>Native status TimerScopeInvalid (7).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScopeGenerationMismatch">
-            <summary>Native status TimerScopeGenerationMismatch (8).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerInvalidDueTick">
-            <summary>Native status TimerInvalidDueTick (9).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerInvalidInterval">
-            <summary>Native status TimerInvalidInterval (10).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScheduleBudgetExceeded">
-            <summary>Native status TimerScheduleBudgetExceeded (11).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotClosed">
-            <summary>Native status TimerSlotClosed (12).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotUnbound">
-            <summary>Native status TimerSlotUnbound (13).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotDispatchMismatch">
-            <summary>Native status TimerSlotDispatchMismatch (14).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotQueueFull">
-            <summary>Native status TimerSlotQueueFull (15).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerLateCompletion">
-            <summary>Native status TimerLateCompletion (16).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerManagerShutdown">
-            <summary>Native status TimerManagerShutdown (17).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.LogMailboxUnavailable">
-            <summary>Native status LogMailboxUnavailable (18).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.InternalFault">
-            <summary>Native status InternalFault (19).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SnapshotBaseMismatch">
-            <summary>Native status SnapshotBaseMismatch (20).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ContextClosing">
-            <summary>Native status ContextClosing (21).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.CapacityExceeded">
-            <summary>Native status CapacityExceeded (22).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionResyncNeeded">
-            <summary>Native status PredictionResyncNeeded (23).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionTokenInvalid">
-            <summary>Native status PredictionTokenInvalid (24).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionFaulted">
-            <summary>Native status PredictionFaulted (25).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionDataUnavailable">
-            <summary>Native status PredictionDataUnavailable (26).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportRevisionMismatch">
-            <summary>Native status SectionExportRevisionMismatch (27).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportDataUnavailable">
-            <summary>Native status SectionExportDataUnavailable (28).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportBaselineMismatch">
-            <summary>Native status SectionExportBaselineMismatch (29).</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ResourceFaulted">
-            <summary>Native status ResourceFaulted (30).</summary>
-        </member>
         <member name="T:Lumio.Engine.NativeLoader.PredictionAbi">
             <summary>Voxel prediction capability versions, root table extents and status codes.</summary>
         </member>
@@ -605,16 +509,16 @@
             <summary>Same extent as the complete prediction capability; working queries are always selective.</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.PredictionAbi.PredictionResyncNeeded">
-            <summary>Authority moved under a section this session still predicts in. The current authoritative revision of a section holding retained records differs from the revision those records were validated against. Writes to any other section, and the root identity or world_revision moving on their own, are not triggers. Keep public reads closed; GAS obtains authoritative state and uses correction reset, which discards only the affected records, then replays them under the existing token. Records in clean sections stay staged; never overwrite committed authority with stale priors.</summary>
+            <summary>仍保留预测记录的分区发生了权威版本变化。 记录校验过的分区版本与当前权威版本不同；其他分区或单独根版本变化不触发。 保持公开读取关闭，取得权威状态并只重置受影响记录，再用现有令牌重放；不覆盖已提交权威。</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.PredictionAbi.PredictionTokenInvalid">
-            <summary>No correct live update token authorizes this operation. Zero, stale, foreign or already completed token, or working query without a live update. Reject without mutation; retain original status and zero pre-execution progress. Caller fixes lifecycle ordering; never infer business rejection.</summary>
+            <summary>本次预测操作没有有效更新令牌。 令牌为零、过期、跨会话、已完成，或工作查询未处于活跃更新中。 本次不修改状态，修正更新生命周期次序；保留原状态和执行前零进度。</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.PredictionAbi.PredictionFaulted">
-            <summary>The addressed session is terminally faulted. Prior internal fault/invariant failure made further mutation/query unsafe; current operation retains the original triggering error and progress. Stop prediction; only stats and close remain legal. Preserve original failure evidence; do not auto-replay, reset or pretend capability is absent.</summary>
+            <summary>预测会话已经进入不可恢复的故障终态。 此前内部故障或不变量破坏已使会话不能安全继续修改与查询。 停止预测，仅允许统计与关闭；保留原错误和实际进度，不自动重放或重置。</summary>
         </member>
         <member name="F:Lumio.Engine.NativeLoader.PredictionAbi.PredictionDataUnavailable">
-            <summary>The region is not loaded, or carries no revision in the current stamp, so there is no complete data to predict on. Stage addresses a section with no loaded payload, or a retained record sits in a section the current stamp no longer stamps. Distinct from PredictionResyncNeeded: nothing drifted, the data is absent. Wait for the data instead of replaying: GAS requests authoritative execution over the existing RPC and keeps the input unpredicted until the section arrives. Unknown is never air, and no terrain is invented for a prediction.</summary>
+            <summary>预测区域缺少完整的已加载数据。 暂存目标分区没有载荷，或现有记录所在分区已不在当前版本戳中。 等待权威数据，期间按既有远程输入走权威执行且不预测；不得把未知当空气或临时造地形。</summary>
         </member>
         <member name="T:Lumio.Engine.NativeLoader.PredictionSessionConfigV1">
             <summary>ABI struct <c>lumio_prediction_session_config_v1_t</c>.</summary>
@@ -1874,21 +1778,6 @@
         <member name="P:Lumio.Engine.NativeLoader.NativeLogException.Operation">
             <summary>出错的槽名。</summary>
         </member>
-        <member name="T:Lumio.Engine.NativeLoader.NativeLogStatus">
-            <summary>ADR-081 用到的 ABI status 码，取自 <c>engine/abi/native-abi.json</c> 的 status 词表。</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.Success">
-            <summary>成功。</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.InvalidArgument">
-            <summary>参数非法（空指针、越界级别、字段数超上限）。</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.BufferTooSmall">
-            <summary>缓冲不足；出参写所需长度，不写数据。</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.LogMailboxUnavailable">
-            <summary>进程没有装日志邮箱——接线缺失，不是参数错。</summary>
-        </member>
         <member name="T:Lumio.Engine.NativeLoader.NativeLogRecords">
             <summary>
             <see cref="T:Lumio.Engine.NativeLoader.NativeLogRecord"/> 的读写助手。记录是定宽 POD，载荷与字段是内联定长
@@ -2001,54 +1890,6 @@
         </member>
         <member name="P:Lumio.Engine.NativeLoader.NativeTimerDrainRecord.IsRejected">
             <summary>True when <see cref="P:Lumio.Engine.NativeLoader.NativeTimerDrainRecord.Status"/> is non-zero, i.e. the firing was rejected during drain.</summary>
-        </member>
-        <member name="T:Lumio.Engine.NativeLoader.NativeTimerStatus">
-            <summary>Stable status values used by the timer root slots.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.Success">
-            <summary>The call succeeded.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.InvalidArgument">
-            <summary>Null or malformed argument, unknown handle, or a call that does not fit the manager mode.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.BufferTooSmall">
-            <summary>The drain buffer is too small; nothing was consumed and the required count was written.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.StaleHandle">
-            <summary>The handle was cancelled, already delivered, or belongs to an older generation.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ScopeInvalid">
-            <summary>Unknown or destroyed scope, illegal scope kind, or an owner that is not this manager.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ScopeGenerationMismatch">
-            <summary>The scope generation passed in is not the live one.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.InvalidDueTick">
-            <summary>The due point, or the advance/pump target, is not after the committed tick or millisecond.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.InvalidInterval">
-            <summary>A repeating interval is zero or below the minimum.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ScheduleBudgetExceeded">
-            <summary>Timer, slot or identity space is exhausted; the request was refused.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotClosed">
-            <summary>The callback slot is closed.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotUnbound">
-            <summary>The callback slot has not been bound to a dispatch id yet.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotDispatchMismatch">
-            <summary>Drain rejection: the dispatch destination recorded at schedule time is no longer valid.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotQueueFull">
-            <summary>Drain rejection: the slot delivery queue is full.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.LateCompletion">
-            <summary>Drain rejection: the firing was still queued when its timer was cancelled or its scope or manager went away.</summary>
-        </member>
-        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ManagerShutdown">
-            <summary>The manager is a shutdown tombstone; every later call returns this status.</summary>
         </member>
         <member name="T:Lumio.Engine.NativeLoader.INativeTimerAbi">
             <summary>
@@ -2583,6 +2424,165 @@
             <summary>以五秒上限调用 <see cref="M:Lumio.Engine.NativeLoader.NativeLogDrainPump.TryStop(System.TimeSpan)"/>；不拥有也不释放宿主 Native 或 logger。</summary>
             <remarks>未停止时抛出 TimeoutException，宿主须保留资源并重试；取件故障永久抛出 InvalidOperationException。</remarks>
         </member>
+        <member name="T:Lumio.Engine.NativeLoader.NativeStatus">
+            <summary>完整的 lumio_status_t 通道常量；体素子空间另见体素错误码表。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.Success">
+            <summary>原生调用成功完成。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.InvalidArgument">
+            <summary>原生调用的参数或对象身份无效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.UnsupportedVersion">
+            <summary>请求的原生接口版本不受支持。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ClrInitFailed">
+            <summary>托管运行环境初始化失败。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ClrEntryFailed">
+            <summary>托管入口装载或调用失败。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.BufferTooSmall">
+            <summary>调用方提供的输出缓冲不足。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerStaleHandle">
+            <summary>定时器句柄已经失效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScopeInvalid">
+            <summary>调度使用了不存在的定时作用域。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScopeGenerationMismatch">
+            <summary>定时作用域代次已经变化。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerInvalidDueTick">
+            <summary>定时器时间参数不满足单调规则。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerInvalidInterval">
+            <summary>周期定时器的间隔无效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerScheduleBudgetExceeded">
+            <summary>定时调度超过作用域或当前周期预算。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotClosed">
+            <summary>回调槽已经关闭。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotUnbound">
+            <summary>回调槽尚未绑定分发目的地。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotDispatchMismatch">
+            <summary>触发记录的分发目的地无法匹配。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerSlotQueueFull">
+            <summary>回调槽投递队列已满。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerLateCompletion">
+            <summary>定时触发在排空前已失去有效对象。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.TimerManagerShutdown">
+            <summary>定时管理器已经停机。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.LogMailboxUnavailable">
+            <summary>进程没有接好原生日志邮箱。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.InternalFault">
+            <summary>原生边界捕获了内部故障。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SnapshotBaseMismatch">
+            <summary>体素快照与恢复底图不一致。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ContextClosing">
+            <summary>原生上下文正在关闭或已经销毁。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.CapacityExceeded">
+            <summary>原生操作无法取得所需有界容量。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionResyncNeeded">
+            <summary>仍保留预测记录的分区发生了权威版本变化。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionTokenInvalid">
+            <summary>本次预测操作没有有效更新令牌。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionFaulted">
+            <summary>预测会话已经进入不可恢复的故障终态。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.PredictionDataUnavailable">
+            <summary>预测区域缺少完整的已加载数据。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportRevisionMismatch">
+            <summary>导出请求的分区版本与可用版本不符。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportDataUnavailable">
+            <summary>分区导出所需的数据尚不可用。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.SectionExportBaselineMismatch">
+            <summary>增量导出的基线与快照不匹配。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeStatus.ResourceFaulted">
+            <summary>该对象在先前调用中捕获了 panic，无法继续执行操作。</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.NativeTimerStatus">
+            <summary>由原生状态单源表生成的定时器状态。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.Success">
+            <summary>原生调用成功完成。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.InvalidArgument">
+            <summary>原生调用的参数或对象身份无效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.BufferTooSmall">
+            <summary>调用方提供的输出缓冲不足。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.StaleHandle">
+            <summary>定时器句柄已经失效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ScopeInvalid">
+            <summary>调度使用了不存在的定时作用域。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ScopeGenerationMismatch">
+            <summary>定时作用域代次已经变化。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.InvalidDueTick">
+            <summary>定时器时间参数不满足单调规则。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.InvalidInterval">
+            <summary>周期定时器的间隔无效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ScheduleBudgetExceeded">
+            <summary>定时调度超过作用域或当前周期预算。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotClosed">
+            <summary>回调槽已经关闭。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotUnbound">
+            <summary>回调槽尚未绑定分发目的地。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotDispatchMismatch">
+            <summary>触发记录的分发目的地无法匹配。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.SlotQueueFull">
+            <summary>回调槽投递队列已满。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.LateCompletion">
+            <summary>定时触发在排空前已失去有效对象。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeTimerStatus.ManagerShutdown">
+            <summary>定时管理器已经停机。</summary>
+        </member>
+        <member name="T:Lumio.Engine.NativeLoader.NativeLogStatus">
+            <summary>由原生状态单源表生成的日志状态。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.Success">
+            <summary>原生调用成功完成。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.InvalidArgument">
+            <summary>原生调用的参数或对象身份无效。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.BufferTooSmall">
+            <summary>调用方提供的输出缓冲不足。</summary>
+        </member>
+        <member name="F:Lumio.Engine.NativeLoader.NativeLogStatus.LogMailboxUnavailable">
+            <summary>进程没有接好原生日志邮箱。</summary>
+        </member>
         <member name="T:Lumio.Engine.NativeLoader.NativeSpatialIndex">
             <summary>
             A NativeCore AABB overlap index owned by one <see cref="T:Lumio.Engine.NativeLoader.NativeKernelContext"/>
@@ -2881,6 +2881,12 @@
         </member>
         <member name="M:Lumio.Engine.SDK.NativeVoxelWorld.DeliverUnchangedSection(Lumio.Engine.SDK.VoxelSectionKey,System.UInt64)">
             <summary>Delivers an explicit Unchanged ticket against the world's original baseline.</summary>
+        </member>
+        <member name="T:Lumio.Engine.SDK.VoxelErrorNames">
+            <summary>体素状态与契约错误码名的生成映射。</summary>
+        </member>
+        <member name="M:Lumio.Engine.SDK.VoxelErrorNames.GetName(Lumio.Engine.SDK.VoxelErrorCode)">
+            <summary>返回已登记的契约码名；未知状态保留为 null，由调用方按故障处理。</summary>
         </member>
         <member name="T:Lumio.Engine.SDK.VoxelPresence">
             <summary>单元格所属 Section 的就绪状态。Pending / Unavailable 不携带 BlockId，也不得当成空气或 0。</summary>

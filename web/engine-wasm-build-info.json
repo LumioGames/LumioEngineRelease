@@ -1,0 +1,6 @@
+{
+  "format": 1,
+  "abiHash": "c5f276c855bcb71fd9b04dcd546d1dd925ac408fd6303d56e30a2c044946a2f3",
+  "binarySha256": "ac7369a17a61005c4342bf9a7c19a5f1696b2c7fe84ced7530245eb7c2df745d",
+  "target": "wasm32-unknown-unknown"
+}

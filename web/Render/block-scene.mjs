@@ -25,24 +25,35 @@ import { createMeshDriver } from "./voxel-mesher.mjs";
 /// - `camera`: `createFreeCamera` options. `clearColor`, `fetchImpl`, `decodeImage`: optional.
 /// - `worldRevisionOf(key)`, `revisionLagBudget`: optional; passed to the mesh driver for the
 ///   "mesh on screen trails the world" warning (`createMeshDriver`).
+/// - `signal`: cancels pending asset loading before a mesher can acquire the world.
+/// - `isWorldAlive()`: optional authoritative owner query; false means the Engine
+///   has retired this world and its derived meshers, not just hidden the view.
 export async function createBlockScene(options) {
   const {
     canvas, catalog, assetRoot, exports, world, onWarning, fetchImpl, decodeImage, camera: cameraOptions, clearColor,
-    worldRevisionOf, revisionLagBudget,
+    worldRevisionOf, revisionLagBudget, signal, isWorldAlive,
   } = options;
+  signal?.throwIfAborted();
   const device = createWebGL2Device(canvas);
   const assets = await loadBlockAssets({ catalog, assetRoot, fetchImpl, decodeImage, onWarning });
-  const { texture, faceTable, layers } = buildBlockTextures(device, assets, onWarning);
-  const renderer = createBlockRenderer({ device, texture, clearColor });
-  let driver;
+  let texture, faceTable, layers, renderer, driver;
+  const closeImages = () => { for (const image of assets.images.values()) image.source?.close?.(); };
   try {
-    driver = createMeshDriver({ exports, world, faceTable, renderer, onWarning, worldRevisionOf, revisionLagBudget });
+    signal?.throwIfAborted();
+    if (isWorldAlive && !isWorldAlive()) throw new DOMException("world_retired", "AbortError");
+    ({ texture, faceTable, layers } = buildBlockTextures(device, assets, onWarning));
+    renderer = createBlockRenderer({ device, texture, clearColor });
+    driver = createMeshDriver({ exports, world, faceTable, renderer, onWarning, worldRevisionOf, revisionLagBudget, isWorldAlive });
   } catch (error) {
-    renderer.destroy();
-    device.deleteTexture(texture);
+    renderer?.destroy();
+    if (texture) device.deleteTexture(texture);
     throw error;
+  } finally {
+    // Texture upload is synchronous; decoded ImageBitmaps have no further owner.
+    closeImages();
   }
   const camera = createFreeCamera(cameraOptions);
+  let alive = true;
 
   return {
     device,
@@ -61,6 +72,8 @@ export async function createBlockScene(options) {
     },
 
     destroy() {
+      if (!alive) return;
+      alive = false;
       driver.destroy();
       renderer.destroy();
       device.deleteTexture(texture);

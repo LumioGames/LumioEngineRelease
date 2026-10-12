@@ -1,0 +1,147 @@
+function __wbg_get_imports() {
+    const import0 = {
+        __proto__: null,
+        __wbg_now_428c47102a9f9f16: function() { return handleError(function () {
+            const ret = performance.now();
+            return ret;
+        }, arguments); },
+        __wbindgen_object_drop_ref: function(arg0) {
+            takeObject(arg0);
+        },
+    };
+    return {
+        __proto__: null,
+        "./lumio_engine_wasm_bg.js": import0,
+    };
+}
+
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
+function dropObject(idx) {
+    if (idx < 1028) return;
+    heap[idx] = heap_next;
+    heap_next = idx;
+}
+
+function getObject(idx) { return heap[idx]; }
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        wasm.__wbindgen_export(addHeapObject(e));
+    }
+}
+
+let heap = new Array(1024).fill(undefined);
+heap.push(undefined, null, true, false);
+
+let heap_next = heap.length;
+
+function takeObject(idx) {
+    const ret = getObject(idx);
+    dropObject(idx);
+    return ret;
+}
+
+let wasmModule, wasmInstance, wasm;
+function __wbg_finalize_init(instance, module) {
+    wasmInstance = instance;
+    wasm = instance.exports;
+    wasmModule = module;
+    return wasm;
+}
+
+async function __wbg_load(module, imports) {
+    if (typeof Response === 'function' && module instanceof Response) {
+        if (!module.ok) {
+            throw new Error(`failed to fetch Wasm: ${module.status} ${module.statusText} fetching '${module.url}'`);
+        }
+
+        if (typeof WebAssembly.instantiateStreaming === 'function') {
+            try {
+                return await WebAssembly.instantiateStreaming(module, imports);
+            } catch (e) {
+                const validResponse = expectedResponseType(module.type);
+
+                if (validResponse && module.headers.get('Content-Type') !== 'application/wasm') {
+                    console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve Wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
+
+                } else { throw e; }
+            }
+        }
+
+        const bytes = await module.arrayBuffer();
+        return await WebAssembly.instantiate(bytes, imports);
+    } else {
+        const instance = await WebAssembly.instantiate(module, imports);
+
+        if (instance instanceof WebAssembly.Instance) {
+            return { instance, module };
+        } else {
+            return instance;
+        }
+    }
+
+    function expectedResponseType(type) {
+        switch (type) {
+            case 'basic': case 'cors': case 'default': return true;
+        }
+        return false;
+    }
+}
+
+function initSync(module) {
+    if (wasm !== undefined) return wasm;
+
+
+    if (module !== undefined) {
+        if (Object.getPrototypeOf(module) === Object.prototype) {
+            ({module} = module)
+        } else {
+            console.warn('using deprecated parameters for `initSync()`; pass a single object instead')
+        }
+    }
+
+    const imports = __wbg_get_imports();
+    if (!(module instanceof WebAssembly.Module)) {
+        module = new WebAssembly.Module(module);
+    }
+    const instance = new WebAssembly.Instance(module, imports);
+    return __wbg_finalize_init(instance, module);
+}
+
+async function __wbg_init(module_or_path) {
+    if (wasm !== undefined) return wasm;
+
+
+    if (module_or_path !== undefined) {
+        if (Object.getPrototypeOf(module_or_path) === Object.prototype) {
+            ({module_or_path} = module_or_path)
+        } else {
+            console.warn('using deprecated parameters for the initialization function; pass a single object instead')
+        }
+    }
+
+    if (module_or_path === undefined) {
+        module_or_path = new URL('lumio_engine_wasm_bg.wasm', import.meta.url);
+    }
+    const imports = __wbg_get_imports();
+
+    if (typeof module_or_path === 'string' || (typeof Request === 'function' && module_or_path instanceof Request) || (typeof URL === 'function' && module_or_path instanceof URL)) {
+        module_or_path = fetch(module_or_path);
+    }
+
+    const { instance, module } = await __wbg_load(await module_or_path, imports);
+
+    return __wbg_finalize_init(instance, module);
+}
+
+export { initSync, __wbg_init as default };

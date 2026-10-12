@@ -1,0 +1,398 @@
+{
+  "formatVersion": 1,
+  "tool": "capture-voxel",
+  "version": "0.1.0",
+  "rid": "win-x64",
+  "sourceCommit": "f2edd5047a6fe215c2a4d09e4267927ade711785",
+  "entrypoint": "capture-voxel.exe",
+  "providers": {
+    "nativeCore": "ef83751c578f1016f670f4703d227e5b87c0bc88",
+    "voxelEngine": "5a3222b18dbd275a08f4088049e14e808921c127"
+  },
+  "runtime": {
+    "name": "native",
+    "version": "1.98.0",
+    "static": true
+  },
+  "toolchain": {
+    "name": "rust",
+    "version": "1.98.0",
+    "target": "x86_64-pc-windows-msvc",
+    "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+    "staticCrt": true,
+    "dependencyLockSha256": "a922e0f9620f5f85eb40e45bd90d27d4798fa9f849fc2915d62637da0c522d6a"
+  },
+  "dependencies": [
+    {
+      "name": "autocfg",
+      "version": "1.5.1",
+      "licenses": [
+        "licenses/autocfg-1.5.1/0/LICENSE",
+        "licenses/autocfg-1.5.1/1/LICENSE"
+      ]
+    },
+    {
+      "name": "byteorder",
+      "version": "1.5.0",
+      "licenses": [
+        "licenses/byteorder-1.5.0/0/LICENSE",
+        "licenses/byteorder-1.5.0/1/LICENSE"
+      ]
+    },
+    {
+      "name": "hash32",
+      "version": "0.3.1",
+      "licenses": [
+        "licenses/hash32-0.3.1/0/LICENSE",
+        "licenses/hash32-0.3.1/1/LICENSE"
+      ]
+    },
+    {
+      "name": "heapless",
+      "version": "0.8.0",
+      "licenses": [
+        "licenses/heapless-0.8.0/0/LICENSE",
+        "licenses/heapless-0.8.0/1/LICENSE"
+      ]
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.18",
+      "licenses": [
+        "licenses/itoa-1.0.18/0/LICENSE",
+        "licenses/itoa-1.0.18/1/LICENSE"
+      ]
+    },
+    {
+      "name": "libm",
+      "version": "0.2.16",
+      "licenses": [
+        "licenses/libm-0.2.16/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-capture-voxel",
+      "version": "0.1.0",
+      "licenses": [
+        "licenses/lumio-capture-voxel-0.1.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-clr-host",
+      "version": "0.1.0",
+      "licenses": [
+        "licenses/lumio-clr-host-0.1.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-codec",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-codec-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-diagnostics",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-diagnostics-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-engine-native",
+      "version": "0.1.0",
+      "licenses": [
+        "licenses/lumio-engine-native-0.1.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-ffi-boundary",
+      "version": "0.1.0",
+      "licenses": [
+        "licenses/lumio-ffi-boundary-0.1.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-hfsm",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-hfsm-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-kernel",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-kernel-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-platform",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-platform-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-spatial",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-spatial-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-timer",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-timer-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-voxel-contracts",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-voxel-contracts-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-voxel-domain",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-voxel-domain-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-voxel-ops",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-voxel-ops-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-voxel-project",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-voxel-project-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "lumio-voxel-world",
+      "version": "0.0.0",
+      "licenses": [
+        "licenses/lumio-voxel-world-0.0.0/0/LICENSE"
+      ]
+    },
+    {
+      "name": "memchr",
+      "version": "2.8.3",
+      "licenses": [
+        "licenses/memchr-2.8.3/0/LICENSE",
+        "licenses/memchr-2.8.3/1/LICENSE"
+      ]
+    },
+    {
+      "name": "num-traits",
+      "version": "0.2.19",
+      "licenses": [
+        "licenses/num-traits-0.2.19/0/LICENSE",
+        "licenses/num-traits-0.2.19/1/LICENSE"
+      ]
+    },
+    {
+      "name": "once_cell",
+      "version": "1.21.4",
+      "licenses": [
+        "licenses/once_cell-1.21.4/0/LICENSE",
+        "licenses/once_cell-1.21.4/1/LICENSE"
+      ]
+    },
+    {
+      "name": "pin-project-lite",
+      "version": "0.2.17",
+      "licenses": [
+        "licenses/pin-project-lite-0.2.17/0/LICENSE",
+        "licenses/pin-project-lite-0.2.17/1/LICENSE"
+      ]
+    },
+    {
+      "name": "rstar",
+      "version": "0.12.2",
+      "licenses": [
+        "licenses/rstar-0.12.2/0/LICENSE",
+        "licenses/rstar-0.12.2/1/LICENSE"
+      ],
+      "licenseSources": [
+        {
+          "license": "licenses/rstar-0.12.2/0/LICENSE",
+          "sourceCommit": "c8c5bf9e41468281d030869d409e3f67f1aaf5b7",
+          "url": "https://raw.githubusercontent.com/georust/rstar/c8c5bf9e41468281d030869d409e3f67f1aaf5b7/LICENSE-MIT",
+          "sha256": "9b3a76c27bac8f3e0ff2d1f64f65941c50310ae3ff69318cea230bd4a36822c5",
+          "spdx": "MIT"
+        },
+        {
+          "license": "licenses/rstar-0.12.2/1/LICENSE",
+          "sourceCommit": "c8c5bf9e41468281d030869d409e3f67f1aaf5b7",
+          "url": "https://raw.githubusercontent.com/georust/rstar/c8c5bf9e41468281d030869d409e3f67f1aaf5b7/LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "spdx": "Apache-2.0"
+        }
+      ]
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "licenses": [
+        "licenses/serde_core-1.0.229/0/LICENSE",
+        "licenses/serde_core-1.0.229/1/LICENSE"
+      ]
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.151",
+      "licenses": [
+        "licenses/serde_json-1.0.151/0/LICENSE",
+        "licenses/serde_json-1.0.151/1/LICENSE"
+      ]
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.0",
+      "licenses": [
+        "licenses/smallvec-1.16.0/0/LICENSE",
+        "licenses/smallvec-1.16.0/1/LICENSE"
+      ]
+    },
+    {
+      "name": "stable_deref_trait",
+      "version": "1.2.1",
+      "licenses": [
+        "licenses/stable_deref_trait-1.2.1/0/LICENSE",
+        "licenses/stable_deref_trait-1.2.1/1/LICENSE"
+      ]
+    },
+    {
+      "name": "tracing",
+      "version": "0.1.44",
+      "licenses": [
+        "licenses/tracing-0.1.44/0/LICENSE"
+      ]
+    },
+    {
+      "name": "tracing-core",
+      "version": "0.1.36",
+      "licenses": [
+        "licenses/tracing-core-0.1.36/0/LICENSE"
+      ]
+    },
+    {
+      "name": "zmij",
+      "version": "1.0.23",
+      "licenses": [
+        "licenses/zmij-1.0.23/0/LICENSE"
+      ]
+    }
+  ],
+  "licenses": [
+    "licenses/autocfg-1.5.1/0/LICENSE",
+    "licenses/autocfg-1.5.1/1/LICENSE",
+    "licenses/byteorder-1.5.0/0/LICENSE",
+    "licenses/byteorder-1.5.0/1/LICENSE",
+    "licenses/hash32-0.3.1/0/LICENSE",
+    "licenses/hash32-0.3.1/1/LICENSE",
+    "licenses/heapless-0.8.0/0/LICENSE",
+    "licenses/heapless-0.8.0/1/LICENSE",
+    "licenses/itoa-1.0.18/0/LICENSE",
+    "licenses/itoa-1.0.18/1/LICENSE",
+    "licenses/libm-0.2.16/0/LICENSE",
+    "licenses/lumio-capture-voxel-0.1.0/0/LICENSE",
+    "licenses/lumio-clr-host-0.1.0/0/LICENSE",
+    "licenses/lumio-codec-0.0.0/0/LICENSE",
+    "licenses/lumio-diagnostics-0.0.0/0/LICENSE",
+    "licenses/lumio-engine-native-0.1.0/0/LICENSE",
+    "licenses/lumio-ffi-boundary-0.1.0/0/LICENSE",
+    "licenses/lumio-hfsm-0.0.0/0/LICENSE",
+    "licenses/lumio-kernel-0.0.0/0/LICENSE",
+    "licenses/lumio-platform-0.0.0/0/LICENSE",
+    "licenses/lumio-spatial-0.0.0/0/LICENSE",
+    "licenses/lumio-timer-0.0.0/0/LICENSE",
+    "licenses/lumio-voxel-contracts-0.0.0/0/LICENSE",
+    "licenses/lumio-voxel-domain-0.0.0/0/LICENSE",
+    "licenses/lumio-voxel-ops-0.0.0/0/LICENSE",
+    "licenses/lumio-voxel-project-0.0.0/0/LICENSE",
+    "licenses/lumio-voxel-world-0.0.0/0/LICENSE",
+    "licenses/memchr-2.8.3/0/LICENSE",
+    "licenses/memchr-2.8.3/1/LICENSE",
+    "licenses/num-traits-0.2.19/0/LICENSE",
+    "licenses/num-traits-0.2.19/1/LICENSE",
+    "licenses/once_cell-1.21.4/0/LICENSE",
+    "licenses/once_cell-1.21.4/1/LICENSE",
+    "licenses/pin-project-lite-0.2.17/0/LICENSE",
+    "licenses/pin-project-lite-0.2.17/1/LICENSE",
+    "licenses/rstar-0.12.2/0/LICENSE",
+    "licenses/rstar-0.12.2/1/LICENSE",
+    "licenses/serde_core-1.0.229/0/LICENSE",
+    "licenses/serde_core-1.0.229/1/LICENSE",
+    "licenses/serde_json-1.0.151/0/LICENSE",
+    "licenses/serde_json-1.0.151/1/LICENSE",
+    "licenses/smallvec-1.16.0/0/LICENSE",
+    "licenses/smallvec-1.16.0/1/LICENSE",
+    "licenses/stable_deref_trait-1.2.1/0/LICENSE",
+    "licenses/stable_deref_trait-1.2.1/1/LICENSE",
+    "licenses/tracing-0.1.44/0/LICENSE",
+    "licenses/tracing-core-0.1.36/0/LICENSE",
+    "licenses/zmij-1.0.23/0/LICENSE",
+    "licenses/rust-1.98.0/LICENSE"
+  ],
+  "files": {
+    "capture-voxel.exe": "63ec183e0f42552a060a1a1f5bfc9590d22a25420aa01ac3201283ae90251935",
+    "licenses/autocfg-1.5.1/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/autocfg-1.5.1/1/LICENSE": "27995d58ad5c1145c1a8cd86244ce844886958a35eb2b78c6b772748669999ac",
+    "licenses/byteorder-1.5.0/0/LICENSE": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f",
+    "licenses/byteorder-1.5.0/1/LICENSE": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f",
+    "licenses/hash32-0.3.1/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/hash32-0.3.1/1/LICENSE": "c986bcdb83103d4ddf58aeb7b5302359782e54dc4eea14a0cc27c62dcbd50729",
+    "licenses/heapless-0.8.0/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/heapless-0.8.0/1/LICENSE": "035e70219855119df4273b3c5b97543ae82e0dd60c520416e759107c602f651b",
+    "licenses/itoa-1.0.18/0/LICENSE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+    "licenses/itoa-1.0.18/1/LICENSE": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "licenses/libm-0.2.16/0/LICENSE": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7",
+    "licenses/lumio-capture-voxel-0.1.0/0/LICENSE": "f824cdd3213be18d75c1ebb702f3dea8799ae4839440b29b21e756cceb591863",
+    "licenses/lumio-clr-host-0.1.0/0/LICENSE": "f824cdd3213be18d75c1ebb702f3dea8799ae4839440b29b21e756cceb591863",
+    "licenses/lumio-codec-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-diagnostics-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-engine-native-0.1.0/0/LICENSE": "f824cdd3213be18d75c1ebb702f3dea8799ae4839440b29b21e756cceb591863",
+    "licenses/lumio-ffi-boundary-0.1.0/0/LICENSE": "f824cdd3213be18d75c1ebb702f3dea8799ae4839440b29b21e756cceb591863",
+    "licenses/lumio-hfsm-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-kernel-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-platform-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-spatial-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-timer-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-voxel-contracts-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-voxel-domain-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-voxel-ops-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-voxel-project-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/lumio-voxel-world-0.0.0/0/LICENSE": "f1f777dc72661ba1dbb4627a97f595104832f45feb9e032b5d08efcb37dec131",
+    "licenses/memchr-2.8.3/0/LICENSE": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f",
+    "licenses/memchr-2.8.3/1/LICENSE": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f",
+    "licenses/num-traits-0.2.19/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/num-traits-0.2.19/1/LICENSE": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+    "licenses/once_cell-1.21.4/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/once_cell-1.21.4/1/LICENSE": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "licenses/pin-project-lite-0.2.17/0/LICENSE": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "licenses/pin-project-lite-0.2.17/1/LICENSE": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "licenses/rstar-0.12.2/0/LICENSE": "9b3a76c27bac8f3e0ff2d1f64f65941c50310ae3ff69318cea230bd4a36822c5",
+    "licenses/rstar-0.12.2/1/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/rust-1.98.0/LICENSE": "68129500b616d5838629e68f55ff3aed5e096dacf60ce9eb41bbe599a563afa6",
+    "licenses/serde_core-1.0.229/0/LICENSE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+    "licenses/serde_core-1.0.229/1/LICENSE": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "licenses/serde_json-1.0.151/0/LICENSE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+    "licenses/serde_json-1.0.151/1/LICENSE": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "licenses/smallvec-1.16.0/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/smallvec-1.16.0/1/LICENSE": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9",
+    "licenses/stable_deref_trait-1.2.1/0/LICENSE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "licenses/stable_deref_trait-1.2.1/1/LICENSE": "5e05b024f653a5ce199e77cbbbd42fb5553562ec714b819421ed0c3e552a75d7",
+    "licenses/tracing-0.1.44/0/LICENSE": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1",
+    "licenses/tracing-core-0.1.36/0/LICENSE": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1",
+    "licenses/zmij-1.0.23/0/LICENSE": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  }
+}

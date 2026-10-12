@@ -37,6 +37,13 @@
             wire name or a CLR type without <c>[BlockEntity]</c> — is rejected before any native call.
             </summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.TrySetBindingPolicy(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Coordination.VoxelBindingPolicyEntry})">
+            <summary>
+            Publishes a Runtime-derived binding context, or returns false only when the configured
+            entry/byte capacity is insufficient. A capacity refusal preserves the previous policy and
+            Native context. Invalid declarations, ownership failures and Native faults still throw.
+            </summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.RefreshBindingContext">
             <summary>
             Re-derives the native binding candidate list from every live entity of a policy-declared type
@@ -45,6 +52,12 @@
             entities ("refreshes the binding context before the next Tick", <c>voxel_section_load_v1</c>
             rules); <see cref="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.LoadSection(System.UInt64,Lumio.GameRuntime.Coordination.SectionLoadEnvelope,System.ReadOnlyMemory{System.Byte})"/> already does this for its own call, but a residency orchestrator
             that hydrates entities separately (R5) must call this again once that hydration is done.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.TryRefreshBindingContext">
+            <summary>
+            Refreshes Runtime-owned live candidates, returning false only for configured capacity
+            refusal. The caller may retry after the live set changes; this method never retries itself.
             </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter.TryReadSectionBindings(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.SectionBindingEntry}@,System.UInt64@)">

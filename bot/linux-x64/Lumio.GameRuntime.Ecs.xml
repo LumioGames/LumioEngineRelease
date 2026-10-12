@@ -121,7 +121,7 @@
         <member name="T:Lumio.GameRuntime.Ecs.Annotations.FieldAttributeDeclaration">
             <summary>One C-2 <c>attributeDeclarations.structure</c> row.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.Annotations.FieldAttributeDeclaration.#ctor(System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:Lumio.GameRuntime.Ecs.Annotations.FieldAttributeDeclaration.#ctor(System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32})">
             <summary>One C-2 <c>attributeDeclarations.structure</c> row.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.BlockEntityAttribute">
@@ -257,6 +257,9 @@
             Gameplay component base. Typed reads use <see cref="M:Lumio.GameRuntime.Ecs.Component.Get``1"/> (self) or
             <see cref="M:Lumio.GameRuntime.Ecs.Component.Get``1(Lumio.GameRuntime.Ecs.NetEntityId)"/> (other). Lifecycle hooks are optional overrides.
             </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.Component.EnsureGeneratedFieldWrite">
+            <summary>Generated non-Sync assignments cannot use an Effect reducer's scalar capability.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.Component.ReadPredictionLocal``1(System.Int32,``0,System.Action{``0})">
             <summary>Generated local getter; cached component references retain the logical input barrier.</summary>
@@ -586,6 +589,16 @@
         <member name="M:Lumio.GameRuntime.Ecs.PredictionStateLayers.HasLocation(Lumio.GameRuntime.Ecs.PredictionAddress)">
             <summary>True while a location is retained, including hidden survivor layers and waiting reads.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Ecs.PredictionStateLayers.CollectOwnedEntities(System.Collections.Generic.HashSet{Lumio.GameRuntime.Ecs.NetEntityId})">
+            <summary>
+            Entities whose fields or containers hold predicted layer content — an input layer or a
+            waiting read, the same IsEmpty criterion HasProjectedStructure applies to structure
+            locations. RefreshTypedAuthority always re-captures these: their layers double as the ECS
+            drift witness, so skipping them would also skip remote-change detection for actively
+            predicted entities. Base-only locations (a bare authority value, e.g. registered when a
+            wire-created entity first captured) carry no drift evidence and are ignored.
+            </summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Ecs.PredictionStateLayers.ReserveScratch(System.Int64)">
             <summary>Charges temporary proposed snapshots before allocation; retained Write charges remain separate.</summary>
         </member>
@@ -670,6 +683,30 @@
             </para>
             </remarks>
         </member>
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.ClientPredictionClockEnabled">
+            <summary>True while an admitted client prediction driver owns the fixed-step clock.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.ClientPredictionClockGeneration">
+            <summary>Connection generation admitted by the current prediction clock; zero when disabled.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.ClientPredictionElapsedStep">
+            <summary>Last accepted elapsed fixed-step ordinal; zero at clock admission.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.EnableClientPredictionClock(System.String,System.UInt64)">
+            <summary>Opts a fresh client prediction driver into host-owned elapsed fixed steps.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Tick(System.UInt64,System.UInt64)">
+            <summary>Runs one bound phase loop for a forward elapsed fixed-step ordinal, including jumps.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TickPredictionInputStep(System.UInt64,System.UInt64)">
+            <summary>Runs one bound phase loop for the next sampled local input step.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.UpdatePresentation(System.Double)">
+            <summary>Evaluates the original owner Model using generation-relative host elapsed seconds. Call before each publication pump and on render frames; does not run a Tick.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryReadOwnerPresentation(Lumio.GameRuntime.Ecs.OwnerPresentationPose@)">
+            <summary>Reads a value-only pose from the current admitted original owner; false before its first complete publication.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.ApplyPredictionIdentityRemap(Lumio.GameRuntime.Ecs.Identity.EntityIdentity,Lumio.GameRuntime.Ecs.Identity.EntityIdentity)">
             <summary>Rejects network identity remapping and prediction adoption, as required by ADR-063 and ADR-091.</summary>
         </member>
@@ -700,12 +737,15 @@
             <summary>
             Every field or container on <paramref name="component"/> declared <c>Scope.Claim</c> with
             <c>ClaimBy == listFieldName</c>, at its current value — the same enumeration
-            <see cref="M:Lumio.GameRuntime.Ecs.WorldManager.CollectVisibleFields(Lumio.GameRuntime.Ecs.Component,Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId,System.Collections.Generic.List{Lumio.GameRuntime.Ecs.FieldValue})"/> uses (<c>IGeneratedComponent.CaptureSync</c>), filtered by claim
+            <see cref="M:Lumio.GameRuntime.Ecs.WorldManager.CollectVisibleFields(Lumio.GameRuntime.Ecs.Component,Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId,System.Collections.Generic.List{Lumio.GameRuntime.Ecs.FieldValue},System.Action{System.Int64})"/> uses (<c>IGeneratedComponent.CaptureSync</c>), filtered by claim
             ownership instead of by current observer visibility.
             </summary>
         </member>
         <member name="F:Lumio.GameRuntime.Ecs.WorldManager.UnconfirmedInputHistoryCap">
             <summary>Maximum unconfirmed local inputs retained for predicted replay. Over-cap sets resync-needed.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.RestoredCut">
+            <summary>Original captured occurrence and resume cursor of a restored candidate.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.LoggerFactory">
             <summary>
@@ -718,6 +758,18 @@
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.PredictedWorld">
             <summary>Client predicted World rebuilt after each successful WorldChange. Null on server.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.WorldManager._authorityRefreshTouched">
+            <summary>Entities the world-change stream touched since the last authority refresh. See RefreshTypedAuthority.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.WorldManager._authorityRefreshBaseline">
+            <summary>The predicted world the last (possibly incremental) authority refresh converged; a fresh instance forces a full refresh.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.WorldManager._authorityRefreshDirtyBaseline">
+            <summary>predicted.Dirty length at the last refresh; later entries name entities whose speculative writes the next refresh must revert.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.WorldManager._authorityFullRefreshPending">
+            <summary>True until the first authority refresh copies the whole confirmed world into the predicted world.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.LastPresentationKeyDelta">
             <summary>Last published presentation occupancy delta. Unchanged when apply or replay fails.</summary>
@@ -746,7 +798,7 @@
         <member name="P:Lumio.GameRuntime.Ecs.WorldManager.NativeKernelConfig">
             <summary>The actual bound Context limits, or null when this World has no native Context.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryBindNativeSpatialIndex(Lumio.Engine.NativeLoader.KernelConfig)">
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.CreateKernelContext">
             <summary>
             Creates a per-World Context using explicit limits. Returns false when the
             native artifact is missing; invalid or conflicting configuration throws.
@@ -755,18 +807,6 @@
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.RequireBoundSpatialIndex">
             <summary>
             Dedicated-server worlds must not silently skip <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/>.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Create(Lumio.GameRuntime.Ecs.EcsRegistry,System.Nullable{System.UInt64},Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,Lumio.GameRuntime.Ecs.WorldConfigBinding,System.Func{Lumio.GameRuntime.Ecs.WorldHfsmContext})">
-            <summary>
-            Creates the manager. <paramref name="loggerFactory"/> remains optional so every existing
-            call site keeps working; omitting it means components log into <see cref="T:Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory"/>.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.CreateFromSnapshot(System.ReadOnlyMemory{System.Byte},Lumio.GameRuntime.Ecs.EcsRegistry,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Nullable{Lumio.Engine.NativeLoader.KernelConfig},Lumio.GameRuntime.Ecs.WorldConfigBinding)">
-            <summary>
-            Restores a world from a snapshot using the caller-supplied <paramref name="registry"/>.
-            Headless hosts must invoke this overload explicitly rather than depending on ambient state.
             </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.Start(System.Threading.Thread)">
@@ -843,8 +883,31 @@
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.EnsureOwnerAccess">
             <summary>Checks this manager's construction or owner thread and disposed state without requiring simulation write access.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryReadRetainedControlledProof(Lumio.GameRuntime.Ecs.SuccessorReservationToken,Lumio.Wire.RetainedControlledProof@)">
+            <summary>Projects the retained admitted owner; this value grants neither a socket nor control.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.EnterExternalCallback">
             <summary>Prevents Tick entry while an owner-thread external callback is executing.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.ConfigureOrderedInputScheduling(System.Int32,System.Int64)">
+            <summary>Enables ordered input scheduling, reserving cleanup headroom inside the existing ingress budget.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.RequestCancelPendingInputs(Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Immediately prevents dispatch of already received, unstarted sender inputs; a later ApplyInputs settles their legal sequence prefix.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.CreateLowLevel(Lumio.GameRuntime.Ecs.EcsRegistry,System.Nullable{System.UInt64},Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,Lumio.GameRuntime.Ecs.WorldConfigBinding,System.Func{Lumio.GameRuntime.Ecs.WorldHfsmContext},Lumio.GameRuntime.Ecs.PersistenceLimits)">
+            <summary>
+            Low-level test shell with the pre-B3 factory semantics: constructs the manager, spawns the
+            authority WorldEntity inside config execution, and commits an attached config. Hosted
+            worlds must use <c>LumioEngine.CreateWorld</c> instead; this path never binds spatial,
+            voxel, GAS, or tick services.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.RestoreLowLevel(System.ReadOnlyMemory{System.Byte},Lumio.GameRuntime.Ecs.EcsRegistry,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Nullable{Lumio.Engine.NativeLoader.KernelConfig},Lumio.GameRuntime.Ecs.WorldConfigBinding,System.Func{Lumio.Engine.NativeLoader.NativeKernelContext},System.Boolean,System.Collections.Generic.IReadOnlyDictionary{System.UInt64,System.ReadOnlyMemory{System.Byte}},Lumio.GameRuntime.Ecs.PersistenceLimits)">
+            <summary>
+            Low-level restore shell with the pre-B3 factory semantics. Production restores go through
+            <c>LumioEngine.CreateWorld</c> with a snapshot; only table-level tests hydrate directly.
+            </summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.CapturePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64)">
             <summary>
@@ -853,7 +916,7 @@
             Section. Rows are ordered by number, so the same entities always capture to the same bytes.
             </summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.RestorePartition(System.ReadOnlySpan{System.Byte},System.UInt64)">
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.RestorePartition(System.ReadOnlySpan{System.Byte},System.UInt64,System.Boolean)">
             <summary>
             Restores the Section's registered partition record under its own numbers, running only OnHydrate. All or
             nothing: a record of another Section or world instance, a number that is live or above the watermark, an unknown
@@ -863,11 +926,21 @@
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.EnsureResidencyStep(System.String)">
             <summary>
             Owner-thread and Tick-boundary gate for any Tick-between residency step (ADR-104), shared by
-            <see cref="M:Lumio.GameRuntime.Ecs.WorldManager.CapturePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64)"/>/<see cref="M:Lumio.GameRuntime.Ecs.WorldManager.RestorePartition(System.ReadOnlySpan{System.Byte},System.UInt64)"/> and, across the assembly boundary
+            <see cref="M:Lumio.GameRuntime.Ecs.WorldManager.CapturePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64)"/>/<see cref="M:Lumio.GameRuntime.Ecs.WorldManager.RestorePartition(System.ReadOnlySpan{System.Byte},System.UInt64,System.Boolean)"/> and, across the assembly boundary
             (<c>InternalsVisibleTo("Lumio.GameRuntime.Simulation")</c>), by <c>SectionResidencyOrchestrator</c>'s
             own entry points — a mid-Tick or non-owner-thread call must be rejected before any of their Native
             side effects run, not only once one happens to call into <see cref="M:Lumio.GameRuntime.Ecs.WorldManager.CapturePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64)"/>.
             </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.ConfigureSuccessorClientInput(Lumio.GameRuntime.Ecs.SuccessorClientInputContext)">
+            <summary>The transport owner supplies validated attachment identity and its actual baseline closure.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryReadSuccessorEligibilityChange(Lumio.GameRuntime.Ecs.SuccessorReservationToken,System.UInt64,Lumio.GameRuntime.Ecs.SuccessorEligibility@)">
+            <summary>Reports a changed declared policy for an exact retained owner revision; grants no binding authority.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WorldManager.TryReadCurrentOwnerSnapshot(System.String,Lumio.GameRuntime.Ecs.CurrentOwnerSnapshot@)">
+            <summary>Reads primitive owner facts without deferred route maintenance. Returns false
+            when the installed binding adapter does not provide the Runtime's read-only capability.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.WorldManager.ConfigureSectionSubscriptions(Lumio.GameRuntime.Ecs.SectionSubscriptionOptions,Lumio.GameRuntime.Ecs.ISectionBindingReader)">
             <summary>
@@ -949,6 +1022,9 @@
         <member name="F:Lumio.GameRuntime.Ecs.WorldManager.ObserverView.Sections">
             <summary>Section subscription of this connection; null until subscriptions are configured.</summary>
         </member>
+        <member name="P:Lumio.GameRuntime.Ecs.WorldManager.CompletedRestore">
+            <summary>Published only after the public owner finishes initialization and enters Running.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.SyncFieldCloneWriter">
             <summary>Collects live Sync (and persist-visible) field values from <see cref="M:Lumio.GameRuntime.Ecs.IGeneratedComponent.CaptureSync(Lumio.GameRuntime.Ecs.IPersistWriter)"/>.</summary>
         </member>
@@ -970,6 +1046,15 @@
             number, with the number watermark at capture. Entity rows share <see cref="T:Lumio.GameRuntime.Ecs.WorldSnapshotCodec"/>'s row encoding;
             rows are in ascending counter order, so the same entities always encode to the same bytes.
             </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.PersistenceCut">
+            <summary>The explicit LWM1v6/LPR1v3 capture position, distinct from the next ordinary Tick.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.PersistenceCut.AllowsLifetime(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>Tests a retained finite lifetime against this format's explicit capture position.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.PersistenceLimits">
+            <summary>Immutable limits for the complete World and Section persistence records, including enclosing entity data.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldSnapshotCodec">
             <summary>
@@ -998,18 +1083,33 @@
             When attached alongside <see cref="T:Lumio.GameRuntime.Ecs.LogicTransform"/>, defines the extent of the entity's AABB.
             </summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Ecs.NativeEngineProcessLease">
-            <summary>
-            Process-wide NativeEngine lease used to mint per-World <see cref="T:Lumio.Engine.NativeLoader.NativeSpatialIndex"/>
-            instances. Missing native artifact fails closed — there is no C# BVH substitute.
-            </summary>
+        <member name="T:Lumio.GameRuntime.Ecs.IWorldSpatialIndex">
+            <summary>Platform transport to the Rust spatial index. No managed spatial algorithm is permitted.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.IWorldSpatialIndex.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Span{System.UInt64})">
+            <summary>Writes available sorted object ids and returns the total required count.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.NativeEntitySpatialIndex">
             <summary>
-            World-facing wrapper over engine <see cref="T:Lumio.Engine.NativeLoader.NativeSpatialIndex"/> (R-00587 / R-00541).
+            World-facing wrapper over engine <see cref="T:Lumio.GameRuntime.Ecs.IWorldSpatialIndex"/> (R-00587 / R-00541).
             The resident set is the caller's in-registry book: Remove is only issued for ids we
             inserted, because native Remove of a missing id is an error, not a no-op.
             </summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.ListItemChange`1">
+            <summary>A net list operation. Values are meaningful only when their presence flag is true; clear uses index zero and no values.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.ListItemChange`1.#ctor(Lumio.GameRuntime.Ecs.ContainerOperationKind,System.Int32,System.Boolean,`0,System.Boolean,`0)">
+            <summary>A net list operation. Values are meaningful only when their presence flag is true; clear uses index zero and no values.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.DictItemChange`2">
+            <summary>A net dictionary operation. Clear uses the default key and no values; other operations carry a key and explicit value presence.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.DictItemChange`2.#ctor(Lumio.GameRuntime.Ecs.ContainerOperationKind,`0,System.Boolean,`1,System.Boolean,`1)">
+            <summary>A net dictionary operation. Clear uses the default key and no values; other operations carry a key and explicit value presence.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.ContainerChanges">
+            <summary>Canonical net operations shared by notifications and wire encoding.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.Scope">
             <summary>Who may observe a <see cref="T:Lumio.GameRuntime.Ecs.Sync`1"/> field.</summary>
@@ -1093,6 +1193,15 @@
         <member name="T:Lumio.GameRuntime.Ecs.ISyncHost">
             <summary>World-facing dirty sink used by <see cref="T:Lumio.GameRuntime.Ecs.Sync`1"/> setters.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IPredictionFieldOwner">
+            <summary>
+            Exposes the owning component of a sync field that holds a prediction layer, so
+            RefreshTypedAuthority can enumerate the entities whose layers demand re-capture each refresh.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.IPredictionFieldOwner.OwnerComponent">
+            <summary>The component holding this field, for enumerating layer-owned entities at refresh.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.Sync`1">
             <summary>
             Replicated scalar. Write <see cref="P:Lumio.GameRuntime.Ecs.Sync`1.Value"/>; read via implicit conversion.
@@ -1120,8 +1229,11 @@
         <member name="T:Lumio.GameRuntime.Ecs.SyncList`1">
             <summary>Replicated list. Mutations are reported per entry.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.SyncList`1.#ctor(Lumio.GameRuntime.Ecs.Scope,Lumio.GameRuntime.Ecs.Authority,Lumio.GameRuntime.Ecs.Notify,System.String)">
+        <member name="M:Lumio.GameRuntime.Ecs.SyncList`1.#ctor(Lumio.GameRuntime.Ecs.Scope,System.Int32,Lumio.GameRuntime.Ecs.Authority,Lumio.GameRuntime.Ecs.Notify,System.String,System.Nullable{System.Int32})">
             <summary>Declares a replicated list.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.SyncList`1.MaxCapacity">
+            <summary>Maximum declared number of entries.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.SyncList`1.Scope">
             <summary>Visibility of the list.</summary>
@@ -1162,8 +1274,11 @@
         <member name="T:Lumio.GameRuntime.Ecs.SyncDict`2">
             <summary>Replicated dictionary. Mutations are reported per key.</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.SyncDict`2.#ctor(Lumio.GameRuntime.Ecs.Scope,Lumio.GameRuntime.Ecs.Authority,Lumio.GameRuntime.Ecs.Notify,System.String)">
+        <member name="M:Lumio.GameRuntime.Ecs.SyncDict`2.#ctor(Lumio.GameRuntime.Ecs.Scope,System.Int32,Lumio.GameRuntime.Ecs.Authority,Lumio.GameRuntime.Ecs.Notify,System.String)">
             <summary>Declares a replicated dictionary.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.SyncDict`2.MaxCapacity">
+            <summary>Maximum declared number of entries.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.SyncDict`2.Scope">
             <summary>Visibility of the dictionary.</summary>
@@ -1246,6 +1361,63 @@
         <member name="M:Lumio.GameRuntime.Ecs.TransformSample.#ctor(Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64,System.Double,Lumio.GameRuntime.Ecs.Pose,Lumio.GameRuntime.Ecs.TransformSampleReference,System.Nullable{Lumio.GameRuntime.Ecs.TransformTeleportId},Lumio.GameRuntime.Ecs.NetEntityId)">
             <summary>Complete immutable sample consumed by a ModelTransform.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Ecs.OwnerPublicationCause">
+            <summary>Cause of a completed local prediction publication.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.OwnerPresentationPose">
+            <summary>Current original-entity owner display and its completed logical target.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.OwnerPresentationPose.#ctor(Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,Lumio.GameRuntime.Ecs.OwnerPublicationCause,Lumio.GameRuntime.Ecs.Pose,Lumio.GameRuntime.Ecs.Pose)">
+            <summary>Current original-entity owner display and its completed logical target.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AdmissionCreationAttribute">
+            <summary>A build-time, closed initial-value declaration. Source is relative to the gameplay source root.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AdmissionCreationAttribute.#ctor(System.UInt32,System.UInt32,System.String)">
+            <summary>A build-time, closed initial-value declaration. Source is relative to the gameplay source root.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AdmissionFieldReference">
+            <summary>A generated scalar storage location; never an authored accessor.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AdmissionFieldReference.#ctor(System.Type,System.String,Lumio.GameRuntime.Ecs.AdmissionValueType)">
+            <summary>A generated scalar storage location; never an authored accessor.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AdmissionExpression">
+            <summary>Immutable expression tree. Literal integers retain all 64 bits in canonical decimal form.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AdmissionCreationDeclaration">
+            <summary>Generated, paired Life/Participant preparation with no Game callback or runtime JSON input.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AdmissionDebtService">
+            <summary>Original executor's retained accounting lane, composed before its World is created.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.AdmissionRuntimeCleanupOwner">
+            <summary>Original World executor's structural cleanup owner; never executes another gameplay Tick.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.AdmissionRuntimeCleanupOwner.#ctor(Lumio.GameRuntime.Ecs.WorldManager)">
+            <summary>Original World executor's structural cleanup owner; never executes another gameplay Tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionPlanService">
+            <summary>Owner-executor access to a retained, exact initial publication plan.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionSnapshotSource">
+            <summary>Composed authority source; never supplied by a client or a gameplay callback.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionSnapshotLease">
+            <summary>Immutable entity and Section bytes plus their actual owner read-set.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionDebtService">
+            <summary>Retained original-incarnation lane. These operations do not require a gameplay Tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.ReconcileSuccessorAdmissionMessage">
+            <summary>Typed original-owner reconciliation, routed before ordinary gameplay ingress.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionSnapshotBudgetOwner">
+            <summary>Trusted host composition backed by an already debited process reservation.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionSnapshotBudget">
+            <summary>One exact private host grant. Release is reported only after actual snapshot cleanup.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.RegistrySide">
             <summary>Which assembly the generated registry was produced for.</summary>
         </member>
@@ -1261,8 +1433,17 @@
             <c>GeneratedRegistry.Instance</c> as a subclass of this type.
             </summary>
         </member>
+        <member name="P:Lumio.GameRuntime.Ecs.EcsRegistry.ReducerStorageDeclarations">
+            <summary>Concrete storage mappings captured before authority finalization starts.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.EcsRegistry.ReducerStorageSchema">
+            <summary>Exact schema identity shared by generated reducer plans and storage mappings.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Ecs.EcsRegistry.CreateWorldServices(Lumio.GameRuntime.Ecs.World)">
             <summary>Creates module services owned by each World, before entity construction.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.EcsRegistry.CreateWorldSubsystems">
+            <summary>Generated factories; each call creates new world-local service instances.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.EcsRegistry.Side">
             <summary>Which side this registry describes. The registry carries the side; callers do not pass a mode flag.</summary>
@@ -1339,6 +1520,9 @@
         <member name="P:Lumio.GameRuntime.Ecs.EntityTypeRef.ClrType">
             <summary>CLR type of the concrete entity declaration.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IAdmissionPreparedAttributes">
+            <summary>Runtime module-owned seed preparation. Gameplay cannot implement this internal boundary.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.IAttributeSeedProvider">
             <summary>
             Provides initial seed values for declared attributes when an entity appears in the World.
@@ -1357,17 +1541,38 @@
         <member name="M:Lumio.GameRuntime.Ecs.IWorldControlAdapter.TryResolveConnectionState(System.String,Lumio.GameRuntime.Ecs.NetEntityId@,System.UInt64@)">
             <summary>Resolves the current entity and generation for an authenticated connection.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IWorldEffectPersistence">
+            <summary>Module-owned Effect section. Preparation must validate before any entity/directory publication.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IEffectProjectionValidation">
+            <summary>Validates the complete staged framework Effect container before authority mutation.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IWorldPhaseSchedule">
+            <summary>Role-owned phase behavior invoked exclusively by the engine's thirteen-phase Tick runner.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.IWorldService">
             <summary>A module resource whose preparation and release belong to its World.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.IWorldService.Start">
             <summary>Freezes preparation before the World executes gameplay.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IWorldSubsystem">
+            <summary>A world service; synchronized, saved and predicted state belongs to entity components.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.WorldSubsystemAttribute">
+            <summary>Declares a generated, fresh-per-world subsystem factory.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.WorldSystemRegistration">
+            <summary>Restricts subsystem work to the existing gameplay phases.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.WorldLifetimeState">
+            <summary>The resource lifetime of one world, as reported by its Native HFSM.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.IWorldTickLoop">
             <summary>Host-facing World tick driveshaft. Simulation binds this; WorldManager.Tick only forwards.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.IWorldTickLoop.ExecuteTickWithAdmission">
-            <summary>Returns only an authoritative rejection before execution; unexpected failures must throw.</summary>
+            <summary>Returns an admission or phase business rejection, which may follow phase work; unexpected failures must throw.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.IWorldTickLoop.SettlePrediction(Lumio.GameRuntime.Ecs.World)">
             <summary>Allows a host to settle prediction-only effects after replay.</summary>
@@ -1432,8 +1637,212 @@
         <member name="M:Lumio.GameRuntime.Ecs.IGeneratedOperationComponent.TryDispatchServerRpc(System.String,System.Object[],Lumio.GameRuntime.Ecs.OperationExecutionOutcome@)">
             <summary>Returns whether the method matched; the outcome describes execution.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IServerRpcInputScheduling">
+            <summary>Pure readiness query for a standard, unstarted single-command ServerRpc input.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.IServerRpcInputScheduling.ShouldDeferServerRpc(System.String,System.Object[])">
+            <summary>Parses arguments and reads readiness without dispatching or mutating ECS state.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Ecs.OperationReceiptMessage">
             <summary>Immutable public execution evidence; local completion failures have no receipt.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.ReducerStorageDeclaration">
+            <summary>Generated stable reference to a concrete Engine-owned storage location.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.ReducerStorageDeclaration.#ctor(System.UInt32,System.UInt32,System.Int32,System.Type,System.Int32,System.Type,System.Int32,System.String,System.Type,System.Boolean,System.Int32,Lumio.GameRuntime.Ecs.Scope,Lumio.GameRuntime.Ecs.Authority,Lumio.GameRuntime.Ecs.Notify,System.String)">
+            <summary>Generated stable reference to a concrete Engine-owned storage location.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.World">
+            <summary>The dense-array GameWorld owned by a WorldManager. A client manager may also hold a PredictedWorld clone.</summary>
+            <summary>
+            Residency (ADR-119 决策 7–9). An entity that leaves the live world with its Section is not destroyed: its
+            number stays reserved in the non-resident directory, a tombstone check never counts it as dead, and it comes
+            back under the same number. The directory is not per-entity state outside components: it is only a derived
+            index over the registered partition records, which the world snapshot persists and restores.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.TryReserveDestroyBatch(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},Lumio.GameRuntime.Ecs.WorldDestroyReservation@)">
+            <summary>Prevalidates and reserves headroom in the existing structural destroy queue.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.Hfsm">
+            <summary>This World's Native or platform-owned HFSM provider. No mutable context is shared with a clone.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.World._spatialRemoteDirty">
+            <summary>Marks raised by remote-converged attaches/detaches; indexed but never treated as local prediction drift.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.LoggerFactory">
+            <summary>Post office this world logs into — the one the host handed to the manager (ADR-081).</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.AttachService``1(``0)">
+            <summary>Attaches one World-owned service. A different instance of the same type is rejected.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetService``1(``0@)">
+            <summary>Reads a world-local service instance without consulting process state.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.RemoveService``1(``0)">
+            <summary>Removes a world-local service when its owner is disposed.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.EnsureSimulationWrite">
+            <summary>Checks the Owner before a simulation port queues or applies work.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetSelf(Lumio.GameRuntime.Ecs.Entity@)">
+            <summary>Reads the current Self binding without throwing before Welcome has bound it.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.IssuedIds">
+            <summary>Issued identities; a joint predicted world's history is compacted to live identities at authority refresh.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.ReservedThrough">
+            <summary>Inclusive reserved entity counter watermark, captured by snapshots; only Runtime advances or restores it.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.World.ObserveOnlyCallbackActive">
+            <summary>
+            True while an observe-only callback runs (e.g. the voxel <c>DigApplied</c> notification inside
+            TickPhase.VoxelCommit, tick.md §3 rule 5). Structural commands and replicated field writes are
+            rejected until the window closes; the rejection surfaces as the callback's own exception.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.RunObserveOnly(System.Action)">
+            <summary>Runs <paramref name="action"/> with <see cref="F:Lumio.GameRuntime.Ecs.World.ObserveOnlyCallbackActive"/> raised; always lowers it again.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.HasRawRecord(Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Raw attached-record presence without projection reads; no observation side effects.</summary>
+        </member>
+        <member name="F:Lumio.GameRuntime.Ecs.World._remoteApplyWrites">
+            <summary>
+            Locally written transform entities (never remote-converged attaches): refresh unions these
+            so speculative or hand-driven movement reverts through re-capture every refresh.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.CollectRemoteApplyWrites(System.Collections.Generic.HashSet{Lumio.GameRuntime.Ecs.NetEntityId})">
+            <summary>Entities game code wrote while applying a remote group; refresh unions them.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.IsTombstoned(Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Authoritative worlds retain counter-derived tombstones; replicas retain only terminal records.</summary>
+            <remarks>A number that left with its Section is not dead (ADR-119 决策 9): the non-resident directory is excluded.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.RegisterTransformController(Lumio.GameRuntime.Ecs.NetEntityId,System.String)">
+            <summary>Registers the sole logical pose writer for an entity.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex">
+            <summary>
+            Flushes dirty LogicTransform and spatial bounds changes to the authoritative spatial index.
+            Called at Phase 10 (GasAndEventFinalize) during tick execution.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.RequireBoundSpatialIndex">
+            <summary>
+            When true, <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/> refuses an unbound index instead of
+            silently dropping dirty entities (which would make later QueryAabb empty).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.CompileHfsm(System.UInt32,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmStateDefinition},System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmTransitionDefinition})">
+            <summary>Compiles an HFSM definition against this World's bound Native Context.</summary>
+            <remarks>The caller owns the returned definition and must dispose it.</remarks>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.InvalidateHandles">
+            <summary>
+            Bumps every live slot generation so Entity / Component / Handle refs from this World fail.
+            Used when a predicted World is thrown away and rebuilt (AC04).
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.CollectPresentationKeysCached(Lumio.GameRuntime.Ecs.PresentationReservation)">
+            <summary>
+            Incremental publication key set: re-derives keys only for entities marked dirty since the
+            last call (component writes, attach/detach, structure writes/projections, refresh copies)
+            and returns a snapshot of the live key set. Semantically equal to the full walk whenever
+            every state change reaches one of those chokes.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Collections.Generic.List{Lumio.GameRuntime.Ecs.Entity})">
+            <summary>
+            Queries entities whose committed AABB overlaps <paramref name="box"/>.
+            Hits follow NativeCore order: (<c>query_ordinal</c>, <c>object_id</c>) ascending.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Collections.Generic.List{Lumio.GameRuntime.Ecs.NetEntityId})">
+            <summary>
+            Queries entity IDs whose committed AABB overlaps <paramref name="box"/>.
+            Hits follow NativeCore order: (<c>query_ordinal</c>, <c>object_id</c>) ascending.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Span{Lumio.GameRuntime.Ecs.Entity})">
+            <summary>
+            Queries entities whose committed AABB overlaps <paramref name="box"/> into the provided span.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Span{Lumio.GameRuntime.Ecs.NetEntityId})">
+            <summary>
+            Queries entity IDs whose committed AABB overlaps <paramref name="box"/> into the provided span.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetEntityBounds(Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.Aabb3@)">
+            <summary>
+            Gets the last committed spatial bounds of an entity (resident-set book, not a second tree).
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.World.ArmedDeadlineCount">
+            <summary>Framework deadline timers currently armed on live entities: slots whose due tick has not fired on this record.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.FireDueDeadlines">
+            <summary>
+            Fires every due deadline in one pass, ordered by (due tick, entity number, component slot). An entry whose
+            field an earlier handler changed in the same pass is left for its new due tick.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.HasProjectedStructure(Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>
+            Whether the entity keeps predicted structure writes. Waiting reads do not change
+            membership and can retain the converged authority base without another capture.
+            Lookup only: no projection read, so no observation side effects.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.IsNonResident(Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>
+            True when the number left the live world with its Section: it is neither live nor tombstoned, queries answer
+            <c>not_resident</c>, and a destroy order for it is an error. Only authoritative worlds keep this directory.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.AttachHydrated(Lumio.GameRuntime.Ecs.NetEntityId,System.Type,System.Action{Lumio.GameRuntime.Ecs.EntityRecord})">
+            <summary>
+            Attaches an entity under an existing number and runs only OnHydrate: no Awake, PostAttribute, OnEnable or Start.
+            Structural undo uses this single-record path. Batch restore defers callbacks until every row is restored.
+            <paramref name="restore"/> may override the lifecycle facts, which default to an entity that has fully appeared.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.HydrateRows(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.WorldSnapshotCodec.SnapshotEntity})">
+            <summary>Hydrates persisted rows (a world snapshot's or a partition record's) under their own numbers.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.InstallPartitions(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.PartitionRegistration},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.WorldSnapshotCodec.SnapshotEntity})">
+            <summary>
+            Replaces the registered partition records with a world snapshot's and rebuilds the directory from them. The
+            number watermark becomes the maximum of the checkpoint's and the registered records' (an assertion, not an
+            inference); rows are the snapshot's live entities, which must not also be non-resident.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.ValidatePartitions(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.PartitionRegistration},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.WorldSnapshotCodec.SnapshotEntity})">
+            <summary>Validates the complete residency directory without attaching rows or mutating the world.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.EncodePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64,Lumio.GameRuntime.Ecs.PartitionRegistration@)">
+            <summary>
+            Validates and encodes the entity half of a partition record; changes nothing (ADR-119 决策 7: capture has no
+            side effect). Rejects a Section that already has a registered record and any number that is foreign, repeated,
+            not live, the world entity, a LogicTransform entity, or still owed a destroy or a tick's outgoing work.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.ExitResidency(Lumio.GameRuntime.Ecs.PartitionRegistration)">
+            <summary>
+            Takes the entities out of the live world with their Section. This is not a destruction: no gameplay callback
+            runs (neither OnDisable nor OnDestroy), nothing enters DestroyedThisTick, no <c>terminated</c> is projected and
+            the numbers stay reserved. Detach releases what the framework holds per entity: component framework state,
+            controllers, the account and spatial indexes, and the deadline timer that lives on the record.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.World.RestorePartitionRecord(System.ReadOnlySpan{System.Byte},System.UInt64,System.Boolean)">
+            <summary>
+            Restores a registered partition record under its own numbers, all or nothing: every check runs before the
+            world changes. Only OnHydrate runs; the numbers leave the non-resident directory; framework deadline timers are
+            re-armed from each entity's persisted due tick because they live on the freshly attached records.
+            </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.RpcCompletionContinuity">
             <summary>One authenticated binding's input high-water and known server world, without callbacks.</summary>
@@ -1590,7 +1999,7 @@
         <member name="M:Lumio.GameRuntime.Ecs.SectionSubscriptionGeometry.Keeps(System.UInt64,System.Int32,System.Int32,System.Int32)">
             <summary>Whether a held Section is still inside the release box (subscribe radius plus hysteresis).</summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Ecs.SectionSubscriptionGeometry.Wanted(System.Collections.Generic.IReadOnlyCollection{System.UInt64},System.Boolean,System.Int32,System.Int32,System.Int32)">
+        <member name="M:Lumio.GameRuntime.Ecs.SectionSubscriptionGeometry.Wanted(System.Collections.Generic.IReadOnlyCollection{System.UInt64},System.Boolean,System.Int32,System.Int32,System.Int32,System.Action{System.Int64})">
             <summary>Wanted Sections in admission order: pins ascending, then the subscribe box nearest first.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.SectionBindingRead">
@@ -1598,6 +2007,18 @@
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.SectionBindingReads">
             <summary>Per-projection cache over <see cref="T:Lumio.GameRuntime.Ecs.ISectionBindingReader"/>: each Section is read at most once per tick.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.SuccessorDeclaration">
+            <summary>Fixed generated metadata. Field keys resolve to verified Engine storage, never authored accessors.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.IWorldSuccessorControlAdapter">
+            <summary>Implemented by the authenticated binding adapter. Gameplay supplies no account accessors.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.SuccessorWelcomeContext">
+            <summary>Value guard context only. This DTO and its boolean cannot authenticate a transport receipt.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.SuccessorWelcomeContext.#ctor(System.Boolean,System.UInt64,Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64,Lumio.GameRuntime.Ecs.AttachmentControlMode,System.Nullable{Lumio.GameRuntime.Ecs.NetEntityId},System.Nullable{System.UInt64},Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64)">
+            <summary>Value guard context only. This DTO and its boolean cannot authenticate a transport receipt.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.SystemExecutionPlan">
             <summary>
@@ -1613,9 +2034,6 @@
         </member>
         <member name="M:Lumio.GameRuntime.Ecs.SystemExecutionPlan.Build(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.EcsSystemDescriptor})">
             <summary>Startup checks: duplicates, registrable phases, missing dependencies, cycles and dual writers.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Ecs.CommandPayloadValidator">
-            <summary>Validates the raw payload of a registered command mapping.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WireCodec">
             <summary>Single C-1 gameplay-envelope codec shared by authoritative and replica worlds.</summary>
@@ -1649,173 +2067,62 @@
             becoming required and without turning off strictness — an unregistered typo stays a rejection.
             </summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryMeasureTerminalReceiptJsonBase64(Lumio.GameRuntime.Ecs.WorldOperationResult,System.Int32@)">
+            <summary>Checks and measures the existing terminal receipt without allocating an exception on rejection.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.MeasureTerminalReceiptJsonBase64(Lumio.GameRuntime.Ecs.WorldOperationResult)">
+            <summary>Measures a terminal's existing receipt as a JSON base64 string without constructing a receipt message.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryWriteTerminalReceiptJsonBase64(Lumio.GameRuntime.Ecs.WorldOperationResult,System.Span{System.Byte},System.Int32@)">
+            <summary>Writes a terminal's receipt into the caller's prepaid JSON base64 window. A short window is untouched.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.MeasurePackJsonBase64(Lumio.GameRuntime.Ecs.WorldMessage,Lumio.GameRuntime.Ecs.WireProfile)">
+            <summary>Measures the existing wire bytes as a default-escaped JSON base64 string, including quotes.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryWritePackJsonBase64(Lumio.GameRuntime.Ecs.WorldMessage,Lumio.GameRuntime.Ecs.WireProfile,System.Span{System.Byte},System.Int32@)">
+            <summary>Writes the transparent JSON base64 representation into a prepaid window. A short window is untouched.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Ecs.WireCodec.GetMaximumOperationReceiptFrameBytes(Lumio.GameRuntime.Ecs.InputCommandMessage,Lumio.GameRuntime.Ecs.WireProfile)">
             <summary>Conservative single-frame receipt bound; hosts reserve queue counts separately.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.DecodeAuthenticatedInput(System.ReadOnlySpan{System.Byte},Lumio.GameRuntime.Ecs.WireProfile,Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64,System.String,Lumio.GameRuntime.Ecs.NetEntityId)">
+            <summary>Decodes without deriving sender, profile or incarnation from a later connection state.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.ValidateSuccessorWelcome(Lumio.GameRuntime.Ecs.WelcomeMessage,Lumio.GameRuntime.Ecs.SuccessorWelcomeContext,Lumio.GameRuntime.Ecs.WelcomeMessage)">
+            <summary>Validates trusted admission/transition correlation before any session reset.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryReadSuccessorAuthorization(System.ReadOnlySpan{System.Byte},System.String,Lumio.Wire.SuccessorAuthorization@)">
+            <summary>Closed value decoding only; authentication belongs to the selected transport/session.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.ValidateSuccessorResultCorrelation(Lumio.GameRuntime.Ecs.SuccessorResult,Lumio.GameRuntime.Ecs.SuccessorResultCorrelation,Lumio.GameRuntime.Ecs.AuthenticatedSuccessorContext,System.UInt64,Lumio.GameRuntime.Ecs.SuccessorTransferRequest)">
+            <summary>Parsing is evidence only. The Host calls this against its still-pending authenticated owner context before Session mutation.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.MeasurePack(Lumio.GameRuntime.Ecs.WorldMessage,Lumio.GameRuntime.Ecs.WireProfile)">
+            <summary>Measures the exact C-1 encoding without allocating a serialized intermediate.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryWritePack(Lumio.GameRuntime.Ecs.WorldMessage,Lumio.GameRuntime.Ecs.WireProfile,System.Span{System.Byte},System.Int32@)">
+            <summary>Writes the same encoding into the caller's reserved window. A short window is untouched.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.MeasureSuccessorRequest(Lumio.GameRuntime.Ecs.SuccessorTransferRequest)">
+            <summary>Exact byte count of a validated successor request without materializing JSON.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryWriteSuccessorRequest(Lumio.GameRuntime.Ecs.SuccessorTransferRequest,System.Span{System.Byte},System.Int32@)">
+            <summary>Writes into a prepaid window; a short window is untouched.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.MeasureSuccessorResult(Lumio.GameRuntime.Ecs.SuccessorResult)">
+            <summary>Exact byte count of a validated successor result without materializing JSON.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Ecs.WireCodec.TryWriteSuccessorResult(Lumio.GameRuntime.Ecs.SuccessorResult,System.Span{System.Byte},System.Int32@)">
+            <summary>Writes into a prepaid window; a short window is untouched.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.CommandPayloadValidator">
+            <summary>Validates the raw payload of a registered command mapping.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.InputCommandSequencer">
             <summary>Runtime-owned allocator for per-connection C-1 input sequences.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.ClientInputEncoder">
             <summary>Client-facing runtime encoder; Client supplies commands, Runtime assigns sequence.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Ecs.World">
-            <summary>The dense-array GameWorld owned by a WorldManager. A client manager may also hold a PredictedWorld clone.</summary>
-            <summary>
-            Residency (ADR-119 决策 7–9). An entity that leaves the live world with its Section is not destroyed: its
-            number stays reserved in the non-resident directory, a tombstone check never counts it as dead, and it comes
-            back under the same number. The directory is not per-entity state outside components: it is only a derived
-            index over the registered partition records, which the world snapshot persists and restores.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.TryReserveDestroyBatch(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},Lumio.GameRuntime.Ecs.WorldDestroyReservation@)">
-            <summary>Prevalidates and reserves headroom in the existing structural destroy queue.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.Hfsm">
-            <summary>This World's Native or platform-owned HFSM provider. No mutable context is shared with a clone.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.LoggerFactory">
-            <summary>Post office this world logs into — the one the host handed to the manager (ADR-081).</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.AttachService``1(``0)">
-            <summary>Attaches one World-owned service. A different instance of the same type is rejected.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetService``1(``0@)">
-            <summary>Reads a world-local service instance without consulting process state.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.RemoveService``1(``0)">
-            <summary>Removes a world-local service when its owner is disposed.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.EnsureSimulationWrite">
-            <summary>Checks the Owner before a simulation port queues or applies work.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetSelf(Lumio.GameRuntime.Ecs.Entity@)">
-            <summary>Reads the current Self binding without throwing before Welcome has bound it.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.IssuedIds">
-            <summary>Issued identities; a joint predicted world's history is compacted to live identities at authority refresh.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.ReservedThrough">
-            <summary>Inclusive reserved entity counter watermark, captured by snapshots; only Runtime advances or restores it.</summary>
-        </member>
-        <member name="F:Lumio.GameRuntime.Ecs.World.ObserveOnlyCallbackActive">
-            <summary>
-            True while an observe-only callback runs (e.g. the voxel <c>DigApplied</c> notification inside
-            TickPhase.VoxelCommit, tick.md §3 rule 5). Structural commands and replicated field writes are
-            rejected until the window closes; the rejection surfaces as the callback's own exception.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.RunObserveOnly(System.Action)">
-            <summary>Runs <paramref name="action"/> with <see cref="F:Lumio.GameRuntime.Ecs.World.ObserveOnlyCallbackActive"/> raised; always lowers it again.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.IsTombstoned(Lumio.GameRuntime.Ecs.NetEntityId)">
-            <summary>Authoritative worlds retain counter-derived tombstones; replicas retain only terminal records.</summary>
-            <remarks>A number that left with its Section is not dead (ADR-119 决策 9): the non-resident directory is excluded.</remarks>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.RegisterTransformController(Lumio.GameRuntime.Ecs.NetEntityId,System.String)">
-            <summary>Registers the sole logical pose writer for an entity.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex">
-            <summary>
-            Flushes dirty LogicTransform and spatial bounds changes to the authoritative spatial index.
-            Called at Phase 10 (GasAndEventFinalize) during tick execution.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.RequireBoundSpatialIndex">
-            <summary>
-            When true, <see cref="M:Lumio.GameRuntime.Ecs.World.CommitSpatialIndex"/> refuses an unbound index instead of
-            silently dropping dirty entities (which would make later QueryAabb empty).
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.CompileHfsm(System.UInt32,System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmStateDefinition},System.Collections.Generic.IReadOnlyList{Lumio.Engine.NativeLoader.HfsmTransitionDefinition})">
-            <summary>Compiles an HFSM definition against this World's bound Native Context.</summary>
-            <remarks>The caller owns the returned definition and must dispose it.</remarks>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.InvalidateHandles">
-            <summary>
-            Bumps every live slot generation so Entity / Component / Handle refs from this World fail.
-            Used when a predicted World is thrown away and rebuilt (AC04).
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Collections.Generic.List{Lumio.GameRuntime.Ecs.Entity})">
-            <summary>
-            Queries entities whose committed AABB overlaps <paramref name="box"/>.
-            Hits follow NativeCore order: (<c>query_ordinal</c>, <c>object_id</c>) ascending.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Collections.Generic.List{Lumio.GameRuntime.Ecs.NetEntityId})">
-            <summary>
-            Queries entity IDs whose committed AABB overlaps <paramref name="box"/>.
-            Hits follow NativeCore order: (<c>query_ordinal</c>, <c>object_id</c>) ascending.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Span{Lumio.GameRuntime.Ecs.Entity})">
-            <summary>
-            Queries entities whose committed AABB overlaps <paramref name="box"/> into the provided span.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.QueryAabb(Lumio.GameRuntime.Ecs.Aabb3,System.Span{Lumio.GameRuntime.Ecs.NetEntityId})">
-            <summary>
-            Queries entity IDs whose committed AABB overlaps <paramref name="box"/> into the provided span.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.TryGetEntityBounds(Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.Aabb3@)">
-            <summary>
-            Gets the last committed spatial bounds of an entity (resident-set book, not a second tree).
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Ecs.World.ArmedDeadlineCount">
-            <summary>Framework deadline timers currently armed on live entities: slots whose due tick has not fired on this record.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.FireDueDeadlines">
-            <summary>
-            Fires every due deadline in one pass, ordered by (due tick, entity number, component slot). An entry whose
-            field an earlier handler changed in the same pass is left for its new due tick.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.IsNonResident(Lumio.GameRuntime.Ecs.NetEntityId)">
-            <summary>
-            True when the number left the live world with its Section: it is neither live nor tombstoned, queries answer
-            <c>not_resident</c>, and a destroy order for it is an error. Only authoritative worlds keep this directory.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.AttachHydrated(Lumio.GameRuntime.Ecs.NetEntityId,System.Type,System.Action{Lumio.GameRuntime.Ecs.EntityRecord})">
-            <summary>
-            Attaches an entity under an existing number and runs only OnHydrate: no Awake, PostAttribute, OnEnable or Start.
-            Snapshot restore, structural undo and partition restore all come through here. <paramref name="restore"/> fills
-            the state and may override the lifecycle facts, which default to an entity that has fully appeared.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.HydrateRows(System.UInt64,System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.WorldSnapshotCodec.SnapshotEntity})">
-            <summary>Hydrates persisted rows (a world snapshot's or a partition record's) under their own numbers.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.InstallPartitions(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.PartitionRegistration},System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.WorldSnapshotCodec.SnapshotEntity})">
-            <summary>
-            Replaces the registered partition records with a world snapshot's and rebuilds the directory from them. The
-            number watermark becomes the maximum of the checkpoint's and the registered records' (an assertion, not an
-            inference); rows are the snapshot's live entities, which must not also be non-resident.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.EncodePartition(System.Collections.Generic.IReadOnlyList{Lumio.GameRuntime.Ecs.NetEntityId},System.UInt64,Lumio.GameRuntime.Ecs.PartitionRegistration@)">
-            <summary>
-            Validates and encodes the entity half of a partition record; changes nothing (ADR-119 决策 7: capture has no
-            side effect). Rejects a Section that already has a registered record and any number that is foreign, repeated,
-            not live, the world entity, a LogicTransform entity, or still owed a destroy or a tick's outgoing work.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.ExitResidency(Lumio.GameRuntime.Ecs.PartitionRegistration)">
-            <summary>
-            Takes the entities out of the live world with their Section. This is not a destruction: no gameplay callback
-            runs (neither OnDisable nor OnDestroy), nothing enters DestroyedThisTick, no <c>terminated</c> is projected and
-            the numbers stay reserved. Detach releases what the framework holds per entity: component framework state,
-            controllers, the account and spatial indexes, and the deadline timer that lives on the record.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Ecs.World.RestorePartitionRecord(System.ReadOnlySpan{System.Byte},System.UInt64)">
-            <summary>
-            Restores a registered partition record under its own numbers, all or nothing: every check runs before the
-            world changes. Only OnHydrate runs; the numbers leave the non-resident directory; framework deadline timers are
-            re-armed from each entity's persisted due tick because they live on the freshly attached records.
-            </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.ITickDeadline">
             <summary>
@@ -1909,6 +2216,12 @@
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.InputCommandMessage.ConnectionGeneration">
             <summary>Authenticated connection generation, when supplied by the host.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.InputCommandMessage.Profile">
+            <summary>Negotiated profile captured by Host when the input entered its queue.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Ecs.InputCommandMessage.WorldIncarnation">
+            <summary>Transient manager identity captured with Sender; never derived from persisted InstanceId.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Ecs.InputCommandMessage.MappingId">
             <summary>C-1 mapping id (<c>chat.input</c>, <c>field.write</c>, or a generated rpc id).</summary>
@@ -2078,6 +2391,9 @@
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldOperationResult">
             <summary>Terminal evidence for one admitted input part, independent of Tick durability.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Ecs.WorldRestoreCompletion">
+            <summary>Restore inputs validated and activated by the public world owner.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Ecs.WorldSaveComponent">
             <summary>

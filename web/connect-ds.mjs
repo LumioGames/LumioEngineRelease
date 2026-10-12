@@ -3,7 +3,9 @@
  * only the gameplay subprotocol, never the credential-carrying offer.
  * Do not log the subprotocol offer or retain the credential in localStorage.
  */
-export function connectDs(launch, { allowLoopback = false, Socket = globalThis.WebSocket } = {}) {
+import { DS_CLOSE_CODES } from "./ds-close-codes.mjs";
+
+export function connectDs(launch, { allowLoopback = false, Socket = globalThis.WebSocket, requestedProfile = "lumio.mvp.v0" } = {}) {
   if (!launch || typeof launch !== "object") throw new TypeError("launch result required");
   const endpoint = new URL(launch.wsUrl);
   const local = ["127.0.0.1", "localhost", "[::1]"].includes(endpoint.hostname);
@@ -19,5 +21,12 @@ export function connectDs(launch, { allowLoopback = false, Socket = globalThis.W
   }
   if (launch.subprotocol !== "lumio.mvp.v0") throw new TypeError("unsupported gameplay subprotocol");
   if (typeof Socket !== "function") throw new TypeError("WebSocket is unavailable");
-  return new Socket(endpoint.href, [launch.subprotocol, `lumio-admission.${credential}`]);
+  if (!["lumio.mvp.v0", "lumio.operation-receipts.v1", "lumio.world-change-parts.v1", "lumio.operation-receipts-parts.v1"].includes(requestedProfile)) {
+    throw new TypeError("unsupported requested gameplay profile");
+  }
+  const socket = new Socket(endpoint.href, [requestedProfile, `lumio-admission.${credential}`]);
+  socket.addEventListener?.("open", () => {
+    if (socket.protocol !== requestedProfile) socket.close(DS_CLOSE_CODES.session_closed, "session_closed");
+  });
+  return socket;
 }

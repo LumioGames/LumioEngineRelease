@@ -13,7 +13,7 @@
 
 export const CONTRACT_ID = "lumio.voxel-world.v1";
 export const CONTRACT_VERSION = 1;
-export const CONTRACT_SHA256 = "e2a40d523df62e92a3fb98149688529c4572c3e956ffa52d182de21b75c817d8";
+export const CONTRACT_SHA256 = "7d6a236a387678917b32c14ff8f8e1dc8500125f645424ff1cb10e1bf3e956b7";
 
 export const SECTION_KEY_SYNTAX = "s:<x>:<y>:<z>";
 export const SECTION_KEY_PREFIX = "s";
@@ -154,7 +154,7 @@ export const LIGHT_PACKING_BITS = Object.freeze({
 
 // wasm 入口(meshOutput.wasmInterop):lumio_voxel_abi_version() 不等于 WASM_ABI_VERSION 就不加载。
 export const WASM_ABI_VERSION = 2;
-export const WASM_ENTRIES = Object.freeze(["lumio_voxel_world_create", "lumio_voxel_deliver_section", "lumio_voxel_mesher_create", "lumio_voxel_mesher_destroy", "lumio_voxel_mesh_section", "lumio_voxel_mesh_release", "lumio_voxel_remesh_pending_count", "lumio_voxel_drain_remesh", "lumio_voxel_light_read_cell", "lumio_voxel_light_section_digest"]);
+export const WASM_ENTRIES = Object.freeze(["lumio_voxel_world_create", "lumio_voxel_deliver_section", "lumio_voxel_mesher_create", "lumio_voxel_mesher_destroy", "lumio_voxel_mesh_section", "lumio_voxel_mesh_release", "lumio_voxel_remesh_pending_count", "lumio_voxel_drain_remesh", "lumio_voxel_light_read_cell", "lumio_voxel_light_section_digest", "lumio_voxel_section_binding_count", "lumio_voxel_read_section_bindings"]);
 export const WASM_RETURN_CODES = Object.freeze({
   success: 0,
   anyOtherFailure: -1,
@@ -166,6 +166,8 @@ export const WASM_STRUCTS = Object.freeze({
   LumioVoxelMeshResult: Object.freeze({ bytes: 16, fields: Object.freeze({ handle: Object.freeze({ type: "u32", offset: 0 }), ptr: Object.freeze({ type: "u32", offset: 4 }), len: Object.freeze({ type: "u32", offset: 8 }), reserved: Object.freeze({ type: "u32", offset: 12 }) }) }),
   LumioVoxelSectionKey: Object.freeze({ bytes: 12, fields: Object.freeze({ section_x: Object.freeze({ type: "i32", offset: 0 }), section_y: Object.freeze({ type: "u32", offset: 4 }), section_z: Object.freeze({ type: "i32", offset: 8 }) }) }),
   LumioVoxelLightRead: Object.freeze({ bytes: 16, fields: Object.freeze({ presence: Object.freeze({ type: "u32", offset: 0 }), has_light: Object.freeze({ type: "u32", offset: 4 }), light: Object.freeze({ type: "u32", offset: 8 }), cell_offset: Object.freeze({ type: "u32", offset: 12 }) }) }),
+  LumioVoxelSectionBindingRead: Object.freeze({ bytes: 24, fields: Object.freeze({ presence: Object.freeze({ type: "u32", offset: 0 }), entry_count: Object.freeze({ type: "u32", offset: 4 }), entity_id_bytes: Object.freeze({ type: "u32", offset: 8 }), reserved: Object.freeze({ type: "u32", offset: 12 }), section_revision: Object.freeze({ type: "u64", offset: 16 }) }) }),
+  LumioVoxelSectionBindingEntry: Object.freeze({ bytes: 16, fields: Object.freeze({ cell_offset: Object.freeze({ type: "u32", offset: 0 }), entity_id_offset: Object.freeze({ type: "u32", offset: 4 }), entity_id_length: Object.freeze({ type: "u32", offset: 8 }), reserved: Object.freeze({ type: "u32", offset: 12 }) }) }),
 });
 export const WASM_ENTRY_ERRORS = Object.freeze({
   lumio_voxel_mesher_create: Object.freeze({ faceLayersLenMismatch: "InvalidArgument", unknownWorld: "InvalidHandle" }),
@@ -174,6 +176,8 @@ export const WASM_ENTRY_ERRORS = Object.freeze({
   lumio_voxel_mesh_release: Object.freeze({ releasedTwice: "mesh_handle_already_released", neverIssued: "InvalidHandle", unknownMesher: "InvalidHandle" }),
   lumio_voxel_drain_remesh: Object.freeze({ capacityTooSmall: "BufferTooSmall" }),
   lumio_voxel_light_section_digest: Object.freeze({ sectionYOver15: "section_y_out_of_range", sectionNotReady: "section_unavailable" }),
+  lumio_voxel_section_binding_count: Object.freeze({ sectionYOver15: "section_y_out_of_range", sectionNotReady: "section_unavailable", unknownWorld: "InvalidHandle", invalidOutput: "InvalidArgument", lengthNotRepresentable: "BufferTooSmall" }),
+  lumio_voxel_read_section_bindings: Object.freeze({ sectionYOver15: "section_y_out_of_range", sectionNotReady: "section_unavailable", unknownWorld: "InvalidHandle", invalidOutput: "InvalidArgument", capacityTooSmall: "BufferTooSmall" }),
 });
 // 上面各入口用到的本契约错误码(last-error 串),按首次出现排序。
 export const MESH_ERROR_IDS = Object.freeze({

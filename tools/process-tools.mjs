@@ -3,6 +3,25 @@ import { appendFileSync, writeFileSync } from 'node:fs';
 import { basename } from 'node:path';
 
 const snippet = text => (text ?? '').replace(/\s+/g, ' ').trim().slice(0, 240);
+const gracefulProcesses = new WeakMap();
+
+// Credential values must not enter command metadata. Only the log projection
+// changes: the child always receives the caller's original argument array.
+function loggedArguments(args) {
+  let secretValue = false;
+  return args.map(arg => {
+    if (secretValue) {
+      secretValue = false;
+      return '<redacted>';
+    }
+    const option = /^--([^=]+)(=|$)/.exec(String(arg));
+    const name = option?.[1].replace(/[-_]/g, '');
+    if (!name || !/(?:ticket|credential|token|password|passwd|secret|apikey|privatekey|signingkey)$/i.test(name)) return arg;
+    if (option[2] === '=') return `${String(arg).slice(0, option[0].length)}<redacted>`;
+    secretValue = true;
+    return arg;
+  });
+}
 
 export function inferFailureSurface(executable, args = [], combined = '') {
   const script = args.map(arg => String(arg)).find(arg => arg.endsWith('.mjs') || arg.endsWith('.json')) ?? '';
@@ -66,7 +85,7 @@ export function attributeCommandFailure(executable, args, result, { log } = {}) 
 
 export function command(executable, args, { cwd, env = process.env, log } = {}) {
   const result = spawnSync(executable, args, { cwd, env, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
-  if (log) writeFileSync(log, `$ ${JSON.stringify([executable, ...args])}\n${result.stdout ?? ''}${result.stderr ?? ''}`);
+  if (log) writeFileSync(log, `$ ${JSON.stringify([executable, ...loggedArguments(args)])}\n${result.stdout ?? ''}${result.stderr ?? ''}`);
   if (result.stderr) process.stderr.write(result.stderr);
   if (result.error) throw result.error;
   if (result.status !== 0) {
@@ -76,10 +95,16 @@ export function command(executable, args, { cwd, env = process.env, log } = {}) 
   return result.stdout;
 }
 
-export function startLogged(executable, args, { cwd, env = process.env, log }) {
-  writeFileSync(log, `$ ${JSON.stringify([executable, ...args])}\n`);
-  const child = spawn(executable, args, { cwd, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+// Opt-in pairs Windows console startup with stopLogged's Ctrl+C request.
+// Ordinary children retain the existing spawn options and cleanup behavior.
+export function startLogged(executable, args, { cwd, env = process.env, log, gracefulShutdown = false }) {
+  writeFileSync(log, `$ ${JSON.stringify([executable, ...loggedArguments(args)])}\n`);
+  const paired = gracefulShutdown === true;
+  const platform = process.platform;
+  const child = spawn(executable, args, { cwd, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true,
+    ...(paired && platform === 'win32' ? { detached: true } : {}) });
   const state = { child, stdout: '', closed: false, code: null, signal: null, error: null };
+  if (paired) gracefulProcesses.set(state, { platform, log, child, pid: child.pid });
   child.stdin.on('error', () => {}); // An exited child is handled through its exit/error state.
   child.stdout.on('data', bytes => {
     state.stdout = (state.stdout + bytes.toString()).slice(-1024 * 1024);
@@ -109,6 +134,67 @@ export function waitExit(state, timeoutMs = 10000) {
       else resolve(result);
     });
   });
+}
+
+// Requests an orderly stop and confirms close/exit 0 within one shared budget.
+// Success is a process result; callers still verify their domain's flush and
+// wire-close evidence. Strong cleanup remains a separate failure path.
+export async function stopLogged(state, timeoutMs = 10000) {
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0 || timeoutMs > 2 ** 31 - 1) {
+    throw new Error('stopLogged timeoutMs must be a positive timer-safe integer');
+  }
+  const owned = gracefulProcesses.get(state);
+  if (!owned) throw new Error('stopLogged requires the state from startLogged with gracefulShutdown: true');
+  if (state.error) throw state.error;
+  if (state.child !== owned.child || state.child.pid !== owned.pid || !Number.isSafeInteger(owned.pid) || owned.pid <= 0) {
+    throw new Error('stopLogged state no longer identifies its paired child and PID');
+  }
+  const started = performance.now();
+  // An exited child can retain open inherited pipes; await close without
+  // targeting its numeric PID again after ChildProcess reports termination.
+  if (!state.closed && state.child.exitCode === null && state.child.signalCode === null) {
+    if (owned.platform === 'win32') {
+      // Group 0 broadcasts inside the attached console: only paired startup
+      // permits this request, never an arbitrary PID or an ordinary child.
+      const script = [
+        "$api = Add-Type -PassThru -Name LumioConsoleCtrl -Namespace Lumio -MemberDefinition @'",
+        '[DllImport("kernel32.dll", SetLastError=true)] public static extern bool FreeConsole();',
+        '[DllImport("kernel32.dll", SetLastError=true)] public static extern bool AttachConsole(uint pid);',
+        '[DllImport("kernel32.dll", SetLastError=true)] public static extern bool SetConsoleCtrlHandler(IntPtr handler, bool add);',
+        '[DllImport("kernel32.dll", SetLastError=true)] public static extern bool GenerateConsoleCtrlEvent(uint evt, uint group);',
+        '[DllImport("kernel32.dll", SetLastError=true)] public static extern uint GetConsoleProcessList([Out] uint[] processList, uint count);',
+        "'@",
+        '[void]$api::FreeConsole()',
+        'if (-not $api::AttachConsole([uint32]$env:LUMIO_DS_INTERRUPT_PID)) { exit 1 }',
+        'if (-not $api::SetConsoleCtrlHandler([IntPtr]::Zero, $true)) { exit 3 }',
+        '$members = [uint32[]]::new(2)',
+        '$count = $api::GetConsoleProcessList($members, 2)',
+        'if ($count -ne 2 -or -not ($members -contains [uint32]$PID) -or -not ($members -contains [uint32]$env:LUMIO_DS_INTERRUPT_PID)) { [Console]::Error.WriteLine("console ownership check failed: count=$count"); exit 4 }',
+        'if (-not $api::GenerateConsoleCtrlEvent(0, 0)) { exit 2 }',
+        'Start-Sleep -Seconds 1',
+        '[void]$api::FreeConsole()',
+      ].join('\n');
+      const args = ['-NoProfile', '-NonInteractive', '-Command', script];
+      const helper = spawnSync('powershell', args, {
+        env: { ...process.env, LUMIO_DS_INTERRUPT_PID: String(state.child.pid) },
+        encoding: 'utf8', timeout: Math.min(timeoutMs, 10000),
+      });
+      appendFileSync(owned.log, `$ powershell (graceful shutdown pid=${state.child.pid})\n${helper.stdout ?? ''}${helper.stderr ?? ''}${helper.error ? `${helper.error.message}\n` : ''}`);
+      if (helper.error) throw helper.error;
+      if (helper.status !== 0 || helper.signal) {
+        const error = attributeCommandFailure('powershell', args, helper, { log: owned.log });
+        if (helper.signal) error.message += ` signal=${helper.signal}`;
+        throw error;
+      }
+    } else if (!state.child.kill('SIGTERM')) {
+      throw new Error(`Process ${state.child.pid} did not accept the graceful SIGTERM request`);
+    }
+  }
+  const remaining = timeoutMs - (performance.now() - started);
+  if (remaining <= 0) throw new Error(`Process ${state.child.pid} did not close within ${timeoutMs}ms.`);
+  const result = await waitExit(state, Math.ceil(remaining));
+  if (!result.closed || result.signal) throw new Error(`Process ${state.child.pid} did not close normally: signal=${result.signal}`);
+  return result;
 }
 
 export async function forceCleanup(state) {

@@ -28,6 +28,9 @@
         <member name="T:Lumio.GameRuntime.Gas.AbilityType">
             <summary>Gameplay ability content base. Generated registry maps T → this type; no gameplay reflection.</summary>
         </member>
+        <member name="P:Lumio.GameRuntime.Gas.AbilityType.InputScheduling">
+            <summary>Read once and frozen by the owning World registration.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Gas.AbilityType.CanActivate">
             <summary>Content-layer admit step 5. Default is allow.</summary>
         </member>
@@ -64,6 +67,7 @@
             <summary>
             Reads this payload back from <paramref name="args"/> starting at
             <paramref name="start"/>. Returns false when the vector does not decode.
+            Pure parsing only: scheduling may probe this method without activation; do not mutate ECS state.
             </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.IAbilityPhysicsPort">
@@ -292,7 +296,7 @@
             list what is actually activatable, so it must not leak the engine's internal maps.
             </summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Gas.AbilityRegistration.#ctor(System.Type,System.Type,System.UInt32,System.String)">
+        <member name="M:Lumio.GameRuntime.Gas.AbilityRegistration.#ctor(System.Type,System.Type,System.UInt32,System.String,Lumio.GameRuntime.Gas.AbilityInputScheduling)">
             <summary>Creates one registration row.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Gas.AbilityRegistration.AbilityType">
@@ -399,6 +403,9 @@
         <member name="M:Lumio.GameRuntime.Gas.EffectComponent.OnFx(System.String,System.Int64,System.Boolean,System.UInt64)">
             <summary>Handwritten ClientRpc receiver. Empty on the server; records on the client.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectComponent.HasActiveEffect(System.UInt32,System.UInt64)">
+            <summary>Reads settled finite rows, excluding suppressed rows and rows ending at or before the supplied tick.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Gas.EffectEntry">
             <summary>One in-flight Effect row. Instant terminal states leave the table.</summary>
         </member>
@@ -426,10 +433,19 @@
         <member name="F:Lumio.GameRuntime.Gas.EffectEntry.Stacks">
             <summary>Stack count. Instant is 1.</summary>
         </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectApplyContext">
+            <summary>Immutable identity and admission order passed to a generated typed callback.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectApplyContext.CompleteFact(Lumio.GameRuntime.Gas.EffectFactValue[])">
+            <summary>Completes the preflighted fact once, with outputs in declared column order.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectFactValue">
+            <summary>One typed numeric output of a generated fact plan.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Gas.EffectFrameOrder">
             <summary>
-            Same-frame event order table. Only hit → remove is implemented this slice.
-            Overflow / snapshot-replace / duration / period throw so they are not disguised as working.
+            Compatibility instant order and the finite phase-9 order. Finite work requires a World Tick;
+            the legacy parameterless hooks cannot execute a lifecycle.
             </summary>
         </member>
         <member name="F:Lumio.GameRuntime.Gas.EffectFrameOrder.ImplementedSteps">
@@ -446,6 +462,152 @@
         </member>
         <member name="M:Lumio.GameRuntime.Gas.EffectFrameOrder.OnPeriod">
             <summary>Period is not implemented this slice.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.Boolean">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.ListObjectArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.ListString">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.JsonElement">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.JsonElementArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.Int32">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.Int32Array">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.Object">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.DataArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.ObjectArrayArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.String">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.StringArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.UInt32">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.UInt32Array">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.Default">
+            <summary>
+            The default <see cref="T:System.Text.Json.Serialization.JsonSerializerContext"/> associated with a default <see cref="T:System.Text.Json.JsonSerializerOptions"/> instance.
+            </summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectJsonContext.GeneratedSerializerOptions">
+            <summary>
+            The source-generated options associated with this context.
+            </summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectJsonContext.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectJsonContext.GetTypeInfo(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectLimits">
+            <summary>Frozen World-local Effect storage and work limits.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectLimits.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>Frozen World-local Effect storage and work limits.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectCurrentValue">
+            <summary>Copied noncreating Current lookup result; Value is valid only when Present.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectFieldAttribute">
+            <summary>Stable identity and, for strings, a mandatory UTF-8 byte bound.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectFieldAttribute.#ctor(System.UInt32)">
+            <summary>Stable identity and, for strings, a mandatory UTF-8 byte bound.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectPayloadException">
+            <summary>Malformed or out-of-domain generated Effect payload.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectPayloadException.#ctor(System.String)">
+            <summary>Malformed or out-of-domain generated Effect payload.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectPayloadWriter">
+            <summary>Little-endian, strict UTF-8 writer used only by generated Effect codecs.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectPayloadReader">
+            <summary>Exact-length, strict decoder used only by generated Effect codecs.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectReducerField">
+            <summary>Generated ordinary Sync field identity and fixed scalar codec bound.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectReducerField.#ctor(System.Type,System.String,System.UInt32,System.UInt32,System.Type,System.Int32)">
+            <summary>Generated ordinary Sync field identity and fixed scalar codec bound.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IGeneratedEffectReducer">
+            <summary>Legacy executable declaration surface; production registration rejects it before invocation.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectReducer">
+            <summary>Authoring marker; generation supplies immutable operation data for Engine execution.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectReducerPlan">
+            <summary>World-local, startup-frozen authority finalization plan.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectReducerContext">
+            <summary>Borrowed, bounded reducer reads and ordinary field writes. Never retain across invocations.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectReducerRowClaim">
+            <summary>Source-only row capability. The generated operation program uses Engine-owned claims.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectResult">
+            <summary>One correlated phase-9 Effect outcome.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectResult.#ctor(Lumio.GameRuntime.Gas.EffectHandle,System.UInt32,Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64,System.UInt64,Lumio.Wire.EffectResultKind,Lumio.Wire.EffectResultOutcome,System.Boolean,Lumio.Wire.EffectError,System.UInt32,System.Boolean,System.UInt64)">
+            <summary>One correlated phase-9 Effect outcome.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectResultBatch">
+            <summary>Borrowed phase-9 result view; invalid outside its owning World and invocation.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.Effects">
             <summary>Unique write: queues an instant Effect slip. Settlement runs at phase-9 after CommitCreates.</summary>
@@ -497,7 +659,7 @@
             <summary>Gameplay admission receives the target's World explicitly.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Gas.EffectType.Settle(Lumio.GameRuntime.Gas.EffectSettlementContext,Lumio.GameRuntime.Ecs.NetEntityId,System.Int64)">
-            <summary>Consumes the existing magnitude-only settlement payload.</summary>
+            <summary>Legacy instant adapter for registrations without generated typed metadata.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Gas.EffectType.Apply(Lumio.GameRuntime.Gas.EffectSettlementContext,Lumio.GameRuntime.Ecs.NetEntityId)">
             <summary>Writes instant modifiers against the target BASE ledger while settlement is entered.</summary>
@@ -505,8 +667,17 @@
         <member name="T:Lumio.GameRuntime.Gas.EffectType`1">
             <summary>Generic Effect base requiring typed parameters conforming to <see cref="T:Lumio.GameRuntime.Gas.IEffectParameters"/>.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectType`1.CanSettle(Lumio.GameRuntime.Gas.EffectApplyContext@,`0@)">
+            <summary>Evaluates eligibility using the same immutable request snapshot as Apply.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectType`1.CreateGeneratedCodec">
+            <summary>Generated partial Effect implementations supply their own typed codec.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectType`1.Apply(Lumio.GameRuntime.Gas.EffectApplyContext@,`0@)">
+            <summary>Generated typed production callback with the immutable admitted identity.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Gas.EffectType`1.Apply(Lumio.GameRuntime.Gas.EffectSettlementContext,Lumio.GameRuntime.Ecs.NetEntityId,`0@)">
-            <summary>Writes instant modifiers with parameters against target BASE ledger.</summary>
+            <summary>Legacy typed callback used by existing instant adapters.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.EffectTypeAttribute">
             <summary>Marks a closed Effect type. Registry is generated; no gameplay reflection.</summary>
@@ -523,18 +694,53 @@
         <member name="P:Lumio.GameRuntime.Gas.EffectTypeAttribute.Instant">
             <summary>True when the effect folds Pending → Active → Expired on the same tick.</summary>
         </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectTypeAttribute.FxKeyFieldId">
+            <summary>Stable field ID of the bounded FxKey carrier in the typed payload.</summary>
+        </member>
+        <member name="P:Lumio.GameRuntime.Gas.EffectTypeAttribute.Policy">
+            <summary>Only finite-ta is recognized when finite lifecycle support is available.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.GasWorldContext">
+            <summary>World-owned GAS indexes and transient work. Entity state remains in ECS.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasWorldContext.#ctor(Lumio.GameRuntime.Ecs.World)">
+            <summary>Called by the registry's World service factory before gameplay construction.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasWorldContext.BindEffectAuthority(Lumio.GameRuntime.Ecs.WorldId)">
+            <summary>Binds the authenticated authority GAS identity before accepting private Effect rows.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasWorldContext.ConfigureEffects(Lumio.GameRuntime.Gas.EffectLimits)">
+            <summary>Sets finite limits before World start.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.FiniteEffectView">
+            <summary>Immutable captured finite row; payload bytes are copied out of component storage.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.FiniteEffectView.#ctor(Lumio.GameRuntime.Gas.EffectHandle,System.UInt32,Lumio.GameRuntime.Ecs.NetEntityId,Lumio.GameRuntime.Ecs.NetEntityId,System.UInt64,System.UInt32,System.UInt64,System.Nullable{System.UInt64},System.UInt64,System.Boolean,System.UInt32,System.ReadOnlyMemory{System.Byte},System.ReadOnlyMemory{System.Byte})">
+            <summary>Immutable captured finite row; payload bytes are copied out of component storage.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Gas.IEffectParameters">
             <summary>
-            Effect parameter payload. Gameplay owns the shape and its fields;
-            the engine only passes the parameters to the effect implementation and extracts
-            the magnitude and fx_key for settlement and client RPC notification.
+            Effect parameter payload. Generated declarations encode every marked scalar field,
+            then decode the immutable snapshot before invoking the typed callback.
             </summary>
         </member>
         <member name="P:Lumio.GameRuntime.Gas.IEffectParameters.Magnitude">
-            <summary>Magnitude written or applied during phase-9 settlement.</summary>
+            <summary>Magnitude retained for the existing OnFx projection.</summary>
         </member>
         <member name="P:Lumio.GameRuntime.Gas.IEffectParameters.FxKey">
             <summary>Visual/audio effect key emitted during phase-10 OnFx.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IGeneratedFiniteEffectCodec`1">
+            <summary>Pure captured-payload finite extension to the generated instant codec.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.EffectContribution">
+            <summary>One declared attribute's additive, permille and optional override contribution.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.EffectContribution.#ctor(System.Int64,System.Int64,System.Nullable{System.Int64})">
+            <summary>One declared attribute's additive, permille and optional override contribution.</summary>
+        </member>
+        <member name="T:Lumio.GameRuntime.Gas.IGeneratedInstantEffectCodec`1">
+            <summary>Typed codec contract implemented by each authored generated Effect registry.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.OnFxCapture">
             <summary>One OnFx emission captured for tests and bomber scene hashes. Not a WorldChange field.</summary>
@@ -593,13 +799,6 @@
             <summary>
             Injects the four <c>hfsm_*</c> slots. Null is rejected. Production never
             substitutes a recording or managed table.
-            </summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Gas.NativeEngineGasLease">
-            <summary>
-            Process-wide native lease used to bind <see cref="T:Lumio.Engine.NativeLoader.INativeHfsmAbi"/> for GAS
-            eight-state / six-state tables. Missing artifact fails closed — there is no
-            C# transition-table substitute.
             </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.AbilityHandle">
@@ -680,23 +879,23 @@
         <member name="T:Lumio.GameRuntime.Gas.GasTypeRegistry">
             <summary>Generated Ability/Effect metadata registry. Frozen before World start and then immutable.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasTypeRegistry.RegisterEffectAttribute(System.UInt32,System.String)">
+            <summary>Binds a stable declared attribute ID to its World registry name before startup.</summary>
+        </member>
         <member name="M:Lumio.GameRuntime.Gas.GasTypeRegistry.RegisterAbility``2(System.UInt32,System.String)">
             <summary>Registers one closed ability declaration into this World registry.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Gas.GasTypeRegistry.RegisterEffect``2(System.UInt32,System.Action{Lumio.GameRuntime.Gas.EffectSettlementContext,Lumio.GameRuntime.Ecs.NetEntityId,System.Int64},System.Func{Lumio.GameRuntime.Gas.EffectSettlementContext,Lumio.GameRuntime.Ecs.NetEntityId,System.Boolean})">
             <summary>Registers the closed declaration and explicit World-aware settlement callbacks.</summary>
         </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasTypeRegistry.RegisterGeneratedInstantEffect``2">
+            <summary>Registers a closed generated instant declaration and its exact typed codec.</summary>
+        </member>
         <member name="T:Lumio.GameRuntime.Gas.EffectRegistration">
             <summary>Closed effect declaration metadata copied out of the World registry.</summary>
         </member>
         <member name="M:Lumio.GameRuntime.Gas.EffectRegistration.#ctor(System.Type,System.Type,System.UInt32)">
             <summary>Closed effect declaration metadata copied out of the World registry.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Gas.GasWorldContext">
-            <summary>World-owned GAS indexes and transient work. Entity state remains in ECS.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Gas.GasWorldContext.#ctor(Lumio.GameRuntime.Ecs.World)">
-            <summary>Called by the registry's World service factory before gameplay construction.</summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.GasJointPrediction">
             <summary>GAS owner of a bounded joint input journal and its Native voxel session.</summary>
@@ -725,6 +924,13 @@
         </member>
         <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.CopyInputNativeKeys(System.UInt64,System.Span{System.UInt64})">
             <summary>Copies an input's physical keys without allocation; returns required length and writes nothing if too small.</summary>
+        </member>
+        <member name="M:Lumio.GameRuntime.Gas.GasJointPrediction.ProjectUnderRemote(System.UInt64)">
+            <summary>
+            Authority-replay projections (survivor/base re-projection) run under the remote interval so
+            their transform projection callbacks mark spatial convergence remote. Local input writes in
+            ExecuteAffected stay outside — those ARE prediction drift the refresh must revert.
+            </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Gas.PredictionUnavailableException">
             <summary>Prediction refused without inferring a server rejection or resending the admitted input.</summary>
@@ -756,6 +962,15 @@
         </member>
         <member name="M:Lumio.GameRuntime.Gas.PredictionExecutionTelemetryStatus.#ctor(System.UInt64,System.Boolean,Lumio.GameRuntime.Gas.PredictionExecutionStopReason,System.UInt64,System.UInt64,System.UInt64,System.Boolean,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.UInt64,System.Int32,System.Int32,System.Int64)">
             <summary>Totals cover observed calls only, including dropped records; totals freeze after stop. Elapsed totals include timed calls only.</summary>
+        </member>
+        <member name="T:Lumio.Wire.EffectLifecycleContract">
+            <summary>Effect declaration and settlement contract. Production readiness is a separate gate.</summary>
+        </member>
+        <member name="F:Lumio.Wire.EffectLifecycleContract.DefinitionJson">
+            <summary>Exact schema/bindings, layout and capability rules consumed by declaration generation and startup validation.</summary>
+        </member>
+        <member name="M:Lumio.Wire.EffectLifecycleContract.ScalarWidth(Lumio.Wire.EffectScalarKind)">
+            <summary>Zero denotes descriptor-dependent width (enum or bounded string).</summary>
         </member>
     </members>
 </doc>

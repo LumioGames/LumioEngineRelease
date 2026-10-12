@@ -49,9 +49,11 @@ function defaultWarn(warning) {
 /// key `"x:y:z"` (the page's delivery bookkeeping), or null when unknown. With it the
 /// driver warns once per Section when the mesh on screen trails the world by more than
 /// `revisionLagBudget` revisions, and once more when it has caught up again.
+/// `isWorldAlive()`: optional owner query for Engine-owned worlds, whose derived
+/// meshers are automatically released on retirement. Read the actual owner identity.
 export function createMeshDriver({
   exports, world, faceTable, renderer, onWarning = defaultWarn,
-  worldRevisionOf = null, revisionLagBudget = DEFAULT_REVISION_LAG_BUDGET,
+  worldRevisionOf = null, revisionLagBudget = DEFAULT_REVISION_LAG_BUDGET, isWorldAlive = () => true,
 }) {
   const call = (entry, ...args) => exports[WASM_ENTRY[entry]](...args);
   for (const entry of REQUIRED_ENTRIES) {
@@ -99,8 +101,32 @@ export function createMeshDriver({
     }
   }
 
-  let mesher = createMesher(faceTable);
+  let mesher;
+  try {
+    if (!isWorldAlive()) throw new Error("mesh_driver_destroyed");
+    mesher = createMesher(faceTable);
+  } catch (error) {
+    call("free", staging, STAGING_BYTES);
+    throw error;
+  }
   let alive = true;
+
+  function destroy() {
+    if (!alive) return;
+    alive = false;
+    // The Engine has already freed derived handles when the owner retired.
+    // A live owner's failing destroy remains an error; it is never suppressed.
+    if (isWorldAlive()) {
+      const status = call("mesherDestroy", mesher);
+      if (status !== WASM_STATUS.ok) warn(`mesher_destroy:${lastError() || status}`);
+    }
+    call("free", staging, STAGING_BYTES);
+  }
+
+  function canEnterWorld() {
+    if (alive && !isWorldAlive()) destroy();
+    return alive;
+  }
 
   const warn = (reason, key) => onWarning({
     reason,
@@ -234,7 +260,7 @@ export function createMeshDriver({
     /// Takes the Sections the wasm side marked for remeshing and meshes each.
     pump() {
       const stats = emptyStats();
-      if (!alive) return stats;
+      if (!canEnterWorld()) return stats;
       for (const [x, y, z] of drainKeys()) stats[meshOne(x, y, z)] += 1;
       checkRevisionLag(stats);
       return stats;
@@ -242,13 +268,13 @@ export function createMeshDriver({
 
     /// Meshes one Section now (for example after the page learns it arrived).
     remesh(x, y, z) {
-      return alive ? meshOne(x, y, z) : "failed";
+      return canEnterWorld() ? meshOne(x, y, z) : "failed";
     },
 
     /// Material pack swap: new mesher with the new table, drop every shown mesh,
     /// regenerate every Section that was shown.
     replaceFaceTable(table) {
-      if (!alive) throw new Error("mesh_driver_destroyed");
+      if (!canEnterWorld()) throw new Error("mesh_driver_destroyed");
       const shown = renderer.sectionKeys().map((key) => key.split(":").map(Number));
       const next = createMesher(table);
       const status = call("mesherDestroy", mesher);
@@ -260,12 +286,6 @@ export function createMeshDriver({
       return stats;
     },
 
-    destroy() {
-      if (!alive) return;
-      alive = false;
-      const status = call("mesherDestroy", mesher);
-      if (status !== WASM_STATUS.ok) warn(`mesher_destroy:${lastError() || status}`);
-      call("free", staging, STAGING_BYTES);
-    },
+    destroy,
   };
 }

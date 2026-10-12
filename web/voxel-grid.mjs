@@ -1,3 +1,6 @@
+import { readVoxelSurface, SURFACE_LOADING, SURFACE_AIR, SURFACE_BLOCK } from './voxel-surface.mjs';
+export { SURFACE_LOADING, SURFACE_AIR, SURFACE_BLOCK };
+
 // Browser voxel grid over the VoxelEngine wasm32 C ABI (ADR-078).
 //
 // 决策 1: the voxel code in the browser IS VoxelEngine's Rust, built for
@@ -38,9 +41,9 @@ export function blockStateOf(blockId) {
 }
 
 /// Per-column surface states `readSurface` reports.
-export const SURFACE_LOADING = 0;
-export const SURFACE_AIR = 1;
-export const SURFACE_BLOCK = 2;
+
+
+
 
 const LUMIO_VOXEL_OK = 0;
 
@@ -309,6 +312,7 @@ function unavailableGrid(reason) {
     sections: () => [],
     sectionRevision: () => null,
     worldRevision: null,
+    release() { return { ok: false, error: reason }; },
     deliver() {
       return { ok: false, error: reason };
     },
@@ -398,6 +402,20 @@ function liveGrid(exports, handle, presenceNames, abiVersion) {
       }
     },
 
+    release(header) {
+      if (!alive) return { ok: false, error: "world_destroyed" };
+      try {
+        const status = exports.lumio_voxel_release_section(handle, header.sectionX, header.sectionY, header.sectionZ);
+        if (status !== LUMIO_VOXEL_OK) throw fail(exports, "release_section");
+        const key = `${header.sectionX}:${header.sectionY}:${header.sectionZ}`;
+        requested.delete(key);
+        delivered.delete(`s:${key}`);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error && error.message ? error.message : String(error) };
+      }
+    },
+
     /// One top-down pass over `box`: the topmost non-air block per column.
     ///
     /// One `lumio_voxel_read_box` per Y layer, highest first, iterating y outer
@@ -406,80 +424,20 @@ function liveGrid(exports, handle, presenceNames, abiVersion) {
     /// answers Pending / Unavailable — or a presence byte `read_box` never wrote
     /// — that column stays LOADING and is never painted as air.
     readSurface(box) {
-      const width = box.maxX - box.minX + 1;
-      const depth = box.maxZ - box.minZ + 1;
-      const cells = width * depth;
-      const blockIds = new Uint32Array(cells);
-      const states = new Uint8Array(cells);
-      const unresolved = new Uint8Array(cells);
-      if (!alive) {
-        return { width, depth, blockIds, states, counts: { block: 0, air: 0, loading: cells }, layersRead: 0, error: "world_destroyed" };
-      }
-
-      let layersRead = 0;
-      let error = null;
-      try {
+      return readVoxelSurface(box, (y, cells) => {
+        if (!alive) throw new Error("world_destroyed");
         const slot = ensureStaging(cells);
-        let pending = cells;
-        for (let y = box.maxY; y >= box.minY && pending > 0; y -= 1) {
-          // Fresh view before writing the sentinel; the previous iteration
-          // called into wasm.
-          new Uint8Array(exports.memory.buffer).fill(
-            PRESENCE_UNWRITTEN,
-            slot.base + slot.presenceOffset,
-            slot.base + slot.presenceOffset + cells,
-          );
-          const status = exports.lumio_voxel_read_box(
-            handle,
-            box.minX, y, box.minZ,
-            box.maxX, y, box.maxZ,
-            slot.base, slot.base + slot.presenceOffset, cells,
-            slot.base + slot.summaryOffset,
-          );
-          if (status !== LUMIO_VOXEL_OK) throw fail(exports, "read_box");
-          layersRead += 1;
-          // Fresh views after the call: read_box may have grown memory.
-          const buffer = exports.memory.buffer;
-          const ids = new Uint32Array(buffer, slot.base, cells);
-          const presence = new Uint8Array(buffer, slot.base + slot.presenceOffset, cells);
-          for (let i = 0; i < cells; i += 1) {
-            if (states[i] !== SURFACE_LOADING) continue;
-            if (!resolvedPresence.has(presence[i])) {
-              unresolved[i] = 1;
-              continue;
-            }
-            const id = ids[i];
-            // Air is a block TYPE; the state half never makes a cell solid.
-            if (blockTypeOf(id) === BLOCK_TYPE_AIR) continue;
-            states[i] = SURFACE_BLOCK;
-            blockIds[i] = id;
-            pending -= 1;
-          }
-        }
-      } catch (readError) {
-        error = readError && readError.message ? readError.message : String(readError);
-        // Anything not already decided stays LOADING: a failed read is not air.
-        unresolved.fill(1);
-      }
-
-      // A column is air only because every layer was READ and answered resolved
-      // air. If no layer was read at all, nothing was asked and nothing is known.
-      if (layersRead === 0) unresolved.fill(1);
-
-      let block = 0;
-      let air = 0;
-      let loading = 0;
-      for (let i = 0; i < cells; i += 1) {
-        if (states[i] === SURFACE_BLOCK) {
-          block += 1;
-        } else if (unresolved[i]) {
-          loading += 1;
-        } else {
-          states[i] = SURFACE_AIR;
-          air += 1;
-        }
-      }
-      return { width, depth, blockIds, states, counts: { block, air, loading }, layersRead, error };
+        new Uint8Array(exports.memory.buffer).fill(PRESENCE_UNWRITTEN,
+          slot.base + slot.presenceOffset, slot.base + slot.presenceOffset + cells);
+        const status = exports.lumio_voxel_read_box(handle,
+          box.minX, y, box.minZ, box.maxX, y, box.maxZ,
+          slot.base, slot.base + slot.presenceOffset, cells, slot.base + slot.summaryOffset);
+        if (status !== LUMIO_VOXEL_OK) throw fail(exports, "read_box");
+        const buffer = exports.memory.buffer;
+        const blockIds = new Uint32Array(buffer, slot.base, cells);
+        const presence = new Uint8Array(buffer, slot.base + slot.presenceOffset, cells);
+        return { blockIds, resolved: Uint8Array.from(presence, value => resolvedPresence.has(value) ? 1 : 0) };
+      });
     },
 
     destroy() {

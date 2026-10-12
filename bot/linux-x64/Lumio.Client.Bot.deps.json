@@ -111,9 +111,14 @@
       "Lumio.Client.Gameplay.ECS/1.0.0": {
         "dependencies": {
           "Lumio.Client.Log": "1.0.0",
+          "Lumio.Client.Network.Connection": "1.0.0",
+          "Lumio.GameRuntime.Coordination": "0.1.0",
           "Lumio.GameRuntime.Ecs": "0.1.0",
+          "Lumio.GameRuntime.Gas": "0.1.0",
+          "Lumio.GameRuntime.Hosting": "0.1.0",
           "Lumio.GameRuntime.Replication": "0.1.0",
           "Lumio.GameRuntime.Simulation": "0.1.0",
+          "System.Text.Json": "10.0.11",
           "System.Threading.Channels": "10.0.0"
         },
         "runtime": {
@@ -267,10 +272,25 @@
           "Lumio.GameRuntime.Config": "0.1.0",
           "Lumio.GameRuntime.Coordination": "0.1.0",
           "Lumio.GameRuntime.Ecs": "0.1.0",
-          "Lumio.GameRuntime.Primitives": "0.1.0"
+          "Lumio.GameRuntime.Primitives": "0.1.0",
+          "System.Text.Json": "10.0.11"
         },
         "runtime": {
           "Lumio.GameRuntime.Gas.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Lumio.GameRuntime.Hosting/0.1.0": {
+        "dependencies": {
+          "Lumio.GameRuntime.Gas": "0.1.0",
+          "Lumio.GameRuntime.Persistence": "0.1.0",
+          "Lumio.GameRuntime.Replication": "0.1.0",
+          "Lumio.GameRuntime.Simulation": "0.1.0"
+        },
+        "runtime": {
+          "Lumio.GameRuntime.Hosting.dll": {
             "assemblyVersion": "0.1.0.0",
             "fileVersion": "0.1.0.0"
           }
@@ -325,30 +345,6 @@
           "Lumio.GameRuntime.Simulation.dll": {
             "assemblyVersion": "0.1.0.0",
             "fileVersion": "0.1.0.0"
-          }
-        }
-      },
-      "Lumio.Engine.NativeLoader/1.0.0.0": {
-        "runtime": {
-          "Lumio.Engine.NativeLoader.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Lumio.GameRuntime.Coordination.VoxelAdapters/0.1.0.0": {
-        "runtime": {
-          "Lumio.GameRuntime.Coordination.VoxelAdapters.dll": {
-            "assemblyVersion": "0.1.0.0",
-            "fileVersion": "0.1.0.0"
-          }
-        }
-      },
-      "Lumio.Engine.SDK/1.0.0.0": {
-        "runtime": {
-          "Lumio.Engine.SDK.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
           }
         }
       }
@@ -488,6 +484,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Lumio.GameRuntime.Hosting/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Lumio.GameRuntime.Persistence/0.1.0": {
       "type": "project",
       "serviceable": false,
@@ -505,21 +506,6 @@
     },
     "Lumio.GameRuntime.Simulation/0.1.0": {
       "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Lumio.Engine.NativeLoader/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Lumio.GameRuntime.Coordination.VoxelAdapters/0.1.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Lumio.Engine.SDK/1.0.0.0": {
-      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }

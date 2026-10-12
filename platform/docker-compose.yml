@@ -49,7 +49,7 @@ services:
       retries: 15
 
   platform:
-    image: ghcr.io/lumiogames/lumio-platform:0.0.4@sha256:40542bc045f6255d8788a974536018636f832ad40206ed765081587310931d77
+    image: ghcr.io/lumiogames/lumio-platform:0.0.5@sha256:436061973212c33ff48d6b7819e3e7c60737da13d18cca452a530a54c5a70a32
     depends_on:
       postgres:
         condition: service_healthy

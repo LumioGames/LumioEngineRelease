@@ -22,37 +22,10 @@
         <member name="M:Lumio.GameRuntime.Persistence.DualCutCaptureResult.#ctor(System.Boolean,System.Nullable{Lumio.GameRuntime.Persistence.DualCutCheckpointPayload},System.String)">
             <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Capture(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,System.String)"/>.</summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Persistence.DualCutRestoreResult">
-            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Restore(Lumio.GameRuntime.Persistence.DualCutCheckpointPayload@,Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldConfigBinding,Lumio.GameRuntime.Ecs.WorldIngressBudget)"/>.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Persistence.DualCutRestoreResult.#ctor(System.Boolean,System.Boolean,System.String,Lumio.GameRuntime.Ecs.WorldManager,System.String[])">
-            <summary>Result of <see cref="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Restore(Lumio.GameRuntime.Persistence.DualCutCheckpointPayload@,Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldConfigBinding,Lumio.GameRuntime.Ecs.WorldIngressBudget)"/>.</summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Persistence.DualCutCheckpoint">
             <summary>
             Same-barrier ECS + voxel checkpoint. Voxel bytes stay opaque.
             </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.Restore(Lumio.GameRuntime.Persistence.DualCutCheckpointPayload@,Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.GameRuntime.Persistence.IVoxelSnapshotPort,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldConfigBinding,Lumio.GameRuntime.Ecs.WorldIngressBudget)">
-            <summary>
-            Restores a same-barrier ECS and voxel checkpoint into a caller-provided
-            voxel target.
-            </summary>
-            <remarks>
-            The <paramref name="voxel"/> target must be newly allocated and
-            uninitialized for this restore. Its underlying voxel world or snapshot
-            target must not have previously accepted a snapshot or otherwise carried
-            voxel state. This method does not clear, replace, or validate existing
-            target state;
-            callers must provide a fresh <see cref="T:Lumio.GameRuntime.Persistence.IVoxelSnapshotPort"/> target for
-            each restore candidate.
-            </remarks>
-            <param name="checkpoint">The complete ECS and voxel checkpoint to restore.</param>
-            <param name="registry">The registry used to hydrate the restored ECS world.</param>
-            <param name="voxel">A fresh, uninitialized voxel snapshot target for this restore.</param>
-            <param name="loggerFactory">Optional logger factory for the restored world.</param>
-            <param name="config">Caller-selected config version for this restore candidate.</param>
-            <param name="ingressBudget">Candidate delivery and ingress limits; null uses the default budget.</param>
         </member>
         <member name="M:Lumio.GameRuntime.Persistence.DualCutCheckpoint.TryCountSectionPresence(System.Byte[],System.UInt32@)">
             <summary>

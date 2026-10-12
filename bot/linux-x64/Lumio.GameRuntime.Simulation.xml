@@ -22,154 +22,6 @@
         <member name="M:Lumio.GameRuntime.Simulation.AbilityPhysicsAdapter.Overlap(System.Numerics.Vector3,System.Numerics.Vector3)">
             <inheritdoc />
         </member>
-        <member name="T:Lumio.GameRuntime.Simulation.PredictionCaptureOwnerServices">
-            <summary>Borrowed capture services; the Host retains the binding, manager and Native lease through writer/pump cleanup.</summary>
-            <remarks>Use only at the manager's idle owner boundary. Do not dispose the borrowed HFSM context or clock.</remarks>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.PredictionCaptureOwnerServices.#ctor(Lumio.Engine.NativeLoader.INativeHfsmAbi,Lumio.Engine.NativeLoader.NativeMonotonicClock,System.String,System.String,System.String)">
-            <summary>Borrowed capture services; the Host retains the binding, manager and Native lease through writer/pump cleanup.</summary>
-            <remarks>Use only at the manager's idle owner boundary. Do not dispose the borrowed HFSM context or clock.</remarks>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding">
-            <summary>
-            Production DS attach: native spatial index, Authority voxel world, and the
-            single-process voxel tick commit hook.
-            </summary>
-            <remarks>
-            NativeVoxelWorld does not expose a public world handle. Attach binds the
-            world object through <see cref="T:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi"/> so renaming or
-            removing the SDK private field cannot make attach invent a zero handle.
-            </remarks>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.GetPredictionCaptureOwnerServices">
-            <summary>Gets the actual World HFSM and a clock over this binding's original Native lease.</summary>
-            <remarks>
-            Call after Runtime returns or unwinds on the manager owner thread. The Host must retain the
-            manager, binding and lease until pump/writer disposal succeeds, including fallback writer
-            cleanup when pump construction fails before BindOwner. No ownership is transferred.
-            </remarks>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.AcquireCaptureSource">
-            <summary>Exclusive observation ownership. Acquire and release at the manager owner boundary.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.NativeCaptureSource">
-            <summary>No pointer escape; disposal remains retryable if Native disable fails.</summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.VoxelWorldHandle">
-            <summary>
-            Opaque identity HostEntry reports as <c>voxelWorldHandle</c>.
-            This is not a native pointer and does not come from a private SDK field.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.TryAttach(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[])">
-            <summary>Binds a Native world using the host's official block catalog configuration.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.TryAttach(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],System.Byte[])">
-            <summary>
-            Binds a Native world, then restores the operator-named base-map capture
-            onto that fresh Authority world. First boot of an empty store is this
-            path, not <see cref="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],Microsoft.Extensions.Logging.ILoggerFactory)"/>:
-            RestoreNew hydrates a DualCut runtime half, which empty-store boot does
-            not have.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.TryAttachWithSectionExport(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.KernelConfig,Lumio.GameRuntime.Simulation.SectionProducerOptions,System.Byte[],System.Byte[])">
-            <summary>Opt-in bounded Section capture, opened only after the optional fresh-world restore.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],Microsoft.Extensions.Logging.ILoggerFactory)">
-            <summary>
-            Restores an independent candidate without modifying any existing binding.
-            </summary>
-            <remarks>
-            A successful result returns a candidate whose <see cref="T:Lumio.GameRuntime.Ecs.WorldManager"/>
-            has not been started and whose normal Tick binding has not been published.
-            The caller owns both the binding and its Manager and must call
-            <see cref="M:Lumio.GameRuntime.Ecs.WorldManager.Start(System.Threading.Thread)"/> and bind the
-            normal Tick path through <c>WorldTickBinding.Bind</c> before publishing
-            the candidate.
-            </remarks>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Byte[],Lumio.GameRuntime.Ecs.WorldConfigBinding)">
-            <summary>Restores a fresh candidate with the host's explicit ingress and receipt budget.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,Microsoft.Extensions.Logging.ILoggerFactory,Lumio.GameRuntime.Ecs.WorldIngressBudget,System.Byte[])">
-            <summary>Restores with the host's original budget and official block catalog configuration.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.Restore(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry)">
-            <summary>
-            In-place restore is deliberately unavailable. A restore must construct a
-            fresh native world and a fresh Runtime binding through <see cref="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RestoreNew(System.Byte[],System.Byte[],Lumio.GameRuntime.Ecs.EcsRegistry,Lumio.Engine.NativeLoader.KernelConfig,System.Byte[],Microsoft.Extensions.Logging.ILoggerFactory)"/>
-            so the in-memory transaction ledger cannot survive into older world data.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.RequiredSectionsUnresolved(Lumio.GameRuntime.Ecs.World,Lumio.GameRuntime.Coordination.HostVoxelWorldAdapter)">
-            <summary>
-            True when a live LogicTransform sits on a Pending or Unavailable cell.
-            Overlap Unresolved is never-empty-air, not a missing required section.
-            </summary>
-        </member>
-        <member name="P:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.SectionResidency">
-            <summary>Runtime's Section residency decision and Tick-between orchestrator (ADR-119 决策 7), once enabled.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.EnableSectionResidency(Lumio.GameRuntime.Simulation.SectionResidencyOptions,Lumio.GameRuntime.Persistence.SectionResidencyRegistry,Lumio.Engine.SDK.VoxelSectionExportLimits,System.UInt64)">
-            <summary>
-            Opt-in Section residency (ADR-119 决策 7), opened on top of an existing attach, and the
-            lumio-hfsm-driven lifecycle. <paramref name="registry"/> is the world checkpoint's own registered
-            (Section key, generation) sidecar — pass a fresh one for a first boot, or the one restored alongside
-            this world's checkpoint to resume an in-flight residency cycle.
-            </summary>
-            <remarks>
-            R-00777: the world has exactly one Native Section export arena
-            (<see cref="M:Lumio.Engine.SDK.NativeVoxelWorld.OpenSectionExport(Lumio.Engine.SDK.VoxelSectionExportLimits)"/> is documented as opening "the
-            world's sole bounded Authority export owner"). When <see cref="P:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding.SectionProducer"/> already opened it
-            (HostEntry's real boot order always attaches with <c>TryAttachWithSectionExport</c> first), this
-            borrows that same arena instead of asking Native for a second one, which it refuses with
-            <c>InvalidArgument</c>. <paramref name="exportLimits"/> is only used to open a fresh arena when no
-            producer already has one.
-            </remarks>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.PredictionCaptureManagedJson">
-            <summary>Raw capture codecs. The host supplies a bounded writer and appends JSONL separators.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.CapturePumpOptions">
-            <summary>Explicit owner budgets, separate from the writer's file and queue budgets.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.CapturePumpOptions.#ctor(System.Int32,System.Int32,System.Int32,System.Int64,System.Int64,System.Int32)">
-            <summary>Explicit owner budgets, separate from the writer's file and queue budgets.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.PredictionCapturePump">
-            <summary>
-            Host calls only after Runtime returns/unwinds. No scheduler, gameplay callbacks, disk I/O or async source access.
-            Keep this owner and its Native context alive until Dispose succeeds; observe Completion from any thread.
-            A Native cut that keeps faulting is abandoned after <see cref="F:Lumio.GameRuntime.Simulation.PredictionCapturePump.NativeCutAttempts"/> owner boundaries, and at the
-            first fault during disposal: the capture then closes as incomplete and records the abandonment as Native evidence
-            instead of demanding an unbounded retry of the same failing final read, disable or release.
-            </summary>
-        </member>
-        <member name="F:Lumio.GameRuntime.Simulation.PredictionCapturePump.NativeCutAttempts">
-            <summary>Owner-boundary attempts at one Native cut. Retrying inside a single call cannot observe new Native state.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.PredictionCapturePump.TryAttachManaged(Lumio.GameRuntime.Gas.GasJointPrediction,Lumio.GameRuntime.Simulation.ManagedCaptureOptions)">
-            <summary>Optional one-shot attachment; GAS enforces its actual pre-input admission fence.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.PredictionCapturePump.AttachNative(Lumio.GameRuntime.Simulation.DedicatedServerHostBinding,Lumio.GameRuntime.Simulation.NativeCaptureOptions)">
-            <summary>Preallocates the complete Native tail before enabling its bounded ring.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.PredictionCapturePump.AbandonNativeCut">
-            <summary>Terminal: stop retrying this Native cut and record why, never as a clean stop.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.PredictionCapturePump.PumpAtOwnerBoundary">
-            <summary>Fixed work per stream. A failed reservation never consumes a source record.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.PredictionCapturePump.ObserveGameplayFailureAtOwnerBoundary">
-            <summary>Use while unwinding a gameplay failure; diagnostics must not replace that exception.</summary>
-        </member>
-        <member name="T:Lumio.GameRuntime.Simulation.DedicatedServerRestoreResult">
-            <summary>Only a fully restored candidate transfers ownership to the host.</summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.DedicatedServerRestoreResult.#ctor(System.Boolean,Lumio.GameRuntime.Simulation.DedicatedServerHostBinding,System.String)">
-            <summary>Only a fully restored candidate transfers ownership to the host.</summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Simulation.Determinism.DeterminismContext">
             <summary>Tick-scoped deterministic inputs. Wall time, thread identity and object identity are absent by design.</summary>
         </member>
@@ -378,29 +230,12 @@
             puts the single-kernel timer drift back.
             </summary>
         </member>
-        <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeEngineProcessLease">
-            <summary>
-            Process-wide native lease shared by every net10.0 Tick-path facade that has no managed substitute:
-            <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock"/> (<c>clock_now</c>), <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64"/>
-            (<c>codec_base64_encode</c>), and <see cref="T:Lumio.GameRuntime.Simulation.DedicatedServerHostBinding"/>'s voxel-world attach.
-            Follow-up 5 (R-00763): the failure message below must name what is actually missing without
-            pretending a fallback exists, and must not be narrowed back to a single consumer — this class is
-            shared, and a message naming only the first consumer that happened to need it misleads whoever hits
-            it through a different one.
-            </summary>
-        </member>
         <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64">
             <summary>
             Production Tick-path Base64 (architecture ADR-122): NativeCore <c>lumio-codec</c> through the engine
             root slot <c>codec_base64_encode</c>, via <see cref="T:Lumio.Engine.NativeLoader.NativeBase64Encoder"/>, on the same process
             lease as <see cref="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock"/>. The Tick runs only this forwarder and the facade's own
             methods, which Prime compiles ahead of time, plus one unmanaged call.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.Tick.NativeTickBase64.Require">
-            <summary>
-            Binds the slot on the process lease. Throws when the native artifact is missing, predates the
-            slot, or answers the facade's probe wrongly; there is no managed substitute.
             </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Simulation.Tick.NativeTickClock">
@@ -466,7 +301,7 @@
         <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.Enabled">
             <summary>When false, <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.BeginTick(System.UInt64)"/> / <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.EndPhase(Lumio.GameRuntime.Primitives.TickPhase,System.UInt64,System.Nullable{System.UInt64})"/> / <see cref="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.EndTick(System.Int64,System.Int32,System.Int32,System.Int32,System.Nullable{System.Double},System.Int32,System.Int32,System.Int32,System.Nullable{System.Int64})"/> are no-ops.</summary>
         </member>
-        <member name="P:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.LiveEntityOverride">
+        <member name="M:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler.Dispose">
             <summary>
             Optional live-entity count for the current tick. WorldTickBinding sets this
             from <c>World.LiveEntityCount</c> before EndTick; TickRunner itself has no World.
@@ -781,14 +616,7 @@
             generic type share one handle across reference-type instantiations.
             </summary>
         </member>
-        <member name="M:Lumio.GameRuntime.Simulation.WorldTickBinding.Bind(Lumio.GameRuntime.Ecs.WorldManager,Lumio.GameRuntime.Simulation.Tick.ITickPhaseSampleSink)">
-            <summary>
-            Binds a thirteen-phase tick loop to <paramref name="manager"/>.
-            Passing <paramref name="sampler"/> enables <see cref="T:Lumio.GameRuntime.Simulation.Tick.TickPhaseSampler"/> for this binding only.
-            Omitting or passing null leaves the sampler disabled.
-            </summary>
-        </member>
-        <member name="M:Lumio.GameRuntime.Simulation.WorldTickBinding.Bind(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.INativeHfsmAbi,Lumio.GameRuntime.Simulation.Tick.ITickPhaseSampleSink)">
+        <member name="M:Lumio.GameRuntime.Simulation.WorldTickBinding.Bind(Lumio.GameRuntime.Ecs.WorldManager,Lumio.Engine.NativeLoader.INativeHfsmAbi,Lumio.GameRuntime.Simulation.Tick.ITickPhaseSampleSink,Lumio.GameRuntime.Simulation.Tick.ITickMonotonicClock,Lumio.GameRuntime.Simulation.IBase64Encoder)">
             <summary>Borrows the provider; the caller closes its Context after disposing the binding.</summary>
         </member>
     </members>

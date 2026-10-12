@@ -43,8 +43,7 @@
             Native status <c>LUMIO_STATUS_BUFFER_TOO_SMALL</c> (engine/abi/native-abi.json <c>status.BufferTooSmall</c>
             = 5): a shared <c>lumio_status_t</c> value, not one of the per-capability generated enums
             (<see cref="T:Lumio.Engine.SDK.VoxelErrorCode"/> only covers the voxel business error table, 1000+). Named locally
-            like <c>INativeLogAbi</c>/<c>INativeTimerAbi</c>/<c>CodecFacade</c> already do in LumioGameEngine,
-            since the generator does not emit a per-capability alias for it (ADR-121 R3: no bare literal).
+            using the generated <see cref="T:Lumio.Engine.NativeLoader.NativeStatus"/> constants from the shared status channel.
             </summary>
         </member>
         <member name="F:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.BlockingMaterialMask">
@@ -139,11 +138,9 @@
         </member>
         <member name="M:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadeNativeAbi.ResidencyWireErrorCode(Lumio.Engine.SDK.VoxelErrorCode)">
             <summary>
-            Maps the ADR-119 residency refusal subset of <see cref="T:Lumio.Engine.SDK.VoxelErrorCode"/> (the generated contract
-            enum from a caught <see cref="T:Lumio.Engine.SDK.VoxelNativeException"/>.Code, never a hand-typed status int —
-            ADR-121 R3) to the exact snake_case string engine/abi/native-abi.json's <c>voxelErrors</c> table
-            declares for it — the same string Runtime's own <c>IVoxelSectionResidencyPort</c> double and
-            <c>DedicatedServerHostBinding</c> already report for these codes.
+            Uses the generated contract mapping (ADR-121 R3 single source, replacing the hand-typed
+            table) to preserve the snake_case name of a residency refusal — the same string the
+            Hosting authority section subsystem reports for these codes.
             </summary>
         </member>
         <member name="T:Lumio.GameRuntime.Coordination.VoxelAdapters.VoxelFacadePredictionSession">
